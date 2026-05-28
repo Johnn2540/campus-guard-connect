@@ -5911,6 +5911,31 @@ app.get("/api/check-session", (req, res) => {
     res.json({ loggedIn: !!(req.session?.userId), userId: req.session?.userId, userRole: req.session?.userRole });
 });
 
+
+// keep render active
+app.get("/health", async (req, res) => {
+    try {
+        // Check database connection
+        await prisma.$queryRaw`SELECT 1`;
+        res.status(200).json({ 
+            status: "healthy", 
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime()
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            status: "unhealthy", 
+            error: error.message 
+        });
+    }
+});
+
+// Simple ping endpoint
+app.get("/ping", (req, res) => {
+    res.status(200).send("pong");
+});
+
+
 // ================== ERROR HANDLING ==================
 
 app.use((req, res) => {
