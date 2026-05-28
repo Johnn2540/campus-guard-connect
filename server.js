@@ -5159,13 +5159,26 @@ app.use((err, req, res, next) => {
 // ================== START SERVER ==================
 
 const PORT = process.env.PORT || 3000;
-const HOST = process.env.NODE_ENV === "production" ? "0.0.0.0" : "localhost";
+// CRITICAL: Render requires binding to 0.0.0.0, not localhost
+const HOST = "0.0.0.0";
+
+// Health check endpoint (required for Render)
+app.get("/health", (req, res) => {
+    res.status(200).json({ 
+        status: "ok", 
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        database: "postgresql"
+    });
+});
 
 // Connect to database and start server
 connectDatabase().then(() => {
     const server = app.listen(PORT, HOST, () => {
-        console.log(`🚀 Server running on ${HOST}:${PORT} [${process.env.NODE_ENV || "development"}]`);
+        console.log(`🚀 Server running on ${HOST}:${PORT}`);
         console.log(`📡 Database: Neon PostgreSQL`);
+        console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
+        console.log(`✅ Ready to accept connections`);
     });
     
     const shutdown = async (signal) => {
