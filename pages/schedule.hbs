@@ -1,0 +1,1170 @@
+<!-- schedule.hbs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Management - Campus Guard Connect</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-brand i {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-badge i {
+            font-size: 1.3rem;
+            color: #64748b;
+            transition: color 0.3s ease;
+        }
+
+        .notification-badge:hover i {
+            color: #667eea;
+        }
+
+        .badge-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .user-profile:hover {
+            background: #eef2f6;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .user-info {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .user-info {
+                display: block;
+            }
+            
+            .user-info h6 {
+                font-weight: 700;
+                color: #1e293b;
+                margin-bottom: 0.2rem;
+                font-size: 0.9rem;
+            }
+            
+            .user-info p {
+                color: #64748b;
+                font-size: 0.8rem;
+                margin-bottom: 0;
+                text-transform: capitalize;
+            }
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-header h2 {
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+            font-size: 2rem;
+        }
+
+        .page-header p {
+            color: #64748b;
+            margin-bottom: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-outline {
+            border: 2px solid #e2e8f0;
+            background: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: #4a5568;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        /* Schedule Controls */
+        .schedule-controls {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .view-controls {
+            display: flex;
+            gap: 0.5rem;
+            background: #f1f5f9;
+            padding: 0.25rem;
+            border-radius: 10px;
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.3s ease;
+        }
+
+        .view-btn:hover {
+            color: #667eea;
+        }
+
+        .view-btn.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .date-navigation {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .date-nav-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 10px;
+            color: #4a5568;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .date-nav-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .current-date {
+            font-weight: 600;
+            color: #1e293b;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .filter-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            background: white;
+        }
+
+        .filter-dropdown select {
+            border: none;
+            background: transparent;
+            font-weight: 500;
+            color: #4a5568;
+            outline: none;
+        }
+
+        /* Calendar Container */
+        .calendar-container {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 2rem;
+        }
+
+        #calendar {
+            min-height: 600px;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+        }
+
+        .color-main-gate { background: #4299e1; }
+        .color-hostels { background: #48bb78; }
+        .color-academic { background: #ed8936; }
+        .color-perimeter { background: #9f7aea; }
+        .color-parking { background: #f56565; }
+        .color-admin { background: #667eea; }
+
+        /* Shift List View */
+        .shift-list {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+        }
+
+        .list-header {
+            display: grid;
+            grid-template-columns: 2fr 2fr 1.5fr 1.5fr 1fr 1fr;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            font-weight: 700;
+            color: #4a5568;
+            margin-bottom: 1rem;
+        }
+
+        .shift-row {
+            display: grid;
+            grid-template-columns: 2fr 2fr 1.5fr 1.5fr 1fr 1fr;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .shift-row:hover {
+            background: #f8fafc;
+        }
+
+        .guard-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .guard-avatar-small {
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .zone-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .zone-main_gate {
+            background: rgba(66, 153, 225, 0.1);
+            color: #4299e1;
+        }
+
+        .zone-hostels {
+            background: rgba(72, 187, 120, 0.1);
+            color: #48bb78;
+        }
+
+        .zone-academic {
+            background: rgba(237, 137, 54, 0.1);
+            color: #ed8936;
+        }
+
+        .zone-perimeter {
+            background: rgba(159, 122, 234, 0.1);
+            color: #9f7aea;
+        }
+
+        .zone-parking {
+            background: rgba(245, 101, 101, 0.1);
+            color: #f56565;
+        }
+
+        .zone-admin {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-scheduled {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .status-in_progress {
+            background: rgba(72, 187, 120, 0.1);
+            color: #48bb78;
+        }
+
+        .status-completed {
+            background: rgba(160, 174, 192, 0.1);
+            color: #4a5568;
+        }
+
+        .status-missed {
+            background: rgba(245, 101, 101, 0.1);
+            color: #f56565;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            color: #94a3b8;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-btn:hover {
+            background: #eef2f6;
+            color: #667eea;
+        }
+
+        /* Modal */
+        .modal-content {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border: none;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            height: 50px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        .time-input-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .time-input-group .form-control {
+            flex: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .list-header, .shift-row {
+                grid-template-columns: 2fr 2fr 1.5fr 1.5fr 1fr;
+            }
+            
+            .list-header div:last-child,
+            .shift-row div:last-child {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .list-header, .shift-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            
+            .list-header div:nth-child(3),
+            .list-header div:nth-child(4),
+            .list-header div:nth-child(5),
+            .shift-row div:nth-child(3),
+            .shift-row div:nth-child(4),
+            .shift-row div:nth-child(5) {
+                display: none;
+            }
+            
+            .schedule-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .current-date {
+                min-width: auto;
+            }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Custom FullCalendar Styles */
+        .fc-event {
+            border: none;
+            border-radius: 8px;
+            padding: 4px 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .fc-event:hover {
+            transform: scale(1.02);
+        }
+
+        .fc-day-today {
+            background: rgba(102, 126, 234, 0.05) !important;
+        }
+
+        .fc-button-primary {
+            background: #667eea !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .fc-button-primary:hover {
+            background: #764ba2 !important;
+        }
+
+        .fc-button-primary:disabled {
+            background: #cbd5e0 !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-shield-alt"></i>
+                CampusGuard Connect
+            </a>
+            
+            <div class="user-menu">
+                <div class="notification-badge">
+                    <i class="far fa-bell"></i>
+                    <span class="badge-count">{{notificationCount}}</span>
+                </div>
+                
+                <div class="dropdown">
+                    <div class="user-profile" data-bs-toggle="dropdown">
+                        <div class="user-avatar">
+                            {{#if user}}
+                                {{#if user.firstName}}
+                                    {{user.firstName.[0]}}{{user.lastName.[0]}}
+                                {{else}}
+                                    {{user.email.[0]}}
+                                {{/if}}
+                            {{else}}
+                                U
+                            {{/if}}
+                        </div>
+                        <div class="user-info">
+                            <h6>{{#if user}}{{user.firstName}} {{user.lastName}}{{else}}User{{/if}}</h6>
+                            <p>{{#if user}}{{user.role}}{{else}}Guest{{/if}}</p>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                        <li><a class="dropdown-item" href="/help"><i class="fas fa-question-circle me-2"></i>Help</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h2><i class="fas fa-calendar-alt me-2" style="color: #667eea;"></i>Schedule Management</h2>
+                <p>Manage guard shifts, patrol assignments, and duty rosters</p>
+            </div>
+            
+            <div class="header-actions">
+                {{#if (ifNotEquals user.role 'guard')}}
+                <button class="btn-primary" data-bs-toggle="modal" data-bs-target="#createShiftModal">
+                    <i class="fas fa-plus-circle"></i>
+                    Create Shift
+                </button>
+                {{/if}}
+                <button class="btn-outline" onclick="exportSchedule()">
+                    <i class="fas fa-download"></i>
+                    Export
+                </button>
+            </div>
+        </div>
+
+        <!-- Schedule Controls -->
+        <div class="schedule-controls">
+            <div class="view-controls">
+                <button class="view-btn active" onclick="changeView('dayGridMonth')">
+                    <i class="fas fa-calendar me-2"></i>Month
+                </button>
+                <button class="view-btn" onclick="changeView('timeGridWeek')">
+                    <i class="fas fa-calendar-week me-2"></i>Week
+                </button>
+                <button class="view-btn" onclick="changeView('timeGridDay')">
+                    <i class="fas fa-calendar-day me-2"></i>Day
+                </button>
+                <button class="view-btn" onclick="changeView('listWeek')">
+                    <i class="fas fa-list me-2"></i>List
+                </button>
+            </div>
+
+            <div class="date-navigation">
+                <button class="date-nav-btn" onclick="previousDate()">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="current-date" id="currentDateDisplay">{{currentDate}}</span>
+                <button class="date-nav-btn" onclick="nextDate()">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <button class="btn-outline" onclick="goToToday()">
+                    <i class="fas fa-calendar-check me-2"></i>Today
+                </button>
+            </div>
+
+            <div class="filter-dropdown">
+                <i class="fas fa-filter" style="color: #667eea;"></i>
+                <select id="zoneFilter" onchange="filterByZone()">
+                    <option value="">All Zones</option>
+                    <option value="main_gate">Main Gate</option>
+                    <option value="hostels">Hostels</option>
+                    <option value="academic">Academic</option>
+                    <option value="perimeter">Perimeter</option>
+                    <option value="parking">Parking</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Calendar Container -->
+        <div class="calendar-container">
+            <div id="calendar"></div>
+            
+            <!-- Legend -->
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color color-main-gate"></div>
+                    <span>Main Gate</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color color-hostels"></div>
+                    <span>Hostels</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color color-academic"></div>
+                    <span>Academic</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color color-perimeter"></div>
+                    <span>Perimeter</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color color-parking"></div>
+                    <span>Parking</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color color-admin"></div>
+                    <span>Admin</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Shifts List -->
+        <div class="shift-list">
+            <h5 class="mb-4">
+                <i class="fas fa-list-alt me-2" style="color: #667eea;"></i>
+                Today's Shifts ({{todayDate}})
+            </h5>
+
+            <div class="list-header">
+                <div>Guard</div>
+                <div>Zone</div>
+                <div>Time</div>
+                <div>Status</div>
+                <div>Check In</div>
+                <div>Actions</div>
+            </div>
+
+            {{#if shifts}}
+                {{#each shifts}}
+                <div class="shift-row">
+                    <div class="guard-info">
+                        <div class="guard-avatar-small">
+                            {{#if this.guard}}
+                                {{#if this.guard.name}}
+                                    {{this.guard.name.[0]}}
+                                {{else}}
+                                    G
+                                {{/if}}
+                            {{else}}
+                                G
+                            {{/if}}
+                        </div>
+                        <div>
+                            <strong>{{this.guard.name}}</strong>
+                            <br>
+                            <small class="text-muted">{{this.guard.badgeNumber}}</small>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="zone-badge zone-{{this.zone}}">
+                            {{formatZone this.zone}}
+                        </span>
+                    </div>
+                    <div>
+                        <strong>{{this.startTime}} - {{this.endTime}}</strong>
+                        <br>
+                        <small class="text-muted">{{formatDate this.date}}</small>
+                    </div>
+                    <div>
+                        <span class="status-badge status-{{this.status}}">
+                            {{formatStatus this.status}}
+                        </span>
+                    </div>
+                    <div>
+                        {{#if this.checkIn.time}}
+                            <span class="text-success">
+                                <i class="fas fa-check-circle"></i>
+                                {{formatTime this.checkIn.time}}
+                            </span>
+                        {{else}}
+                            <span class="text-warning">
+                                <i class="fas fa-clock"></i>
+                                Pending
+                            </span>
+                        {{/if}}
+                    </div>
+                    <div class="action-btns">
+                        <button class="action-btn" onclick="viewShift('{{this._id}}')" title="View">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        {{#if (ifNotEquals ../user.role 'guard')}}
+                        <button class="action-btn" onclick="editShift('{{this._id}}')" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn" onclick="deleteShift('{{this._id}}')" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        {{/if}}
+                    </div>
+                </div>
+                {{/each}}
+            {{else}}
+                <div class="text-center py-5">
+                    <i class="fas fa-calendar-times fa-3x mb-3" style="color: #cbd5e0;"></i>
+                    <h6 style="color: #94a3b8;">No shifts scheduled for today</h6>
+                </div>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- Create Shift Modal -->
+    {{#if (ifNotEquals user.role 'guard')}}
+    <div class="modal fade" id="createShiftModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Create New Shift
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="/schedule/create" method="POST" id="createShiftForm">
+                    <div class="modal-body">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-user-shield me-2" style="color: #667eea;"></i>
+                                    Select Guard
+                                </label>
+                                <select class="form-select" name="guard" required>
+                                    <option value="">Choose guard...</option>
+                                    {{#each availableGuards}}
+                                    <option value="{{this._id}}">{{this.name}} ({{this.badgeNumber}})</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-map-marker-alt me-2" style="color: #667eea;"></i>
+                                    Zone
+                                </label>
+                                <select class="form-select" name="zone" required>
+                                    <option value="">Select zone...</option>
+                                    <option value="main_gate">Main Gate</option>
+                                    <option value="hostels">Hostels</option>
+                                    <option value="academic">Academic Area</option>
+                                    <option value="perimeter">Perimeter</option>
+                                    <option value="parking">Parking Lots</option>
+                                    <option value="admin">Admin Block</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label class="form-label">
+                                    <i class="fas fa-calendar-day me-2" style="color: #667eea;"></i>
+                                    Shift Date
+                                </label>
+                                <input type="date" class="form-control" name="date" 
+                                       min="{{currentDate}}" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-clock me-2" style="color: #667eea;"></i>
+                                    Start Time
+                                </label>
+                                <input type="time" class="form-control" name="startTime" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-clock me-2" style="color: #667eea;"></i>
+                                    End Time
+                                </label>
+                                <input type="time" class="form-control" name="endTime" required>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label class="form-label">
+                                    <i class="fas fa-clipboard-list me-2" style="color: #667eea;"></i>
+                                    Special Instructions (Optional)
+                                </label>
+                                <textarea class="form-control" name="notes" rows="3" 
+                                          placeholder="Any special notes for this shift..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-outline" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </button>
+                        <button type="submit" class="btn-primary" id="saveShiftBtn">
+                            <i class="fas fa-save me-2"></i>Create Shift
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    
+    <script>
+        // Initialize Calendar
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            
+            // Sample shift data (replace with actual data from backend)
+            const shifts = {{{json shifts}}};
+            
+            const events = shifts.map(shift => ({
+                id: shift._id,
+                title: `${shift.guard?.name || 'Guard'} - ${formatZone(shift.zone)}`,
+                start: combineDateAndTime(shift.date, shift.startTime),
+                end: combineDateAndTime(shift.date, shift.endTime),
+                className: `zone-${shift.zone}`,
+                extendedProps: {
+                    guard: shift.guard,
+                    zone: shift.zone,
+                    status: shift.status,
+                    notes: shift.notes
+                }
+            }));
+            
+            window.calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: false,
+                events: events,
+                eventClick: function(info) {
+                    viewShift(info.event.id);
+                },
+                eventDidMount: function(info) {
+                    // Add tooltip
+                    info.el.title = `${info.event.title}\nStatus: ${info.event.extendedProps.status}`;
+                },
+                dateClick: function(info) {
+                    // Open create shift modal with date pre-filled
+                    if ('{{user.role}}' !== 'guard') {
+                        document.querySelector('input[name="date"]').value = info.dateStr;
+                        new bootstrap.Modal(document.getElementById('createShiftModal')).show();
+                    }
+                }
+            });
+            
+            calendar.render();
+            updateCurrentDateDisplay();
+        });
+
+        // Helper Functions
+        function formatZone(zone) {
+            const zones = {
+                'main_gate': 'Main Gate',
+                'hostels': 'Hostels',
+                'academic': 'Academic',
+                'perimeter': 'Perimeter',
+                'parking': 'Parking',
+                'admin': 'Admin'
+            };
+            return zones[zone] || zone;
+        }
+
+        function formatStatus(status) {
+            const statuses = {
+                'scheduled': 'Scheduled',
+                'in_progress': 'In Progress',
+                'completed': 'Completed',
+                'missed': 'Missed',
+                'cancelled': 'Cancelled'
+            };
+            return statuses[status] || status;
+        }
+
+        function formatTime(timestamp) {
+            return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function combineDateAndTime(date, time) {
+            if (!date || !time) return new Date();
+            const [year, month, day] = date.split('-');
+            const [hours, minutes] = time.split(':');
+            return new Date(year, month - 1, day, hours, minutes);
+        }
+
+        // Calendar Navigation
+        function changeView(view) {
+            calendar.changeView(view);
+            updateViewButtons(view);
+            updateCurrentDateDisplay();
+        }
+
+        function previousDate() {
+            calendar.prev();
+            updateCurrentDateDisplay();
+        }
+
+        function nextDate() {
+            calendar.next();
+            updateCurrentDateDisplay();
+        }
+
+        function goToToday() {
+            calendar.today();
+            updateCurrentDateDisplay();
+        }
+
+        function updateCurrentDateDisplay() {
+            const currentDate = document.getElementById('currentDateDisplay');
+            const viewTitle = calendar.view.title;
+            currentDate.textContent = viewTitle;
+        }
+
+        function updateViewButtons(activeView) {
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Filter by Zone
+        function filterByZone() {
+            const zone = document.getElementById('zoneFilter').value;
+            // Implement filtering logic
+            console.log('Filtering by zone:', zone);
+        }
+
+        // Shift Actions
+        function viewShift(shiftId) {
+            window.location.href = `/schedule/${shiftId}`;
+        }
+
+        function editShift(shiftId) {
+            window.location.href = `/schedule/${shiftId}/edit`;
+        }
+
+        function deleteShift(shiftId) {
+            if (confirm('Are you sure you want to delete this shift?')) {
+                fetch(`/schedule/${shiftId}`, {
+                    method: 'DELETE'
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    }
+                });
+            }
+        }
+
+        function exportSchedule() {
+            const format = prompt('Export format (pdf/excel/csv):', 'pdf');
+            if (format) {
+                window.location.href = `/schedule/export?format=${format}`;
+            }
+        }
+
+        // Form Validation
+        document.getElementById('createShiftForm')?.addEventListener('submit', function(e) {
+            const startTime = this.startTime.value;
+            const endTime = this.endTime.value;
+            const date = this.date.value;
+            
+            if (startTime >= endTime) {
+                e.preventDefault();
+                alert('End time must be after start time');
+                return;
+            }
+            
+            // Check if date is in the past
+            const selectedDate = new Date(date);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (selectedDate < today) {
+                e.preventDefault();
+                alert('Cannot create shifts in the past');
+                return;
+            }
+            
+            // Show loading state
+            const btn = document.getElementById('saveShiftBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Creating...';
+        });
+
+        // Auto-refresh every 30 seconds for real-time updates
+        setInterval(() => {
+            // Refresh calendar data
+            fetch('/api/shifts/today')
+                .then(response => response.json())
+                .then(data => {
+                    // Update calendar events
+                    calendar.removeAllEvents();
+                    calendar.addEventSource(data);
+                });
+        }, 30000);
+    </script>
+</body>
+</html>

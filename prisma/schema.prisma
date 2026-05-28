@@ -1,0 +1,593 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== SESSION MODEL ====================
+
+model Session {
+  sid       String   @id
+  data      String   @db.Text
+  expiresAt DateTime @map("expires_at")
+
+  @@map("sessions")
+}
+
+// ==================== USER MODEL ====================
+
+model User {
+  id                  String    @id @default(cuid())
+  firstName           String    @map("first_name")
+  lastName            String    @map("last_name")
+  name                String?
+  email               String    @unique
+  password            String
+  role                Role      @default(student)
+  badgeNumber         String?   @unique @map("badge_number")
+  phoneNumber         String?   @map("phone_number")
+  institution         String?
+  profileImage        String?   @default("default-avatar.png") @map("profile_image")
+  isActive            Boolean   @default(true) @map("is_active")
+  lastLogin           DateTime? @map("last_login")
+  location            Json?     @map("location")
+  locationLastUpdated DateTime? @default(now()) @map("location_last_updated")
+  shiftPreferences    Json?     @map("shift_preferences")
+  emergencyContact    Json?     @map("emergency_contact")
+
+  // Settings
+  timezone            String    @default("Africa/Nairobi")
+  dateFormat          String    @default("MM/DD/YYYY") @map("date_format")
+  timeFormat          String    @default("12h") @map("time_format")
+  firstDayOfWeek      String    @default("sunday") @map("first_day_of_week")
+  theme               String    @default("system")
+  compactMode         Boolean   @default(false) @map("compact_mode")
+  reduceAnimations    Boolean   @default(false) @map("reduce_animations")
+  language            String    @default("en")
+  country             String    @default("KE")
+  currency            String    @default("KES")
+  measurement         String    @default("metric")
+  sessionTimeout      Int       @default(30) @map("session_timeout")
+  twoFactorEnabled    Boolean   @default(false) @map("two_factor_enabled")
+  twoFactorSecret     String?   @map("two_factor_secret")
+  loginAlerts         Boolean   @default(true) @map("login_alerts")
+  passwordLastChanged DateTime? @map("password_last_changed")
+
+  // Settings objects
+  notificationSettings  Json? @map("notification_settings")
+  privacySettings       Json? @map("privacy_settings")
+  accessibilitySettings Json? @map("accessibility_settings")
+  integrationSettings   Json? @map("integration_settings")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  incidents              Incident[]
+  patrols                Patrol[]        @relation("GuardPatrols")
+  supervisedPatrols      Patrol[]        @relation("SupervisorPatrols")
+  shifts                 Shift[]         @relation("GuardShifts")
+  supervisedShifts       Shift[]         @relation("SupervisorShifts")
+  attendanceRecords      Attendance[]
+  userNotifications      Notification[]  @relation("UserNotifications")
+  reports                Report[]
+  auditLogs              AuditLog[]
+  apiKeys                ApiKey[]
+  webhooks               Webhook[]
+  backups                Backup[]
+  supportTicketsCreated  SupportTicket[] @relation("CreatedTickets")
+  supportTicketsAssigned SupportTicket[] @relation("AssignedTickets")
+  checkpointsScanned     Checkpoint[]    @relation("Scanner")
+
+  @@index([email])
+  @@index([role])
+  @@index([isActive])
+  @@index([badgeNumber])
+  @@index([createdAt(sort: Desc)])
+  @@map("users")
+}
+
+// ==================== INCIDENT MODEL ====================
+
+model Incident {
+  id           String         @id @default(cuid())
+  title        String
+  description  String         @db.Text
+  type         IncidentType
+  severity     Severity       @default(medium)
+  status       IncidentStatus @default(reported)
+  location     Json
+  reportedBy   String         @map("reported_by")
+  assignedTo   String[]       @map("assigned_to")
+  witnesses    Json?
+  media        Json?
+  timeline     Json?
+  responseTime Json?          @map("response_time")
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+
+  // Relations
+  reporter       User            @relation(fields: [reportedBy], references: [id])
+  patrols        Patrol[]        @relation("PatrolIncidents")
+  supportTickets SupportTicket[]
+
+  @@index([status])
+  @@index([severity])
+  @@index([createdAt(sort: Desc)])
+  @@index([reportedBy])
+  @@map("incidents")
+}
+
+// ==================== PATROL MODEL ====================
+
+model Patrol {
+  id               String       @id @default(cuid())
+  guard            String
+  supervisor       String?
+  shift            String?
+  route            Json?
+  startTime        DateTime     @map("start_time")
+  endTime          DateTime?    @map("end_time")
+  scheduledEndTime DateTime?    @map("scheduled_end_time")
+  status           PatrolStatus @default(scheduled)
+  checkpoints      Json?
+  path             Json?
+  incidents        String[]
+  notes            String?      @db.Text
+  weather          Json?
+  stats            Json?
+  createdAt        DateTime     @default(now()) @map("created_at")
+
+  // Relations
+  guardUser        User       @relation("GuardPatrols", fields: [guard], references: [id])
+  supervisorUser   User?      @relation("SupervisorPatrols", fields: [supervisor], references: [id])
+  incidentRelation Incident[] @relation("PatrolIncidents")
+
+  @@index([guard])
+  @@index([status])
+  @@index([startTime(sort: Desc)])
+  @@map("patrols")
+}
+
+// ==================== SHIFT MODEL ====================
+
+model Shift {
+  id         String      @id @default(cuid())
+  guard      String
+  supervisor String?
+  date       DateTime
+  startTime  String      @map("start_time")
+  endTime    String      @map("end_time")
+  zone       ZoneType
+  status     ShiftStatus @default(scheduled)
+  checkIn    Json?       @map("check_in")
+  checkOut   Json?       @map("check_out")
+  overtime   Int         @default(0)
+  notes      String?     @db.Text
+  createdAt  DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  guardUser      User  @relation("GuardShifts", fields: [guard], references: [id])
+  supervisorUser User? @relation("SupervisorShifts", fields: [supervisor], references: [id])
+
+  @@index([guard])
+  @@index([date])
+  @@index([status])
+  @@index([zone])
+  @@map("shifts")
+}
+
+// ==================== ATTENDANCE MODEL ====================
+
+model Attendance {
+  id           String           @id @default(cuid())
+  guard        String
+  date         DateTime
+  checkIn      Json?            @map("check_in")
+  checkOut     Json?            @map("check_out")
+  status       AttendanceStatus @default(present)
+  workingHours Float?           @map("working_hours")
+  overtime     Float?
+  notes        String?          @db.Text
+  createdAt    DateTime         @default(now()) @map("created_at")
+
+  // Relations
+  guardUser User @relation(fields: [guard], references: [id])
+
+  @@index([guard])
+  @@index([date(sort: Desc)])
+  @@index([status])
+  @@map("attendances")
+}
+
+// ==================== NOTIFICATION MODEL ====================
+
+model Notification {
+  id        String           @id @default(cuid())
+  recipient String
+  type      NotificationType
+  title     String
+  message   String           @db.Text
+  relatedTo Json?            @map("related_to")
+  read      Boolean          @default(false)
+  readAt    DateTime?        @map("read_at")
+  priority  Priority         @default(medium)
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  // Relations
+  recipientUser User @relation("UserNotifications", fields: [recipient], references: [id])
+
+  @@index([recipient])
+  @@index([read])
+  @@index([createdAt(sort: Desc)])
+  @@index([priority])
+  @@map("notifications")
+}
+
+// ==================== CHECKPOINT MODEL ====================
+
+model Checkpoint {
+  id            String         @id @default(cuid())
+  name          String
+  code          String         @unique
+  location      Json
+  zone          ZoneType
+  type          CheckpointType @default(qr)
+  qrCode        String?        @map("qr_code")
+  nfcTag        String?        @map("nfc_tag")
+  description   String?        @db.Text
+  instructions  String?        @db.Text
+  isActive      Boolean        @default(true) @map("is_active")
+  lastScanned   DateTime?      @map("last_scanned")
+  lastScannedBy String?        @map("last_scanned_by")
+  createdAt     DateTime       @default(now()) @map("created_at")
+
+  // Relations
+  scanner User? @relation("Scanner", fields: [lastScannedBy], references: [id])
+
+  @@index([code])
+  @@index([zone])
+  @@index([isActive])
+  @@map("checkpoints")
+}
+
+// ==================== REPORT MODEL ====================
+
+model Report {
+  id          String       @id @default(cuid())
+  title       String
+  type        ReportType
+  generatedBy String       @map("generated_by")
+  dateRange   Json?        @map("date_range")
+  data        Json?
+  format      ReportFormat @default(pdf)
+  fileUrl     String?      @map("file_url")
+  status      ReportStatus @default(pending)
+  createdAt   DateTime     @default(now()) @map("created_at")
+
+  // Relations
+  generator User @relation(fields: [generatedBy], references: [id])
+
+  @@map("reports")
+}
+
+// ==================== AUDIT LOG MODEL ====================
+
+model AuditLog {
+  id          String        @id @default(cuid())
+  user        String
+  action      String
+  category    AuditCategory
+  description String?       @db.Text
+  ipAddress   String?       @map("ip_address")
+  userAgent   String?       @map("user_agent")
+  changes     Json?
+  targetId    String?       @map("target_id")
+  targetModel String?       @map("target_model")
+  status      AuditStatus   @default(success)
+  createdAt   DateTime      @default(now()) @map("created_at")
+
+  // Relations
+  userRecord User @relation(fields: [user], references: [id])
+
+  @@index([user])
+  @@index([createdAt(sort: Desc)])
+  @@index([category])
+  @@index([action])
+  @@map("audit_logs")
+}
+
+// ==================== API KEY MODEL ====================
+
+model ApiKey {
+  id          String       @id @default(cuid())
+  user        String
+  name        String
+  key         String       @unique
+  permissions Permission[] @default([read])
+  lastUsed    DateTime?    @map("last_used")
+  expiresAt   DateTime?    @map("expires_at")
+  isActive    Boolean      @default(true) @map("is_active")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  owner User @relation(fields: [user], references: [id])
+
+  @@index([user])
+  @@index([key])
+  @@index([expiresAt])
+  @@index([isActive])
+  @@map("api_keys")
+}
+
+// ==================== WEBHOOK MODEL ====================
+
+model Webhook {
+  id            String         @id @default(cuid())
+  user          String
+  url           String         @db.Text
+  events        WebhookEvent[]
+  secret        String?
+  lastTriggered DateTime?      @map("last_triggered")
+  lastResponse  Json?          @map("last_response")
+  isActive      Boolean        @default(true) @map("is_active")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+
+  // Relations
+  owner User @relation(fields: [user], references: [id])
+
+  @@index([user])
+  @@index([isActive])
+  @@map("webhooks")
+}
+
+// ==================== BACKUP MODEL ====================
+
+model Backup {
+  id        String       @id @default(cuid())
+  user      String
+  name      String
+  type      BackupType   @default(manual)
+  data      Json
+  size      Int
+  fileUrl   String?      @map("file_url")
+  status    BackupStatus @default(completed)
+  metadata  Json?
+  createdAt DateTime     @default(now()) @map("created_at")
+
+  // Relations
+  creator User @relation(fields: [user], references: [id])
+
+  @@index([user])
+  @@index([createdAt(sort: Desc)])
+  @@index([type])
+  @@map("backups")
+}
+
+// ==================== SUPPORT TICKET MODEL ====================
+
+model SupportTicket {
+  id          String         @id @default(cuid())
+  ticketId    String         @unique @map("ticket_id")
+  createdBy   String         @map("created_by")
+  assignedTo  String?        @map("assigned_to")
+  subject     String
+  description String         @db.Text
+  category    TicketCategory
+  priority    Priority       @default(medium)
+  status      TicketStatus   @default(open)
+  attachments Json?
+  messages    Json?
+  relatedTo   Json?          @map("related_to")
+  resolvedAt  DateTime?      @map("resolved_at")
+  closedAt    DateTime?      @map("closed_at")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  // Relations
+  creator    User      @relation("CreatedTickets", fields: [createdBy], references: [id])
+  assignee   User?     @relation("AssignedTickets", fields: [assignedTo], references: [id])
+  incident   Incident? @relation(fields: [incidentId], references: [id])
+  incidentId String?
+
+  @@index([ticketId])
+  @@index([createdBy])
+  @@index([assignedTo])
+  @@index([status])
+  @@index([priority])
+  @@index([createdAt(sort: Desc)])
+  @@map("support_tickets")
+}
+
+// ==================== ENUMS ====================
+
+enum Role {
+  admin
+  supervisor
+  guard
+  student
+}
+
+enum IncidentType {
+  theft
+  vandalism
+  unauthorized_access
+  fire
+  medical_emergency
+  suspicious_activity
+  accident
+  assault
+  harassment
+  noise_complaint
+  property_damage
+  other
+}
+
+enum Severity {
+  low
+  medium
+  high
+  critical
+}
+
+enum IncidentStatus {
+  reported
+  acknowledged
+  investigating
+  in_progress
+  resolved
+  closed
+  false_alarm
+}
+
+enum PatrolStatus {
+  scheduled
+  in_progress
+  completed
+  interrupted
+  cancelled
+  missed
+}
+
+enum ShiftStatus {
+  scheduled
+  in_progress
+  completed
+  missed
+  cancelled
+}
+
+enum ZoneType {
+  main_gate
+  hostels
+  academic
+  perimeter
+  parking
+  admin
+}
+
+enum AttendanceStatus {
+  present
+  absent
+  late
+  early_departure
+  half_day
+}
+
+enum NotificationType {
+  alert
+  reminder
+  info
+  warning
+  emergency
+}
+
+enum Priority {
+  low
+  medium
+  high
+  urgent
+}
+
+enum CheckpointType {
+  qr
+  nfc
+  manual
+}
+
+enum ReportType {
+  incident_summary
+  patrol_report
+  attendance_report
+  shift_report
+  custom
+  backup
+}
+
+enum ReportFormat {
+  pdf
+  excel
+  csv
+  json
+}
+
+enum ReportStatus {
+  pending
+  generating
+  completed
+  failed
+}
+
+enum AuditCategory {
+  auth
+  incident
+  patrol
+  shift
+  user
+  system
+  api
+  webhook
+  backup
+  support
+}
+
+enum AuditStatus {
+  success
+  failure
+  pending
+}
+
+enum Permission {
+  read
+  write
+  delete
+  admin
+}
+
+enum WebhookEvent {
+  incident_created
+  incident_updated
+  incident_resolved
+  patrol_started
+  patrol_completed
+  patrol_interrupted
+  shift_assigned
+  shift_reminder
+  shift_completed
+  user_login
+  user_logout
+  test
+}
+
+enum BackupType {
+  manual
+  scheduled
+  automatic
+}
+
+enum BackupStatus {
+  completed
+  failed
+  in_progress
+}
+
+enum TicketCategory {
+  technical
+  account
+  billing
+  feature
+  incident
+  other
+}
+
+enum TicketStatus {
+  open
+  in_progress
+  resolved
+  closed
+}

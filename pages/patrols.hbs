@@ -1,0 +1,1582 @@
+<!-- views/patrols.hbs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patrol Management - Campus Guard Connect</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    
+    <!-- Leaflet CSS for Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- DateRange Picker -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-brand i {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-badge i {
+            font-size: 1.3rem;
+            color: #64748b;
+            transition: color 0.3s ease;
+        }
+
+        .notification-badge:hover i {
+            color: #667eea;
+        }
+
+        .badge-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .user-profile:hover {
+            background: #eef2f6;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .user-info {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .user-info {
+                display: block;
+            }
+            
+            .user-info h6 {
+                font-weight: 700;
+                color: #1e293b;
+                margin-bottom: 0.2rem;
+                font-size: 0.9rem;
+            }
+            
+            .user-info p {
+                color: #64748b;
+                font-size: 0.8rem;
+                margin-bottom: 0;
+                text-transform: capitalize;
+            }
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            animation: fadeInDown 0.5s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-header h2 {
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+            font-size: 2rem;
+        }
+
+        .page-header p {
+            color: #64748b;
+            margin-bottom: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-outline {
+            border: 2px solid #e2e8f0;
+            background: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: #4a5568;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        /* Date Range Picker */
+        .date-range-picker {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .date-range-picker:hover {
+            border-color: #667eea;
+        }
+
+        .date-range-picker i {
+            color: #667eea;
+        }
+
+        .date-range-picker span {
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        /* Stats Cards */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+        .stat-card:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: height 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            height: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon i {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .stat-trend {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .trend-up {
+            color: #48bb78;
+        }
+
+        .trend-down {
+            color: #f56565;
+        }
+
+        /* Live Map Container */
+        .map-container {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .map-header h5 {
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .map-header h5 i {
+            color: #667eea;
+        }
+
+        .map-legend {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+        }
+
+        .legend-color.active {
+            background: #48bb78;
+        }
+
+        .legend-color.completed {
+            background: #a0aec0;
+        }
+
+        .legend-color.in-progress {
+            background: #667eea;
+        }
+
+        .patrol-map {
+            height: 400px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+            animation: fadeIn 0.7s ease-out;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 160px;
+        }
+
+        .filter-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+
+        .filter-select, .filter-input {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .filter-select:focus, .filter-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .btn-filter {
+            padding: 0.6rem 1.5rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            height: 42px;
+        }
+
+        .btn-filter:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .btn-reset {
+            padding: 0.6rem 1.5rem;
+            background: #e2e8f0;
+            color: #4a5568;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            height: 42px;
+        }
+
+        .btn-reset:hover {
+            background: #cbd5e0;
+        }
+
+        /* Patrols Table */
+        .table-container {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .table-header h5 {
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .table-header h5 i {
+            color: #667eea;
+        }
+
+        .patrols-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .patrols-table th {
+            text-align: left;
+            padding: 1rem;
+            background: #f8fafc;
+            font-weight: 700;
+            color: #4a5568;
+            border-bottom: 2px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        .patrols-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+
+        .patrols-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .patrols-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .guard-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .guard-avatar-small {
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-scheduled {
+            background: rgba(102, 126, 234, 0.15);
+            color: #434190;
+        }
+
+        .status-in_progress {
+            background: rgba(72, 187, 120, 0.15);
+            color: #276749;
+        }
+
+        .status-completed {
+            background: rgba(160, 174, 192, 0.15);
+            color: #4a5568;
+        }
+
+        .status-interrupted {
+            background: rgba(245, 101, 101, 0.15);
+            color: #c53030;
+        }
+
+        .status-cancelled {
+            background: rgba(245, 158, 11, 0.15);
+            color: #b45309;
+        }
+
+        .zone-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .zone-main_gate {
+            background: rgba(66, 153, 225, 0.15);
+            color: #2c5282;
+        }
+
+        .zone-hostels {
+            background: rgba(72, 187, 120, 0.15);
+            color: #276749;
+        }
+
+        .zone-academic {
+            background: rgba(237, 137, 54, 0.15);
+            color: #9c4221;
+        }
+
+        .zone-perimeter {
+            background: rgba(159, 122, 234, 0.15);
+            color: #6b46a1;
+        }
+
+        .zone-parking {
+            background: rgba(245, 101, 101, 0.15);
+            color: #c53030;
+        }
+
+        .zone-admin {
+            background: rgba(102, 126, 234, 0.15);
+            color: #434190;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            color: #94a3b8;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            background: #eef2f6;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .action-btn.view-btn:hover {
+            color: #4299e1;
+        }
+
+        .action-btn.track-btn:hover {
+            color: #48bb78;
+        }
+
+        .action-btn.report-btn:hover {
+            color: #9f7aea;
+        }
+
+        /* Checkpoint Progress */
+        .checkpoint-progress {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .progress-bar-container {
+            width: 100px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border: none;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .patrol-detail-label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .patrol-detail-value {
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .checkpoint-timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .checkpoint-item {
+            position: relative;
+            padding-bottom: 1.5rem;
+        }
+
+        .checkpoint-item::before {
+            content: '';
+            position: absolute;
+            left: -1.5rem;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px #667eea;
+        }
+
+        .checkpoint-item.completed::before {
+            background: #48bb78;
+            box-shadow: 0 0 0 2px #48bb78;
+        }
+
+        .checkpoint-item.missed::before {
+            background: #f56565;
+            box-shadow: 0 0 0 2px #f56565;
+        }
+
+        .checkpoint-item::after {
+            content: '';
+            position: absolute;
+            left: -1rem;
+            top: 1rem;
+            bottom: 0;
+            width: 2px;
+            background: #e2e8f0;
+        }
+
+        .checkpoint-item:last-child::after {
+            display: none;
+        }
+
+        .checkpoint-time {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-bottom: 0.25rem;
+        }
+
+        .checkpoint-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .checkpoint-status {
+            font-size: 0.85rem;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .filter-bar {
+                flex-direction: column;
+            }
+            
+            .filter-group {
+                width: 100%;
+            }
+            
+            .patrols-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .map-legend {
+                flex-wrap: wrap;
+                gap: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-shield-alt"></i>
+                CampusGuard Connect
+            </a>
+            
+            <div class="user-menu">
+                <div class="notification-badge">
+                    <i class="far fa-bell"></i>
+                    <span class="badge-count">{{notificationCount}}</span>
+                </div>
+                
+                <div class="dropdown">
+                    <div class="user-profile" data-bs-toggle="dropdown">
+                        <div class="user-avatar">
+                            {{#if user}}
+                                {{user.initials}}
+                            {{else}}
+                                U
+                            {{/if}}
+                        </div>
+                        <div class="user-info">
+                            <h6>{{user.name}}</h6>
+                            <p>{{user.role}}</p>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h2><i class="fas fa-route me-2" style="color: #667eea;"></i>Patrol Management</h2>
+                <p>Monitor and manage security patrols across campus</p>
+            </div>
+            
+            <div class="header-actions">
+                <div class="date-range-picker" id="dateRangePicker">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="dateRangeText">Today</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                {{#if (ifNotEquals user.role "guard")}}
+                <button class="btn-primary" onclick="startNewPatrol()">
+                    <i class="fas fa-plus-circle"></i>
+                    Start New Patrol
+                </button>
+                {{/if}}
+                <button class="btn-outline" onclick="exportPatrols()">
+                    <i class="fas fa-download"></i>
+                    Export
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <span class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i> 8%
+                    </span>
+                </div>
+                <div class="stat-value">{{stats.totalPatrols}}</div>
+                <div class="stat-label">Total Patrols</div>
+                <small class="text-muted">{{stats.periodPatrols}} in selected period</small>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{stats.activePatrols}}</div>
+                <div class="stat-label">Active Now</div>
+                <small class="text-muted">{{stats.onDutyGuards}} guards on duty</small>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{stats.completionRate}}%</div>
+                <div class="stat-label">Completion Rate</div>
+                <small class="text-muted">{{stats.completedToday}} completed today</small>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{stats.avgDuration}}min</div>
+                <div class="stat-label">Avg Duration</div>
+                <small class="text-muted">{{stats.totalDistance}} km covered</small>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-map-pin"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{stats.checkpointsCovered}}%</div>
+                <div class="stat-label">Checkpoints</div>
+                <small class="text-muted">{{stats.completedCheckpoints}}/{{stats.totalCheckpoints}}</small>
+            </div>
+        </div>
+
+        <!-- Live Map -->
+        <div class="map-container">
+            <div class="map-header">
+                <h5>
+                    <i class="fas fa-map-marked-alt"></i>
+                    Live Patrol Tracking
+                </h5>
+                <div class="map-legend">
+                    <div class="legend-item">
+                        <div class="legend-color active"></div>
+                        <span>Active Patrols</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color in-progress"></div>
+                        <span>In Progress</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color completed"></div>
+                        <span>Completed</span>
+                    </div>
+                </div>
+            </div>
+            <div id="patrolMap" class="patrol-map"></div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label><i class="fas fa-filter me-1"></i>Status</label>
+                <select class="filter-select" id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="scheduled">Scheduled</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="interrupted">Interrupted</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label><i class="fas fa-user-shield me-1"></i>Guard</label>
+                <select class="filter-select" id="guardFilter">
+                    <option value="">All Guards</option>
+                    {{#each guards}}
+                    <option value="{{this._id}}">{{this.name}}</option>
+                    {{/each}}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label><i class="fas fa-map-marker-alt me-1"></i>Zone</label>
+                <select class="filter-select" id="zoneFilter">
+                    <option value="">All Zones</option>
+                    <option value="main_gate">Main Gate</option>
+                    <option value="hostels">Hostels</option>
+                    <option value="academic">Academic</option>
+                    <option value="perimeter">Perimeter</option>
+                    <option value="parking">Parking</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button class="btn-filter" onclick="applyFilters()">
+                    <i class="fas fa-filter me-2"></i>Apply
+                </button>
+                <button class="btn-reset" onclick="resetFilters()">
+                    <i class="fas fa-undo me-2"></i>Reset
+                </button>
+            </div>
+        </div>
+
+        <!-- Patrols Table -->
+        <div class="table-container">
+            <div class="table-header">
+                <h5>
+                    <i class="fas fa-list"></i>
+                    Patrol History
+                </h5>
+                <div>
+                    <span class="me-3"><i class="fas fa-check-circle text-success me-1"></i> {{stats.completedToday}} today</span>
+                    <span><i class="fas fa-clock text-warning me-1"></i> {{stats.scheduledToday}} scheduled</span>
+                </div>
+            </div>
+            
+            <table class="patrols-table" id="patrolsTable">
+                <thead>
+                    <tr>
+                        <th>Guard</th>
+                        <th>Zone</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Duration</th>
+                        <th>Checkpoints</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each patrols}}
+                    <tr>
+                        <td>
+                            <div class="guard-info">
+                                <div class="guard-avatar-small">
+                                    {{this.guard.initials}}
+                                </div>
+                                <div>
+                                    <strong>{{this.guard.name}}</strong>
+                                    <br>
+                                    <small class="text-muted">{{this.guard.badgeNumber}}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="zone-badge zone-{{this.zone}}">
+                                {{formatZone this.zone}}
+                            </span>
+                        </td>
+                        <td>
+                            <strong>{{formatTime this.startTime}}</strong>
+                            <br>
+                            <small class="text-muted">{{formatDate this.startTime}}</small>
+                        </td>
+                        <td>
+                            {{#if this.endTime}}
+                                <strong>{{formatTime this.endTime}}</strong>
+                                <br>
+                                <small class="text-muted">{{formatDate this.endTime}}</small>
+                            {{else}}
+                                <span class="text-warning">In Progress</span>
+                            {{/if}}
+                        </td>
+                        <td>
+                            {{#if this.duration}}
+                                <strong>{{this.duration}} min</strong>
+                                <br>
+                                <small class="text-muted">{{this.distance}} km</small>
+                            {{else}}
+                                <span class="text-muted">--</span>
+                            {{/if}}
+                        </td>
+                        <td>
+                            <div class="checkpoint-progress">
+                                <span>{{this.completedCheckpoints}}/{{this.totalCheckpoints}}</span>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-fill" style="width: {{this.checkpointPercentage}}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="status-badge status-{{this.status}}">
+                                {{formatStatus this.status}}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn view-btn" onclick="viewPatrol('{{this._id}}')" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn track-btn" onclick="trackPatrol('{{this._id}}')" title="Live Track">
+                                    <i class="fas fa-map-marked-alt"></i>
+                                </button>
+                                <button class="action-btn report-btn" onclick="generateReport('{{this._id}}')" title="Generate Report">
+                                    <i class="fas fa-file-pdf"></i>
+                                </button>
+                                {{#if (ifEquals ../user.role "admin")}}
+                                <button class="action-btn" onclick="editPatrol('{{this._id}}')" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                {{/if}}
+                            </div>
+                        </td>
+                    </tr>
+                    {{else}}
+                    <tr>
+                        <td colspan="8" class="text-center py-5">
+                            <i class="fas fa-route fa-4x mb-3" style="color: #cbd5e0;"></i>
+                            <h5 style="color: #94a3b8;">No patrols found</h5>
+                            <p class="text-muted">Click "Start New Patrol" to begin a patrol</p>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- View Patrol Modal -->
+    <div class="modal fade" id="viewPatrolModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Patrol Details
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="patrolDetails">
+                    <!-- Dynamic content loaded via JS -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-primary" onclick="downloadPatrolReport()">
+                        <i class="fas fa-download me-2"></i>Download Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Start Patrol Modal -->
+    <div class="modal fade" id="startPatrolModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-play-circle me-2"></i>
+                        Start New Patrol
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="startPatrolForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Select Route</label>
+                            <select class="form-select" name="route" required>
+                                <option value="">Choose route...</option>
+                                <option value="main_gate_perimeter">Main Gate Perimeter</option>
+                                <option value="hostels_loop">Hostels Loop</option>
+                                <option value="academic_buildings">Academic Buildings</option>
+                                <option value="full_campus">Full Campus Circuit</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Estimated Duration</label>
+                            <select class="form-select" name="duration">
+                                <option value="30">30 minutes</option>
+                                <option value="45">45 minutes</option>
+                                <option value="60">1 hour</option>
+                                <option value="90">1.5 hours</option>
+                                <option value="120">2 hours</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" name="notes" rows="2" 
+                                      placeholder="Any special instructions..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-outline" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn-primary">Start Patrol</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    
+    <script>
+        // Initialize DataTable
+        $(document).ready(function() {
+            const table = $('#patrolsTable').DataTable({
+                pageLength: 10,
+                order: [[2, 'desc']],
+                language: {
+                    search: '<i class="fas fa-search"></i>',
+                    searchPlaceholder: 'Search patrols...',
+                    lengthMenu: 'Show _MENU_ patrols'
+                },
+                columnDefs: [
+                    { orderable: false, targets: 7 } // Actions column
+                ]
+            });
+
+            // Date Range Picker
+            $('#dateRangePicker').daterangepicker({
+                startDate: moment(),
+                endDate: moment(),
+                ranges: {
+                   'Today': [moment(), moment()],
+                   'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                   'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                   'This Month': [moment().startOf('month'), moment().endOf('month')],
+                   'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                locale: {
+                    format: 'MMM D, YYYY'
+                }
+            }, function(start, end) {
+                $('#dateRangeText').text(start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY'));
+                refreshPatrols(start, end);
+            });
+        });
+
+        // Initialize Map
+        document.addEventListener('DOMContentLoaded', function() {
+            const map = L.map('patrolMap').setView([-1.2864, 36.8172], 15);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Add campus boundary
+            const campusBoundary = L.polygon([
+                [-1.2844, 36.8152],
+                [-1.2844, 36.8192],
+                [-1.2884, 36.8192],
+                [-1.2884, 36.8152]
+            ], {
+                color: '#667eea',
+                weight: 2,
+                opacity: 0.5,
+                fillOpacity: 0.1
+            }).addTo(map);
+
+            // Add patrol markers from data
+            const patrols = {{{json activePatrols}}};
+            patrols.forEach(patrol => {
+                if (patrol.currentLocation) {
+                    const marker = L.marker(patrol.currentLocation).addTo(map);
+                    marker.bindPopup(`
+                        <b>${patrol.guard.name}</b><br>
+                        Status: ${patrol.status}<br>
+                        Zone: ${patrol.zone}<br>
+                        <button onclick="trackPatrol('${patrol._id}')">Track</button>
+                    `);
+                }
+            });
+
+            // Add checkpoint markers
+            const checkpoints = {{{json checkpoints}}};
+            checkpoints.forEach(cp => {
+                if (cp.location) {
+                    const marker = L.circleMarker(cp.location, {
+                        radius: 6,
+                        color: '#48bb78',
+                        fillColor: '#48bb78',
+                        fillOpacity: 0.8
+                    }).addTo(map);
+                    marker.bindPopup(`<b>${cp.name}</b><br>Code: ${cp.code}`);
+                }
+            });
+        });
+
+        // Patrol ID for modals
+        let currentPatrolId = null;
+
+        // View Patrol
+        function viewPatrol(id) {
+            currentPatrolId = id;
+            fetch(`/api/patrols/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    const modalBody = document.getElementById('patrolDetails');
+                    modalBody.innerHTML = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="patrol-detail-label">Guard</div>
+                                <div class="patrol-detail-value">
+                                    <div class="d-flex align-items-center">
+                                        <div class="guard-avatar-small me-2">${data.guard.initials}</div>
+                                        ${data.guard.name} (${data.guard.badgeNumber})
+                                    </div>
+                                </div>
+                                
+                                <div class="patrol-detail-label">Zone</div>
+                                <div class="patrol-detail-value">
+                                    <span class="zone-badge zone-${data.zone}">${formatZone(data.zone)}</span>
+                                </div>
+                                
+                                <div class="patrol-detail-label">Start Time</div>
+                                <div class="patrol-detail-value">${new Date(data.startTime).toLocaleString()}</div>
+                                
+                                <div class="patrol-detail-label">End Time</div>
+                                <div class="patrol-detail-value">${data.endTime ? new Date(data.endTime).toLocaleString() : 'In Progress'}</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="patrol-detail-label">Duration</div>
+                                <div class="patrol-detail-value">${data.duration || 'N/A'} minutes</div>
+                                
+                                <div class="patrol-detail-label">Distance</div>
+                                <div class="patrol-detail-value">${data.distance || 'N/A'} km</div>
+                                
+                                <div class="patrol-detail-label">Status</div>
+                                <div class="patrol-detail-value">
+                                    <span class="status-badge status-${data.status}">${formatStatus(data.status)}</span>
+                                </div>
+                                
+                                <div class="patrol-detail-label">Supervisor</div>
+                                <div class="patrol-detail-value">${data.supervisor?.name || 'N/A'}</div>
+                            </div>
+                            
+                            <div class="col-12 mt-3">
+                                <div class="patrol-detail-label">Checkpoint Timeline</div>
+                                <div class="checkpoint-timeline">
+                                    ${data.checkpoints.map(cp => `
+                                        <div class="checkpoint-item ${cp.status}">
+                                            <div class="checkpoint-time">${cp.scannedAt ? new Date(cp.scannedAt).toLocaleTimeString() : 'Pending'}</div>
+                                            <div class="checkpoint-name">${cp.name}</div>
+                                            <div class="checkpoint-status text-${cp.status === 'completed' ? 'success' : cp.status === 'missed' ? 'danger' : 'muted'}">
+                                                ${cp.status}
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mt-3">
+                                <div class="patrol-detail-label">Notes</div>
+                                <div class="patrol-detail-value">${data.notes || 'No notes'}</div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    new bootstrap.Modal(document.getElementById('viewPatrolModal')).show();
+                });
+        }
+
+        // Track Patrol
+        function trackPatrol(id) {
+            window.location.href = `/patrols/track/${id}`;
+        }
+
+        // Generate Report
+        function generateReport(id) {
+            window.location.href = `/patrols/report/${id}?format=pdf`;
+        }
+
+        // Edit Patrol
+        function editPatrol(id) {
+            window.location.href = `/patrols/edit/${id}`;
+        }
+
+        // Start New Patrol
+        function startNewPatrol() {
+            new bootstrap.Modal(document.getElementById('startPatrolModal')).show();
+        }
+
+        // Handle Start Patrol Form
+        document.getElementById('startPatrolForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            fetch('/patrols/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = `/patrols/track/${data.patrolId}`;
+                } else {
+                    alert('Failed to start patrol');
+                }
+            });
+        });
+
+        // Export Patrols
+        function exportPatrols() {
+            const format = prompt('Export format (csv/json):', 'csv');
+            if (format) {
+                window.location.href = `/patrols/export?format=${format}`;
+            }
+        }
+
+        // Filter Functions
+        function applyFilters() {
+            const status = document.getElementById('statusFilter').value;
+            const guard = document.getElementById('guardFilter').value;
+            const zone = document.getElementById('zoneFilter').value;
+            
+            const table = $('#patrolsTable').DataTable();
+            
+            // Custom filtering
+            $.fn.dataTable.ext.search.push(
+                function(settings, data, dataIndex) {
+                    const row = table.row(dataIndex).data();
+                    const rowStatus = row[6].toLowerCase();
+                    const rowZone = row[1].toLowerCase();
+                    
+                    if (status && !rowStatus.includes(status.replace('_', ' '))) return false;
+                    if (zone && !rowZone.includes(zone)) return false;
+                    
+                    return true;
+                }
+            );
+            
+            table.draw();
+        }
+
+        function resetFilters() {
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('guardFilter').value = '';
+            document.getElementById('zoneFilter').value = '';
+            
+            const table = $('#patrolsTable').DataTable();
+            $.fn.dataTable.ext.search.pop();
+            table.search('').columns().search('').draw();
+        }
+
+        // Refresh Patrols with date range
+        function refreshPatrols(start, end) {
+            fetch(`/api/patrols?from=${start.format('YYYY-MM-DD')}&to=${end.format('YYYY-MM-DD')}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update table with new data
+                    const table = $('#patrolsTable').DataTable();
+                    table.clear();
+                    table.rows.add(data);
+                    table.draw();
+                });
+        }
+
+        // Download Patrol Report
+        function downloadPatrolReport() {
+            if (currentPatrolId) {
+                window.location.href = `/patrols/report/${currentPatrolId}?format=pdf`;
+            }
+        }
+
+        // Helper Functions
+        function formatZone(zone) {
+            const zones = {
+                'main_gate': 'Main Gate',
+                'hostels': 'Hostels',
+                'academic': 'Academic',
+                'perimeter': 'Perimeter',
+                'parking': 'Parking',
+                'admin': 'Admin'
+            };
+            return zones[zone] || zone;
+        }
+
+        function formatStatus(status) {
+            return status.split('_').map(word => 
+                word.charAt(0).toUpperCase() + word.slice(1)
+            ).join(' ');
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            fetch('/api/patrols/active')
+                .then(response => response.json())
+                .then(data => {
+                    // Update active patrols count
+                    document.querySelector('.stat-card:nth-child(2) .stat-value').textContent = data.active;
+                });
+        }, 30000);
+    </script>
+</body>
+</html>

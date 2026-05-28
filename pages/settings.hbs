@@ -1,0 +1,2328 @@
+<!-- views/settings.hbs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Campus Guard Connect</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    
+    <!-- Prism.js for code syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-brand i {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-badge i {
+            font-size: 1.3rem;
+            color: #64748b;
+            transition: color 0.3s ease;
+        }
+
+        .notification-badge:hover i {
+            color: #667eea;
+        }
+
+        .badge-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .user-profile:hover {
+            background: #eef2f6;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .user-info {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .user-info {
+                display: block;
+            }
+            
+            .user-info h6 {
+                font-weight: 700;
+                color: #1e293b;
+                margin-bottom: 0.2rem;
+                font-size: 0.9rem;
+            }
+            
+            .user-info p {
+                color: #64748b;
+                font-size: 0.8rem;
+                margin-bottom: 0;
+                text-transform: capitalize;
+            }
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            animation: fadeInDown 0.5s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-header h2 {
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+            font-size: 2rem;
+        }
+
+        .page-header p {
+            color: #64748b;
+            margin-bottom: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-outline {
+            border: 2px solid #e2e8f0;
+            background: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: #4a5568;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(245, 101, 101, 0.4);
+        }
+
+        /* Settings Layout */
+        .settings-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+        }
+
+        /* Settings Sidebar */
+        .settings-sidebar {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+            animation: fadeInLeft 0.6s ease-out;
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .settings-sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .settings-sidebar-title {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .settings-sidebar-title i {
+            color: #667eea;
+        }
+
+        .settings-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .settings-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .settings-menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #4a5568;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .settings-menu a:hover {
+            background: #f8fafc;
+            color: #667eea;
+        }
+
+        .settings-menu a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .settings-menu a i {
+            width: 20px;
+        }
+
+        /* Settings Content */
+        .settings-content {
+            background: white;
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            animation: fadeInRight 0.6s ease-out;
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .settings-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .settings-header h3 {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .settings-header p {
+            color: #64748b;
+            margin-bottom: 0;
+        }
+
+        /* Settings Sections */
+        .settings-section {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .settings-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .section-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-control, .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        .form-control.is-invalid {
+            border-color: #f56565;
+        }
+
+        .invalid-feedback {
+            color: #f56565;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        .form-text {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            width: 50px;
+            height: 26px;
+            background: #e2e8f0;
+            border-radius: 30px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: #667eea;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active::after {
+            left: 26px;
+        }
+
+        /* Setting Items */
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .setting-info h5 {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .setting-info p {
+            color: #64748b;
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+
+        /* Theme Options */
+        .theme-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .theme-option {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-option:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .theme-option.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        }
+
+        .theme-preview {
+            width: 100%;
+            height: 80px;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .theme-preview.light {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+        }
+
+        .theme-preview.dark {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .theme-preview.system {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .theme-name {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        /* Language Options */
+        .language-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .language-option {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .language-option:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .language-option.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        }
+
+        .language-flag {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .language-name {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        /* Notification Groups */
+        .notification-group {
+            margin-bottom: 2rem;
+        }
+
+        .notification-group-title {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        /* API Keys */
+        .api-key-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .api-key-info h5 {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .api-key-info p {
+            color: #64748b;
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+
+        .api-key-value {
+            font-family: 'Monaco', 'Menlo', monospace;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        .api-key-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Danger Zone */
+        .danger-zone {
+            background: #fff5f5;
+            border: 2px solid #f56565;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .danger-zone-title {
+            color: #c53030;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .danger-zone-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .danger-zone-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Integration Cards */
+        .integration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .integration-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .integration-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+        }
+
+        .integration-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .integration-icon i {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .integration-card h5 {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .integration-card p {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .integration-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .status-connected {
+            background: rgba(72, 187, 120, 0.15);
+            color: #276749;
+        }
+
+        .status-disconnected {
+            background: rgba(160, 174, 192, 0.15);
+            color: #4a5568;
+        }
+
+        /* Backup List */
+        .backup-list {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .backup-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .backup-item:last-child {
+            border-bottom: none;
+        }
+
+        .backup-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .backup-icon {
+            width: 40px;
+            height: 40px;
+            background: #f8fafc;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+        }
+
+        .backup-details h6 {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .backup-details p {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-bottom: 0;
+        }
+
+        .backup-size {
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border: none;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1100;
+        }
+
+        .toast {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .toast.success {
+            border-left-color: #48bb78;
+        }
+
+        .toast.error {
+            border-left-color: #f56565;
+        }
+
+        .toast.info {
+            border-left-color: #4299e1;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .settings-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .settings-sidebar {
+                position: static;
+                margin-bottom: 1rem;
+            }
+            
+            .theme-options, .language-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .api-key-item {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .api-key-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .danger-zone-item {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .navbar, .settings-sidebar, .header-actions, .btn {
+                display: none !important;
+            }
+            
+            .settings-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .settings-content {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-shield-alt"></i>
+                CampusGuard Connect
+            </a>
+            
+            <div class="user-menu">
+                <div class="notification-badge">
+                    <i class="far fa-bell"></i>
+                    <span class="badge-count">{{notificationCount}}</span>
+                </div>
+                
+                <div class="dropdown">
+                    <div class="user-profile" data-bs-toggle="dropdown">
+                        <div class="user-avatar">
+                            {{#if user}}
+                                {{user.initials}}
+                            {{else}}
+                                U
+                            {{/if}}
+                        </div>
+                        <div class="user-info">
+                            <h6>{{user.name}}</h6>
+                            <p>{{user.role}}</p>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                        <li><a class="dropdown-item" href="/help"><i class="fas fa-question-circle me-2"></i>Help</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h2><i class="fas fa-cog me-2" style="color: #667eea;"></i>Settings</h2>
+                <p>Manage your account preferences and configurations</p>
+            </div>
+            
+            <div class="header-actions">
+                <button class="btn-outline" onclick="window.print()">
+                    <i class="fas fa-print me-2"></i>Print Settings
+                </button>
+                <button class="btn-primary" onclick="saveAllSettings()">
+                    <i class="fas fa-save me-2"></i>Save Changes
+                </button>
+            </div>
+        </div>
+
+        <!-- Settings Layout -->
+        <div class="settings-layout">
+            <!-- Settings Sidebar -->
+            <div class="settings-sidebar">
+                <div class="settings-sidebar-section">
+                    <div class="settings-sidebar-title">
+                        <i class="fas fa-user-cog"></i>
+                        Account
+                    </div>
+                    <ul class="settings-menu">
+                        <li><a href="#account" class="active" onclick="switchSection('account')"><i class="fas fa-user"></i> Account Settings</a></li>
+                        <li><a href="#security" onclick="switchSection('security')"><i class="fas fa-shield-alt"></i> Security</a></li>
+                        <li><a href="#notifications" onclick="switchSection('notifications')"><i class="fas fa-bell"></i> Notifications</a></li>
+                        <li><a href="#privacy" onclick="switchSection('privacy')"><i class="fas fa-lock"></i> Privacy</a></li>
+                    </ul>
+                </div>
+
+                <div class="settings-sidebar-section">
+                    <div class="settings-sidebar-title">
+                        <i class="fas fa-paint-brush"></i>
+                        Personalization
+                    </div>
+                    <ul class="settings-menu">
+                        <li><a href="#appearance" onclick="switchSection('appearance')"><i class="fas fa-palette"></i> Appearance</a></li>
+                        <li><a href="#language" onclick="switchSection('language')"><i class="fas fa-language"></i> Language & Region</a></li>
+                        <li><a href="#accessibility" onclick="switchSection('accessibility')"><i class="fas fa-universal-access"></i> Accessibility</a></li>
+                    </ul>
+                </div>
+
+                <div class="settings-sidebar-section">
+                    <div class="settings-sidebar-title">
+                        <i class="fas fa-plug"></i>
+                        Integrations
+                    </div>
+                    <ul class="settings-menu">
+                        <li><a href="#api" onclick="switchSection('api')"><i class="fas fa-code"></i> API Keys</a></li>
+                        <li><a href="#webhooks" onclick="switchSection('webhooks')"><i class="fas fa-webhook"></i> Webhooks</a></li>
+                        <li><a href="#integrations" onclick="switchSection('integrations')"><i class="fas fa-puzzle-piece"></i> Connected Apps</a></li>
+                    </ul>
+                </div>
+
+                <div class="settings-sidebar-section">
+                    <div class="settings-sidebar-title">
+                        <i class="fas fa-database"></i>
+                        Data
+                    </div>
+                    <ul class="settings-menu">
+                        <li><a href="#backup" onclick="switchSection('backup')"><i class="fas fa-database"></i> Backup & Restore</a></li>
+                        <li><a href="#export" onclick="switchSection('export')"><i class="fas fa-download"></i> Export Data</a></li>
+                        <li><a href="#import" onclick="switchSection('import')"><i class="fas fa-upload"></i> Import Data</a></li>
+                    </ul>
+                </div>
+
+                {{#if (eq user.role "admin")}}
+                <div class="settings-sidebar-section">
+                    <div class="settings-sidebar-title">
+                        <i class="fas fa-crown"></i>
+                        Administration
+                    </div>
+                    <ul class="settings-menu">
+                        <li><a href="/admin/users"><i class="fas fa-users"></i> User Management</a></li>
+                        <li><a href="/admin/audit-logs"><i class="fas fa-history"></i> Audit Logs</a></li>
+                        <li><a href="/settings/system"><i class="fas fa-server"></i> System Settings</a></li>
+                    </ul>
+                </div>
+                {{/if}}
+            </div>
+
+            <!-- Settings Content -->
+            <div class="settings-content">
+                <!-- Account Settings Section -->
+                <div id="account" class="settings-section active">
+                    <div class="settings-header">
+                        <h3>Account Settings</h3>
+                        <p>Manage your account information and preferences</p>
+                    </div>
+
+                    <form id="accountForm">
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-control" name="email" value="{{user.email}}" readonly disabled>
+                            <div class="form-text">Contact support to change your email address</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Display Name</label>
+                            <input type="text" class="form-control" name="displayName" value="{{user.name}}">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Time Zone</label>
+                                    <select class="form-select" name="timezone">
+                                        <option value="Africa/Nairobi" {{#if (eq user.timezone "Africa/Nairobi")}}selected{{/if}}>Africa/Nairobi (EAT)</option>
+                                        <option value="Africa/Lagos" {{#if (eq user.timezone "Africa/Lagos")}}selected{{/if}}>Africa/Lagos (WAT)</option>
+                                        <option value="Africa/Johannesburg" {{#if (eq user.timezone "Africa/Johannesburg")}}selected{{/if}}>Africa/Johannesburg (SAST)</option>
+                                        <option value="America/New_York" {{#if (eq user.timezone "America/New_York")}}selected{{/if}}>America/New York (EST)</option>
+                                        <option value="Europe/London" {{#if (eq user.timezone "Europe/London")}}selected{{/if}}>Europe/London (GMT)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Date Format</label>
+                                    <select class="form-select" name="dateFormat">
+                                        <option value="MM/DD/YYYY" {{#if (eq user.dateFormat "MM/DD/YYYY")}}selected{{/if}}>MM/DD/YYYY</option>
+                                        <option value="DD/MM/YYYY" {{#if (eq user.dateFormat "DD/MM/YYYY")}}selected{{/if}}>DD/MM/YYYY</option>
+                                        <option value="YYYY-MM-DD" {{#if (eq user.dateFormat "YYYY-MM-DD")}}selected{{/if}}>YYYY-MM-DD</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Time Format</label>
+                                    <select class="form-select" name="timeFormat">
+                                        <option value="12h" {{#if (eq user.timeFormat "12h")}}selected{{/if}}>12-hour (AM/PM)</option>
+                                        <option value="24h" {{#if (eq user.timeFormat "24h")}}selected{{/if}}>24-hour</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">First Day of Week</label>
+                                    <select class="form-select" name="firstDayOfWeek">
+                                        <option value="sunday" {{#if (eq user.firstDayOfWeek "sunday")}}selected{{/if}}>Sunday</option>
+                                        <option value="monday" {{#if (eq user.firstDayOfWeek "monday")}}selected{{/if}}>Monday</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Security Section -->
+                <div id="security" class="settings-section" style="display: none;">
+                    <div class="settings-header">
+                        <h3>Security Settings</h3>
+                        <p>Manage your security preferences and authentication methods</p>
+                    </div>
+
+                    <div class="section-title">Password</div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h5>Change Password</h5>
+                            <p>Last changed: {{#if user.passwordLastChanged}}{{formatDate user.passwordLastChanged}}{{else}}Never{{/if}}</p>
+                        </div>
+                        <button class="btn-outline" onclick="changePassword()">
+                            <i class="fas fa-key me-2"></i>Change Password
+                        </button>
+                    </div>
+
+                    <div class="section-title mt-4">Two-Factor Authentication</div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h5>Two-Factor Authentication</h5>
+                            <p>Add an extra layer of security to your account</p>
+                        </div>
+                        <div class="toggle-switch {{#if user.twoFactorEnabled}}active{{/if}}" onclick="toggleTwoFactor()"></div>
+                    </div>
+
+                    <div class="section-title mt-4">Session Management</div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h5>Active Sessions</h5>
+                            <p>You have {{activeSessions}} active session(s)</p>
+                        </div>
+                        <button class="btn-outline" onclick="logoutAllDevices()">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout All Devices
+                        </button>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h5>Session Timeout</h5>
+                            <p>Automatically log out after inactivity</p>
+                        </div>
+                        <select class="form-select w-auto" name="sessionTimeout">
+                            <option value="15" {{#if (eq user.sessionTimeout 15)}}selected{{/if}}>15 minutes</option>
+                            <option value="30" {{#if (eq user.sessionTimeout 30)}}selected{{/if}}>30 minutes</option>
+                            <option value="60" {{#if (eq user.sessionTimeout 60)}}selected{{/if}}>1 hour</option>
+                            <option value="120" {{#if (eq user.sessionTimeout 120)}}selected{{/if}}>2 hours</option>
+                            <option value="240" {{#if (eq user.sessionTimeout 240)}}selected{{/if}}>4 hours</option>
+                        </select>
+                    </div>
+
+                    <div class="section-title mt-4">Login Alerts</div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h5>Email on New Login</h5>
+                            <p>Get notified when someone logs into your account</p>
+                        </div>
+                        <div class="toggle-switch {{#if user.loginAlerts}}active{{/if}}" onclick="toggleLoginAlerts()"></div>
+                    </div>
+                </div>
+
+                <!-- Notifications Section -->
+                <div id="notifications" class="settings-section" style="display: none;">
+                    <div class="settings-header">
+                        <h3>Notification Settings</h3>
+                        <p>Choose how and when you receive notifications</p>
+                    </div>
+
+                    <div class="notification-group">
+                        <div class="notification-group-title">Channels</div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h5>Email Notifications</h5>
+                                <p>Receive notifications via email</p>
+                            </div>
+                            <div class="toggle-switch {{#if user.notifications.email}}active{{/if}}" onclick="toggleNotification('email')"></div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h5>Push Notifications</h5>
+                                <p>Browser and mobile push notifications</p>
+                            </div>
+                            <div class="toggle-switch {{#if user.notifications.push}}active{{/if}}" onclick="toggleNotification('push')"></div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h5>SMS Alerts</h5>
+                                <p>Critical alerts via text message</p>
+                            </div>
+                            <div class="toggle-switch {{#if user.notifications.sms}}active{{/if}}" onclick="toggleNotification('sms')"></div>
+                        </div>
+                    </div>
+
+                    <div class="notification-group">
+                        <div class="notification-group-title">Incident Alerts</div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h5>New Incidents</h5>
+                                <p>Get notified when incidents are reported</p>
+                            </div>
+                            <div class="toggle-switch {{#if user.notifications.newIncidents}}active{{/if}}" onclick="toggleAlert('newIncidents')"></div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h5>Incident Updates</h5>
+                                <p>Get notified when incidents are updated</p>
+                            </div>
+                            <div class="toggle-switch {{#if user.notifications.incidentUpdates}}active{{/if}}" onclick="toggleAlert('incidentUpdates')"></div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h5>Critical Incidents</h5>
+                                <p>Immediate notifications for critical incidents</p>
+                            </div>
+                            <div class="toggle-switch {{#if user.notifications.criticalIncidents}}active{{/if}}" onclick="toggleAlert('criticalIncidents')"></div>
+                        </div>
+                    </div>
+
+                    <div class="notification-group">
+                        <div class="notification-group-title">Patrol Alerts</div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h5>Patrol Start</h5>
+                                <p>Get notified when patrols start</p>
+                            </div>
+                            <div class="toggle-switch {{#if user.notifications.patrolStart}}active{{/if}}" onclick="toggleAlert('patrolStart')"></div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h5>Patrol Completion</h5>
+                                <p>Get notified when patrols are completed</p>
+                            </div>
+                            <div class="toggle-switch {{#if user.notifications.patrolComplete}}active{{/if}}" onclick="toggleAlert('patrolComplete')"></div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h5>Missed Checkpoints</h5>
+                                <p>Get notified when checkpoints are missed</p>
+                            </div>
+                            <div class="toggle-switch {{#if user.notifications.missedCheckpoints}}active{{/if}}" onclick="toggleAlert('missedCheckpoints')"></div>
+                        </div>
+                    </div>
+
+                    <div class="notification-group">
+                        <div class="notification-group-title">Shift Reminders</div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h5>Upcoming Shifts</h5>
+                                <p>Get reminders before your shifts start</p>
+                            </div>
+                            <div class="toggle-switch {{#if user.notifications.upcomingShifts}}active{{/if}}" onclick="toggleAlert('upcomingShifts')"></div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h5>Shift Changes</h5>
+                                <p>Get notified when shifts are changed</p>
+                            </div>
+                            <div class="toggle-switch {{#if user.notifications.shiftChanges}}active{{/if}}" onclick="toggleAlert('shiftChanges')"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Privacy Section -->
+                <div id="privacy" class="settings-section" style="display: none;">
+                    <div class="settings-header">
+                        <h3>Privacy Settings</h3>
+                        <p>Control your privacy and data sharing preferences</p>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h5>Profile Visibility</h5>
+                            <p>Control who can see your profile information</p>
+                        </div>
+                        <select class="form-select w-auto" name="profileVisibility">
+                            <option value="public" {{#if (eq user.privacy.profileVisibility "public")}}selected{{/if}}>Public</option>
+                            <option value="team" {{#if (eq user.privacy.profileVisibility "team")}}selected{{/if}}>Team Only</option>
+                            <option value="private" {{#if (eq user.privacy.profileVisibility "private")}}selected{{/if}}>Private</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h5>Location Tracking</h5>
+                            <p>Allow the system to track your location during patrols</p>
+                        </div>
+                        <div class="toggle-switch {{#if user.privacy.locationTracking}}active{{/if}}" onclick="togglePrivacy('locationTracking')"></div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h5>Activity History</h5>
+                            <p>Save your activity history for analytics</p>
+                        </div>
+                        <div class="toggle-switch {{#if user.privacy.activityHistory}}active{{/if}}" onclick="togglePrivacy('activityHistory')"></div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h5>Data Sharing</h5>
+                            <p>Share anonymous usage data to help improve the system</p>
+                        </div>
+                        <div class="toggle-switch {{#if user.privacy.dataSharing}}active{{/if}}" onclick="togglePrivacy('dataSharing')"></div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h5>Marketing Communications</h5>
+                            <p>Receive emails about new features and updates</p>
+                        </div>
+                        <div class="toggle-switch {{#if user.privacy.marketingEmails}}active{{/if}}" onclick="togglePrivacy('marketingEmails')"></div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button class="btn-outline" onclick="downloadMyData()">
+                            <i class="fas fa-download me-2"></i>Download My Data
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Appearance Section -->
+                <div id="appearance" class="settings-section" style="display: none;">
+                    <div class="settings-header">
+                        <h3>Appearance</h3>
+                        <p>Customize how the application looks</p>
+                    </div>
+
+                    <div class="section-title">Theme</div>
+                    <div class="theme-options">
+                        <div class="theme-option {{#if (eq user.theme "light")}}active{{/if}}" onclick="setTheme('light')">
+                            <div class="theme-preview light"></div>
+                            <span class="theme-name">Light</span>
+                        </div>
+                        <div class="theme-option {{#if (eq user.theme "dark")}}active{{/if}}" onclick="setTheme('dark')">
+                            <div class="theme-preview dark"></div>
+                            <span class="theme-name">Dark</span>
+                        </div>
+                        <div class="theme-option {{#if (eq user.theme "system")}}active{{/if}}" onclick="setTheme('system')">
+                            <div class="theme-preview system"></div>
+                            <span class="theme-name">System</span>
+                        </div>
+                    </div>
+
+                    <div class="section-title mt-4">Compact Mode</div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h5>Compact Dashboard</h5>
+                            <p>Show more information with reduced spacing</p>
+                        </div>
+                        <div class="toggle-switch {{#if user.compactMode}}active{{/if}}" onclick="toggleCompactMode()"></div>
+                    </div>
+
+                    <div class="section-title mt-4">Animations</div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h5>Reduce Animations</h5>
+                            <p>Minimize motion for better performance</p>
+                        </div>
+                        <div class="toggle-switch {{#if user.reduceAnimations}}active{{/if}}" onclick="toggleReduceAnimations()"></div>
+                    </div>
+                </div>
+
+                <!-- Language & Region Section -->
+                <div id="language" class="settings-section" style="display: none;">
+                    <div class="settings-header">
+                        <h3>Language & Region</h3>
+                        <p>Set your language and regional preferences</p>
+                    </div>
+
+                    <div class="section-title">Language</div>
+                    <div class="language-options">
+                        <div class="language-option {{#if (eq user.language "en")}}active{{/if}}" onclick="setLanguage('en')">
+                            <div class="language-flag">EN</div>
+                            <span class="language-name">English</span>
+                        </div>
+                        <div class="language-option {{#if (eq user.language "sw")}}active{{/if}}" onclick="setLanguage('sw')">
+                            <div class="language-flag">SW</div>
+                            <span class="language-name">Kiswahili</span>
+                        </div>
+                        <div class="language-option {{#if (eq user.language "fr")}}active{{/if}}" onclick="setLanguage('fr')">
+                            <div class="language-flag">FR</div>
+                            <span class="language-name">Français</span>
+                        </div>
+                    </div>
+
+                    <div class="section-title mt-4">Regional Settings</div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Country</label>
+                                <select class="form-select" name="country">
+                                    <option value="KE" {{#if (eq user.country "KE")}}selected{{/if}}>Kenya</option>
+                                    <option value="UG" {{#if (eq user.country "UG")}}selected{{/if}}>Uganda</option>
+                                    <option value="TZ" {{#if (eq user.country "TZ")}}selected{{/if}}>Tanzania</option>
+                                    <option value="US" {{#if (eq user.country "US")}}selected{{/if}}>United States</option>
+                                    <option value="GB" {{#if (eq user.country "GB")}}selected{{/if}}>United Kingdom</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Currency</label>
+                                <select class="form-select" name="currency">
+                                    <option value="KES" {{#if (eq user.currency "KES")}}selected{{/if}}>KES - Kenyan Shilling</option>
+                                    <option value="UGX" {{#if (eq user.currency "UGX")}}selected{{/if}}>UGX - Ugandan Shilling</option>
+                                    <option value="TZS" {{#if (eq user.currency "TZS")}}selected{{/if}}>TZS - Tanzanian Shilling</option>
+                                    <option value="USD" {{#if (eq user.currency "USD")}}selected{{/if}}>USD - US Dollar</option>
+                                    <option value="GBP" {{#if (eq user.currency "GBP")}}selected{{/if}}>GBP - British Pound</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Measurement System</label>
+                                <select class="form-select" name="measurement">
+                                    <option value="metric" {{#if (eq user.measurement "metric")}}selected{{/if}}>Metric (km, °C)</option>
+                                    <option value="imperial" {{#if (eq user.measurement "imperial")}}selected{{/if}}>Imperial (miles, °F)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accessibility Section -->
+                <div id="accessibility" class="settings-section" style="display: none;">
+                    <div class="settings-header">
+                        <h3>Accessibility</h3>
+                        <p>Configure accessibility features</p>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h5>Screen Reader Optimization</h5>
+                            <p>Optimize interface for screen readers</p>
+                        </div>
+                        <div class="toggle-switch {{#if user.accessibility.screenReader}}active{{/if}}" onclick="toggleAccessibility('screenReader')"></div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h5>High Contrast Mode</h5>
+                            <p>Increase contrast for better visibility</p>
+                        </div>
+                        <div class="toggle-switch {{#if user.accessibility.highContrast}}active{{/if}}" onclick="toggleAccessibility('highContrast')"></div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h5>Large Text</h5>
+                            <p>Increase font size throughout the application</p>
+                        </div>
+                        <div class="toggle-switch {{#if user.accessibility.largeText}}active{{/if}}" onclick="toggleAccessibility('largeText')"></div>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <label class="form-label">Font Size</label>
+                        <select class="form-select" name="fontSize">
+                            <option value="small" {{#if (eq user.accessibility.fontSize "small")}}selected{{/if}}>Small</option>
+                            <option value="medium" {{#if (eq user.accessibility.fontSize "medium")}}selected{{/if}}>Medium</option>
+                            <option value="large" {{#if (eq user.accessibility.fontSize "large")}}selected{{/if}}>Large</option>
+                            <option value="x-large" {{#if (eq user.accessibility.fontSize "x-large")}}selected{{/if}}>Extra Large</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- API Keys Section -->
+                <div id="api" class="settings-section" style="display: none;">
+                    <div class="settings-header">
+                        <h3>API Keys</h3>
+                        <p>Manage API keys for integrations</p>
+                    </div>
+
+                    <button class="btn-primary mb-4" onclick="generateApiKey()">
+                        <i class="fas fa-plus-circle me-2"></i>Generate New API Key
+                    </button>
+
+                    {{#each apiKeys}}
+                    <div class="api-key-item">
+                        <div class="api-key-info">
+                            <h5>{{this.name}}</h5>
+                            <p>Created: {{formatDate this.createdAt}} • Last used: {{#if this.lastUsed}}{{formatDate this.lastUsed}}{{else}}Never{{/if}}</p>
+                        </div>
+                        <div class="api-key-value">{{this.key}}</div>
+                        <div class="api-key-actions">
+                            <button class="action-btn" onclick="copyApiKey('{{this.key}}')" title="Copy">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button class="action-btn" onclick="revokeApiKey('{{this.id}}')" title="Revoke">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {{else}}
+                    <p class="text-muted text-center py-4">No API keys generated yet</p>
+                    {{/each}}
+                </div>
+
+                <!-- Webhooks Section -->
+                <div id="webhooks" class="settings-section" style="display: none;">
+                    <div class="settings-header">
+                        <h3>Webhooks</h3>
+                        <p>Configure webhook endpoints for real-time notifications</p>
+                    </div>
+
+                    <button class="btn-primary mb-4" onclick="addWebhook()">
+                        <i class="fas fa-plus-circle me-2"></i>Add Webhook
+                    </button>
+
+                    {{#each webhooks}}
+                    <div class="api-key-item">
+                        <div class="api-key-info">
+                            <h5>{{this.url}}</h5>
+                            <p>Events: {{this.events}} • Created: {{formatDate this.createdAt}}</p>
+                        </div>
+                        <div class="api-key-actions">
+                            <button class="action-btn" onclick="testWebhook('{{this.id}}')" title="Test">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="action-btn" onclick="editWebhook('{{this.id}}')" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn" onclick="deleteWebhook('{{this.id}}')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {{else}}
+                    <p class="text-muted text-center py-4">No webhooks configured</p>
+                    {{/each}}
+                </div>
+
+                <!-- Integrations Section -->
+                <div id="integrations" class="settings-section" style="display: none;">
+                    <div class="settings-header">
+                        <h3>Connected Apps</h3>
+                        <p>Manage third-party application integrations</p>
+                    </div>
+
+                    <div class="integration-grid">
+                        <div class="integration-card">
+                            <div class="integration-icon">
+                                <i class="fab fa-slack"></i>
+                            </div>
+                            <h5>Slack</h5>
+                            <p>Receive notifications in your Slack workspace</p>
+                            <span class="integration-status {{#if integrations.slack}}status-connected{{else}}status-disconnected{{/if}}">
+                                {{#if integrations.slack}}Connected{{else}}Disconnected{{/if}}
+                            </span>
+                            <button class="btn-outline w-100" onclick="toggleIntegration('slack')">
+                                {{#if integrations.slack}}Disconnect{{else}}Connect{{/if}}
+                            </button>
+                        </div>
+
+                        <div class="integration-card">
+                            <div class="integration-icon">
+                                <i class="fab fa-telegram"></i>
+                            </div>
+                            <h5>Telegram</h5>
+                            <p>Get alerts via Telegram bot</p>
+                            <span class="integration-status {{#if integrations.telegram}}status-connected{{else}}status-disconnected{{/if}}">
+                                {{#if integrations.telegram}}Connected{{else}}Disconnected{{/if}}
+                            </span>
+                            <button class="btn-outline w-100" onclick="toggleIntegration('telegram')">
+                                {{#if integrations.telegram}}Disconnect{{else}}Connect{{/if}}
+                            </button>
+                        </div>
+
+                        <div class="integration-card">
+                            <div class="integration-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <h5>Microsoft 365</h5>
+                            <p>Sync with Outlook calendar</p>
+                            <span class="integration-status {{#if integrations.outlook}}status-connected{{else}}status-disconnected{{/if}}">
+                                {{#if integrations.outlook}}Connected{{else}}Disconnected{{/if}}
+                            </span>
+                            <button class="btn-outline w-100" onclick="toggleIntegration('outlook')">
+                                {{#if integrations.outlook}}Disconnect{{else}}Connect{{/if}}
+                            </button>
+                        </div>
+
+                        <div class="integration-card">
+                            <div class="integration-icon">
+                                <i class="fab fa-google"></i>
+                            </div>
+                            <h5>Google Workspace</h5>
+                            <p>Sync with Google Calendar</p>
+                            <span class="integration-status {{#if integrations.google}}status-connected{{else}}status-disconnected{{/if}}">
+                                {{#if integrations.google}}Connected{{else}}Disconnected{{/if}}
+                            </span>
+                            <button class="btn-outline w-100" onclick="toggleIntegration('google')">
+                                {{#if integrations.google}}Disconnect{{else}}Connect{{/if}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backup & Restore Section -->
+                <div id="backup" class="settings-section" style="display: none;">
+                    <div class="settings-header">
+                        <h3>Backup & Restore</h3>
+                        <p>Manage your data backups</p>
+                    </div>
+
+                    <div class="d-flex gap-3 mb-4">
+                        <button class="btn-primary" onclick="createBackup()">
+                            <i class="fas fa-database me-2"></i>Create Backup
+                        </button>
+                        <button class="btn-outline" onclick="restoreBackup()">
+                            <i class="fas fa-upload me-2"></i>Restore Backup
+                        </button>
+                        <button class="btn-outline" onclick="scheduleBackup()">
+                            <i class="fas fa-clock me-2"></i>Schedule Backup
+                        </button>
+                    </div>
+
+                    <div class="section-title">Recent Backups</div>
+                    <div class="backup-list">
+                        {{#each backups}}
+                        <div class="backup-item">
+                            <div class="backup-info">
+                                <div class="backup-icon">
+                                    <i class="fas fa-file-archive"></i>
+                                </div>
+                                <div class="backup-details">
+                                    <h6>{{this.name}}</h6>
+                                    <p>{{formatDate this.createdAt}}</p>
+                                </div>
+                            </div>
+                            <div class="backup-size">{{this.size}}</div>
+                            <div class="api-key-actions">
+                                <button class="action-btn" onclick="downloadBackup('{{this.id}}')" title="Download">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="action-btn" onclick="restoreBackup('{{this.id}}')" title="Restore">
+                                    <i class="fas fa-upload"></i>
+                                </button>
+                                <button class="action-btn" onclick="deleteBackup('{{this.id}}')" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {{else}}
+                        <div class="text-center py-4">
+                            <p class="text-muted">No backups available</p>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="danger-zone">
+                    <div class="danger-zone-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Danger Zone
+                    </div>
+
+                    <div class="danger-zone-item">
+                        <div>
+                            <h5>Deactivate Account</h5>
+                            <p class="text-muted">Temporarily disable your account</p>
+                        </div>
+                        <button class="btn-outline" onclick="deactivateAccount()">
+                            Deactivate
+                        </button>
+                    </div>
+
+                    <div class="danger-zone-item">
+                        <div>
+                            <h5>Delete Account</h5>
+                            <p class="text-muted">Permanently delete your account and all data</p>
+                        </div>
+                        <button class="btn-danger" onclick="deleteAccount()">
+                            Delete Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-key me-2"></i>
+                        Change Password
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="changePasswordForm">
+                    <div class="modal-body">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" class="form-control" name="currentPassword" required>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">New Password</label>
+                            <input type="password" class="form-control" name="newPassword" required minlength="8">
+                            <div class="form-text">Minimum 8 characters with at least one number and one special character</div>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" name="confirmPassword" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-outline" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn-primary">Update Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generate API Key Modal -->
+    <div class="modal fade" id="apiKeyModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-key me-2"></i>
+                        Generate API Key
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="apiKeyForm">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="form-label">Key Name</label>
+                            <input type="text" class="form-control" name="name" placeholder="e.g., Development, Production" required>
+                        </div>
+                        
+                        <div class="form-group mt-3">
+                            <label class="form-label">Permissions</label>
+                            <select class="form-select" name="permissions" multiple>
+                                <option value="read">Read Only</option>
+                                <option value="write">Write</option>
+                                <option value="delete">Delete</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                            <div class="form-text">Hold Ctrl/Cmd to select multiple</div>
+                        </div>
+                        
+                        <div class="form-group mt-3">
+                            <label class="form-label">Expiration</label>
+                            <select class="form-select" name="expiration">
+                                <option value="30">30 days</option>
+                                <option value="90">90 days</option>
+                                <option value="365">1 year</option>
+                                <option value="never">Never expires</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-outline" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn-primary">Generate</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Webhook Modal -->
+    <div class="modal fade" id="webhookModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-webhook me-2"></i>
+                        Add Webhook
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="webhookForm">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="form-label">Webhook URL</label>
+                            <input type="url" class="form-control" name="url" placeholder="https://example.com/webhook" required>
+                        </div>
+                        
+                        <div class="form-group mt-3">
+                            <label class="form-label">Events</label>
+                            <select class="form-select" name="events" multiple size="4">
+                                <option value="incident.created">Incident Created</option>
+                                <option value="incident.updated">Incident Updated</option>
+                                <option value="patrol.started">Patrol Started</option>
+                                <option value="patrol.completed">Patrol Completed</option>
+                                <option value="shift.assigned">Shift Assigned</option>
+                                <option value="shift.reminder">Shift Reminder</option>
+                            </select>
+                            <div class="form-text">Hold Ctrl/Cmd to select multiple</div>
+                        </div>
+                        
+                        <div class="form-group mt-3">
+                            <label class="form-label">Secret (Optional)</label>
+                            <input type="text" class="form-control" name="secret" placeholder="Webhook secret for verification">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-outline" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn-primary">Add Webhook</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    
+    <script>
+        // Initialize Select2
+        $(document).ready(function() {
+            $('select[multiple]').select2({
+                width: '100%',
+                placeholder: 'Select permissions'
+            });
+        });
+
+        // Section switching
+        function switchSection(sectionId) {
+            document.querySelectorAll('.settings-menu a').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            document.querySelectorAll('.settings-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionId).style.display = 'block';
+        }
+
+        // Save all settings
+        function saveAllSettings() {
+            const settings = {
+                // Account settings
+                displayName: document.querySelector('input[name="displayName"]').value,
+                timezone: document.querySelector('select[name="timezone"]').value,
+                dateFormat: document.querySelector('select[name="dateFormat"]').value,
+                timeFormat: document.querySelector('select[name="timeFormat"]').value,
+                firstDayOfWeek: document.querySelector('select[name="firstDayOfWeek"]').value,
+                
+                // Session timeout
+                sessionTimeout: document.querySelector('select[name="sessionTimeout"]').value,
+                
+                // Privacy
+                profileVisibility: document.querySelector('select[name="profileVisibility"]').value,
+                
+                // Regional
+                country: document.querySelector('select[name="country"]').value,
+                currency: document.querySelector('select[name="currency"]').value,
+                measurement: document.querySelector('select[name="measurement"]').value,
+                
+                // Accessibility
+                fontSize: document.querySelector('select[name="fontSize"]').value
+            };
+
+            fetch('/api/settings/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(settings)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Settings saved successfully', 'success');
+                } else {
+                    showToast('Failed to save settings', 'error');
+                }
+            });
+        }
+
+        // Theme switching
+        function setTheme(theme) {
+            document.querySelectorAll('.theme-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // Apply theme
+            document.body.className = theme;
+            
+            fetch('/api/settings/theme', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ theme })
+            });
+        }
+
+        // Language switching
+        function setLanguage(language) {
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            fetch('/api/settings/language', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ language })
+            }).then(() => {
+                showToast('Language updated. Refresh to see changes.', 'info');
+            });
+        }
+
+        // Toggle functions
+        function toggleTwoFactor() {
+            fetch('/api/settings/2fa/toggle', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const toggle = document.querySelector('.toggle-switch');
+                        toggle.classList.toggle('active');
+                        showToast(data.message, 'success');
+                    }
+                });
+        }
+
+        function toggleLoginAlerts() {
+            fetch('/api/settings/login-alerts/toggle', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const toggle = event.currentTarget;
+                        toggle.classList.toggle('active');
+                    }
+                });
+        }
+
+        function toggleNotification(type) {
+            fetch(`/api/settings/notifications/${type}/toggle`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const toggle = event.currentTarget;
+                        toggle.classList.toggle('active');
+                    }
+                });
+        }
+
+        function toggleAlert(type) {
+            fetch(`/api/settings/alerts/${type}/toggle`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const toggle = event.currentTarget;
+                        toggle.classList.toggle('active');
+                    }
+                });
+        }
+
+        function togglePrivacy(setting) {
+            fetch(`/api/settings/privacy/${setting}/toggle`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const toggle = event.currentTarget;
+                        toggle.classList.toggle('active');
+                    }
+                });
+        }
+
+        function toggleCompactMode() {
+            fetch('/api/settings/compact-mode/toggle', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const toggle = event.currentTarget;
+                        toggle.classList.toggle('active');
+                    }
+                });
+        }
+
+        function toggleReduceAnimations() {
+            fetch('/api/settings/reduce-animations/toggle', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const toggle = event.currentTarget;
+                        toggle.classList.toggle('active');
+                    }
+                });
+        }
+
+        function toggleAccessibility(feature) {
+            fetch(`/api/settings/accessibility/${feature}/toggle`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const toggle = event.currentTarget;
+                        toggle.classList.toggle('active');
+                    }
+                });
+        }
+
+        // Password change
+        function changePassword() {
+            new bootstrap.Modal(document.getElementById('changePasswordModal')).show();
+        }
+
+        document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {
+                currentPassword: formData.get('currentPassword'),
+                newPassword: formData.get('newPassword'),
+                confirmPassword: formData.get('confirmPassword')
+            };
+
+            if (data.newPassword !== data.confirmPassword) {
+                showToast('New passwords do not match', 'error');
+                return;
+            }
+
+            fetch('/api/settings/password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Password updated successfully', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
+                } else {
+                    showToast(data.message || 'Failed to update password', 'error');
+                }
+            });
+        });
+
+        // Session management
+        function logoutAllDevices() {
+            if (confirm('This will log you out from all other devices. Continue?')) {
+                fetch('/api/settings/logout-all', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast('Logged out from all other devices', 'success');
+                        }
+                    });
+            }
+        }
+
+        // API Keys
+        function generateApiKey() {
+            new bootstrap.Modal(document.getElementById('apiKeyModal')).show();
+        }
+
+        document.getElementById('apiKeyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {
+                name: formData.get('name'),
+                permissions: $(this).find('select[name="permissions"]').val(),
+                expiration: formData.get('expiration')
+            };
+
+            fetch('/api/settings/api-keys', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('API key generated successfully', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('apiKeyModal')).hide();
+                    setTimeout(() => window.location.reload(), 1500);
+                }
+            });
+        });
+
+        function copyApiKey(key) {
+            navigator.clipboard.writeText(key);
+            showToast('API key copied to clipboard', 'success');
+        }
+
+        function revokeApiKey(id) {
+            if (confirm('Are you sure you want to revoke this API key?')) {
+                fetch(`/api/settings/api-keys/${id}`, { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast('API key revoked', 'success');
+                            setTimeout(() => window.location.reload(), 1500);
+                        }
+                    });
+            }
+        }
+
+        // Webhooks
+        function addWebhook() {
+            new bootstrap.Modal(document.getElementById('webhookModal')).show();
+        }
+
+        document.getElementById('webhookForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {
+                url: formData.get('url'),
+                events: $(this).find('select[name="events"]').val(),
+                secret: formData.get('secret')
+            };
+
+            fetch('/api/settings/webhooks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Webhook added successfully', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('webhookModal')).hide();
+                    setTimeout(() => window.location.reload(), 1500);
+                }
+            });
+        });
+
+        function testWebhook(id) {
+            fetch(`/api/settings/webhooks/${id}/test`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    showToast(data.message, data.success ? 'success' : 'error');
+                });
+        }
+
+        function editWebhook(id) {
+            // Load webhook data and show modal
+            console.log('Edit webhook:', id);
+        }
+
+        function deleteWebhook(id) {
+            if (confirm('Are you sure you want to delete this webhook?')) {
+                fetch(`/api/settings/webhooks/${id}`, { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast('Webhook deleted', 'success');
+                            setTimeout(() => window.location.reload(), 1500);
+                        }
+                    });
+            }
+        }
+
+        // Integrations
+        function toggleIntegration(integration) {
+            fetch(`/api/settings/integrations/${integration}/toggle`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    }
+                });
+        }
+
+        // Backup
+        function createBackup() {
+            fetch('/api/settings/backup', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Backup created successfully', 'success');
+                        setTimeout(() => window.location.reload(), 1500);
+                    }
+                });
+        }
+
+        function restoreBackup(id) {
+            if (confirm('This will restore data from backup. Current data will be overwritten. Continue?')) {
+                fetch(`/api/settings/backup/${id}/restore`, { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast('Backup restored successfully', 'success');
+                        }
+                    });
+            }
+        }
+
+        function downloadBackup(id) {
+            window.location.href = `/api/settings/backup/${id}/download`;
+        }
+
+        function deleteBackup(id) {
+            if (confirm('Are you sure you want to delete this backup?')) {
+                fetch(`/api/settings/backup/${id}`, { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast('Backup deleted', 'success');
+                            setTimeout(() => window.location.reload(), 1500);
+                        }
+                    });
+            }
+        }
+
+        function scheduleBackup() {
+            // Show scheduling modal
+            console.log('Schedule backup');
+        }
+
+        // Data management
+        function downloadMyData() {
+            window.location.href = '/api/settings/export-data';
+        }
+
+        // Danger zone
+        function deactivateAccount() {
+            if (confirm('Are you sure you want to deactivate your account? You can reactivate it later by contacting support.')) {
+                fetch('/api/settings/deactivate', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast('Account deactivated', 'success');
+                            setTimeout(() => window.location.href = '/logout', 2000);
+                        }
+                    });
+            }
+        }
+
+        function deleteAccount() {
+            if (confirm('WARNING: This will permanently delete your account and all associated data. This action cannot be undone. Continue?')) {
+                fetch('/api/settings/delete', { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast('Account deleted', 'success');
+                            setTimeout(() => window.location.href = '/', 2000);
+                        }
+                    });
+            }
+        }
+
+        // Toast notification
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} me-2"></i>
+                    <div>${message}</div>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

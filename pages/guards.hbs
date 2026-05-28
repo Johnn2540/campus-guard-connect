@@ -1,0 +1,1538 @@
+<!-- views/guards.hbs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guard Management - Campus Guard Connect</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-brand i {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-badge i {
+            font-size: 1.3rem;
+            color: #64748b;
+            transition: color 0.3s ease;
+        }
+
+        .notification-badge:hover i {
+            color: #667eea;
+        }
+
+        .badge-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .user-profile:hover {
+            background: #eef2f6;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .user-info {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .user-info {
+                display: block;
+            }
+            
+            .user-info h6 {
+                font-weight: 700;
+                color: #1e293b;
+                margin-bottom: 0.2rem;
+                font-size: 0.9rem;
+            }
+            
+            .user-info p {
+                color: #64748b;
+                font-size: 0.8rem;
+                margin-bottom: 0;
+                text-transform: capitalize;
+            }
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            animation: fadeInDown 0.5s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-header h2 {
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+            font-size: 2rem;
+        }
+
+        .page-header p {
+            color: #64748b;
+            margin-bottom: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-outline {
+            border: 2px solid #e2e8f0;
+            background: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: #4a5568;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        /* Stats Cards */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: height 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            height: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon i {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .stat-trend {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .trend-up {
+            color: #48bb78;
+        }
+
+        .trend-down {
+            color: #f56565;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .filter-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+
+        .filter-select, .filter-input {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .filter-select:focus, .filter-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .btn-filter {
+            padding: 0.6rem 1.5rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            height: 42px;
+        }
+
+        .btn-filter:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .btn-reset {
+            padding: 0.6rem 1.5rem;
+            background: #e2e8f0;
+            color: #4a5568;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            height: 42px;
+        }
+
+        .btn-reset:hover {
+            background: #cbd5e0;
+        }
+
+        /* Guards Table */
+        .table-container {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            animation: fadeIn 0.7s ease-out;
+        }
+
+        .guards-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .guards-table th {
+            text-align: left;
+            padding: 1rem;
+            background: #f8fafc;
+            font-weight: 700;
+            color: #4a5568;
+            border-bottom: 2px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        .guards-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+
+        .guards-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .guards-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .guard-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .guard-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .guard-details h6 {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .guard-details small {
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+
+        .badge-role {
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .role-admin {
+            background: rgba(102, 126, 234, 0.15);
+            color: #434190;
+        }
+
+        .role-supervisor {
+            background: rgba(237, 137, 54, 0.15);
+            color: #9c4221;
+        }
+
+        .role-guard {
+            background: rgba(72, 187, 120, 0.15);
+            color: #276749;
+        }
+
+        .role-student {
+            background: rgba(160, 174, 192, 0.15);
+            color: #4a5568;
+        }
+
+        .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-active {
+            background: rgba(72, 187, 120, 0.15);
+            color: #276749;
+        }
+
+        .status-inactive {
+            background: rgba(245, 101, 101, 0.15);
+            color: #c53030;
+        }
+
+        .status-online {
+            background: rgba(72, 187, 120, 0.15);
+            color: #276749;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .status-online::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #48bb78;
+            animation: pulse 2s infinite;
+        }
+
+        .status-offline {
+            background: rgba(160, 174, 192, 0.15);
+            color: #4a5568;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .status-offline::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #a0aec0;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: translateY(-50%) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-50%) scale(1.2);
+                opacity: 0.7;
+            }
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            color: #94a3b8;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            background: #eef2f6;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .action-btn.view-btn:hover {
+            color: #4299e1;
+        }
+
+        .action-btn.edit-btn:hover {
+            color: #48bb78;
+        }
+
+        .action-btn.delete-btn:hover {
+            color: #f56565;
+        }
+
+        .action-btn.shift-btn:hover {
+            color: #9f7aea;
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border: none;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+            opacity: 0.8;
+        }
+
+        .modal-header .btn-close:hover {
+            opacity: 1;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .form-control, .form-select {
+            height: 48px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        .form-control.is-invalid, .form-select.is-invalid {
+            border-color: #f56565;
+        }
+
+        .invalid-feedback {
+            color: #f56565;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Tooltip */
+        [data-tooltip] {
+            position: relative;
+            cursor: help;
+        }
+        
+        [data-tooltip]:before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.5rem 1rem;
+            background: #2d3748;
+            color: white;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            border-radius: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        [data-tooltip]:hover:before {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-bar {
+                flex-direction: column;
+            }
+            
+            .filter-group {
+                width: 100%;
+            }
+            
+            .guards-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .header-actions {
+                width: 100%;
+            }
+            
+            .btn-primary, .btn-outline {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-shield-alt"></i>
+                CampusGuard Connect
+            </a>
+            
+            <div class="user-menu">
+                <div class="notification-badge" data-tooltip="Notifications">
+                    <i class="far fa-bell"></i>
+                    <span class="badge-count">{{notificationCount}}</span>
+                </div>
+                
+                <div class="dropdown">
+                    <div class="user-profile" data-bs-toggle="dropdown">
+                        <div class="user-avatar">
+                            {{#if user}}
+                                {{user.initials}}
+                            {{else}}
+                                U
+                            {{/if}}
+                        </div>
+                        <div class="user-info">
+                            <h6>{{user.name}}</h6>
+                            <p>{{user.role}}</p>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h2><i class="fas fa-users me-2" style="color: #667eea;"></i>Guard Management</h2>
+                <p>Manage security personnel, assignments, and performance</p>
+            </div>
+            
+            <div class="header-actions">
+                <button class="btn-primary" data-bs-toggle="modal" data-bs-target="#addGuardModal">
+                    <i class="fas fa-user-plus"></i>
+                    Add New Guard
+                </button>
+                <button class="btn-outline" onclick="exportGuards()">
+                    <i class="fas fa-download"></i>
+                    Export
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <span class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i> {{stats.newThisMonth}} this month
+                    </span>
+                </div>
+                <div class="stat-value">{{stats.totalGuards}}</div>
+                <div class="stat-label">Total Guards</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{stats.activeGuards}}</div>
+                <div class="stat-label">Active Guards</div>
+                <small class="text-muted">{{stats.onDuty}} currently on duty</small>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{stats.onLeave}}</div>
+                <div class="stat-label">On Leave</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{stats.attendance}}%</div>
+                <div class="stat-label">Attendance Rate</div>
+                <small class="text-muted">Last 30 days</small>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label><i class="fas fa-filter me-1"></i>Status</label>
+                <select class="filter-select" id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="onDuty">On Duty</option>
+                    <option value="offDuty">Off Duty</option>
+                    <option value="onLeave">On Leave</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label><i class="fas fa-tag me-1"></i>Role</label>
+                <select class="filter-select" id="roleFilter">
+                    <option value="">All Roles</option>
+                    <option value="guard">Guard</option>
+                    <option value="supervisor">Supervisor</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label><i class="fas fa-map-marker-alt me-1"></i>Zone</label>
+                <select class="filter-select" id="zoneFilter">
+                    <option value="">All Zones</option>
+                    <option value="main_gate">Main Gate</option>
+                    <option value="hostels">Hostels</option>
+                    <option value="academic">Academic</option>
+                    <option value="perimeter">Perimeter</option>
+                    <option value="parking">Parking</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label><i class="fas fa-search me-1"></i>Search</label>
+                <input type="text" class="filter-input" id="searchInput" placeholder="Name, email, badge...">
+            </div>
+
+            <div class="filter-actions">
+                <button class="btn-filter" onclick="applyFilters()">
+                    <i class="fas fa-filter me-2"></i>Apply
+                </button>
+                <button class="btn-reset" onclick="resetFilters()">
+                    <i class="fas fa-undo me-2"></i>Reset
+                </button>
+            </div>
+        </div>
+
+        <!-- Guards Table -->
+        <div class="table-container">
+            <table class="guards-table" id="guardsTable">
+                <thead>
+                    <tr>
+                        <th>Guard</th>
+                        <th>Badge Number</th>
+                        <th>Role</th>
+                        <th>Contact</th>
+                        <th>Status</th>
+                        <th>Current Zone</th>
+                        <th>Shift</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each guards}}
+                    <tr>
+                        <td>
+                            <div class="guard-info">
+                                <div class="guard-avatar">
+                                    {{initials}}
+                                </div>
+                                <div class="guard-details">
+                                    <h6>{{name}}</h6>
+                                    <small class="text-muted">Joined {{formatDate createdAt "MMM YYYY"}}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="fw-bold">{{badgeNumber}}</span>
+                        </td>
+                        <td>
+                            <span class="badge-role role-{{role}}">
+                                {{formatRole role}}
+                            </span>
+                        </td>
+                        <td>
+                            <div><i class="fas fa-envelope me-1 text-muted"></i> {{email}}</div>
+                            <small><i class="fas fa-phone me-1 text-muted"></i> {{phoneNumber}}</small>
+                        </td>
+                        <td>
+                            {{#if isActive}}
+                                {{#if isOnline}}
+                                <span class="status-badge status-online">Online</span>
+                                {{else}}
+                                <span class="status-badge status-active">Active</span>
+                                {{/if}}
+                            {{else}}
+                                <span class="status-badge status-inactive">Inactive</span>
+                            {{/if}}
+                        </td>
+                        <td>
+                            {{#if currentZone}}
+                                <span class="badge-zone">{{formatZone currentZone}}</span>
+                            {{else}}
+                                <span class="text-muted">Not assigned</span>
+                            {{/if}}
+                        </td>
+                        <td>
+                            {{#if currentShift}}
+                                <div><strong>{{currentShift.start}} - {{currentShift.end}}</strong></div>
+                                <small class="text-muted">{{formatDate currentShift.date}}</small>
+                            {{else}}
+                                <span class="text-muted">No shift today</span>
+                            {{/if}}
+                        </td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn view-btn" onclick="viewGuard('{{_id}}')" data-tooltip="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn edit-btn" onclick="editGuard('{{_id}}')" data-tooltip="Edit Guard">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn shift-btn" onclick="assignShift('{{_id}}')" data-tooltip="Assign Shift">
+                                    <i class="fas fa-calendar-plus"></i>
+                                </button>
+                                <button class="action-btn delete-btn" onclick="deleteGuard('{{_id}}')" data-tooltip="Delete Guard">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {{else}}
+                    <tr>
+                        <td colspan="8" class="text-center py-5">
+                            <i class="fas fa-user-shield fa-4x mb-3" style="color: #cbd5e0;"></i>
+                            <h5 style="color: #94a3b8;">No guards found</h5>
+                            <p class="text-muted">Click "Add New Guard" to create your first guard profile</p>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Shift Distribution Chart (Optional) -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="table-container">
+                    <h5 class="mb-3"><i class="fas fa-chart-pie me-2" style="color: #667eea;"></i>Guard Distribution by Zone</h5>
+                    <canvas id="zoneChart" height="250"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="table-container">
+                    <h5 class="mb-3"><i class="fas fa-chart-line me-2" style="color: #667eea;"></i>Performance Metrics</h5>
+                    <canvas id="performanceChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Guard Modal -->
+    <div class="modal fade" id="addGuardModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-plus me-2"></i>
+                        Add New Guard
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="addGuardForm" method="POST" action="/guards/add">
+                    <div class="modal-body">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-user me-2" style="color: #667eea;"></i>
+                                    First Name <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" name="firstName" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-user me-2" style="color: #667eea;"></i>
+                                    Last Name <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" name="lastName" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-envelope me-2" style="color: #667eea;"></i>
+                                    Email <span class="text-danger">*</span>
+                                </label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-phone me-2" style="color: #667eea;"></i>
+                                    Phone Number <span class="text-danger">*</span>
+                                </label>
+                                <input type="tel" class="form-control" name="phoneNumber" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-id-card me-2" style="color: #667eea;"></i>
+                                    Badge Number <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" name="badgeNumber" 
+                                       placeholder="GC-{{year}}-{{inc lastBadge}}" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-tag me-2" style="color: #667eea;"></i>
+                                    Role <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select" name="role" required>
+                                    <option value="guard">Security Guard</option>
+                                    <option value="supervisor">Supervisor</option>
+                                    <option value="admin">Administrator</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label class="form-label">
+                                    <i class="fas fa-map-marker-alt me-2" style="color: #667eea;"></i>
+                                    Assigned Zones
+                                </label>
+                                <select class="form-select" name="zones" multiple id="zoneSelect">
+                                    <option value="main_gate">Main Gate</option>
+                                    <option value="hostels">Hostels</option>
+                                    <option value="academic">Academic Area</option>
+                                    <option value="perimeter">Perimeter</option>
+                                    <option value="parking">Parking Lots</option>
+                                    <option value="admin">Admin Block</option>
+                                </select>
+                                <small class="text-muted">Hold Ctrl/Cmd to select multiple zones</small>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label class="form-label">
+                                    <i class="fas fa-clock me-2" style="color: #667eea;"></i>
+                                    Shift Preferences
+                                </label>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="shiftMorning" value="morning">
+                                            <label class="form-check-label">Morning (6AM - 2PM)</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="shiftAfternoon" value="afternoon">
+                                            <label class="form-check-label">Afternoon (2PM - 10PM)</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="shiftNight" value="night">
+                                            <label class="form-check-label">Night (10PM - 6AM)</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label class="form-label">
+                                    <i class="fas fa-phone-alt me-2" style="color: #667eea;"></i>
+                                    Emergency Contact
+                                </label>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control" name="emergencyName" placeholder="Contact Name">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control" name="emergencyRelationship" placeholder="Relationship">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="tel" class="form-control" name="emergencyPhone" placeholder="Phone Number">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-outline" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save me-2"></i>Add Guard
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Guard Modal -->
+    <div class="modal fade" id="viewGuardModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user me-2"></i>
+                        Guard Details
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="guardDetails">
+                    <!-- Dynamic content loaded via JS -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-primary" onclick="editGuard(currentGuardId)">
+                        <i class="fas fa-edit me-2"></i>Edit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assign Shift Modal -->
+    <div class="modal fade" id="assignShiftModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-calendar-plus me-2"></i>
+                        Assign Shift
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="assignShiftForm" method="POST" action="/shifts/assign">
+                    <div class="modal-body">
+                        <input type="hidden" name="guardId" id="shiftGuardId">
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Guard</label>
+                            <input type="text" class="form-control" id="shiftGuardName" readonly>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" name="date" min="{{todayDate}}" required>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Start Time <span class="text-danger">*</span></label>
+                                <select class="form-select" name="startTime" required>
+                                    <option value="">Select time</option>
+                                    <option value="06:00">06:00 (Morning)</option>
+                                    <option value="14:00">14:00 (Afternoon)</option>
+                                    <option value="22:00">22:00 (Night)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">End Time <span class="text-danger">*</span></label>
+                                <select class="form-select" name="endTime" required>
+                                    <option value="">Select time</option>
+                                    <option value="14:00">14:00 (Morning)</option>
+                                    <option value="22:00">22:00 (Afternoon)</option>
+                                    <option value="06:00">06:00 (Night)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Zone <span class="text-danger">*</span></label>
+                            <select class="form-select" name="zone" required>
+                                <option value="">Select zone</option>
+                                <option value="main_gate">Main Gate</option>
+                                <option value="hostels">Hostels</option>
+                                <option value="academic">Academic Area</option>
+                                <option value="perimeter">Perimeter</option>
+                                <option value="parking">Parking Lots</option>
+                                <option value="admin">Admin Block</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" name="notes" rows="2" 
+                                      placeholder="Special instructions..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-outline" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn-primary">Assign Shift</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <script>
+        // Initialize DataTable
+        $(document).ready(function() {
+            const table = $('#guardsTable').DataTable({
+                pageLength: 10,
+                order: [[0, 'asc']],
+                language: {
+                    search: '<i class="fas fa-search"></i>',
+                    searchPlaceholder: 'Search guards...',
+                    lengthMenu: 'Show _MENU_ guards'
+                },
+                columnDefs: [
+                    { orderable: false, targets: 7 } // Actions column
+                ]
+            });
+
+            // Initialize Select2
+            $('#zoneSelect').select2({
+                placeholder: 'Select zones',
+                width: '100%'
+            });
+        });
+
+        // Current guard ID for modals
+        let currentGuardId = null;
+
+        // View Guard
+        function viewGuard(id) {
+            currentGuardId = id;
+            fetch(`/api/guards/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    const modalBody = document.getElementById('guardDetails');
+                    modalBody.innerHTML = `
+                        <div class="text-center mb-4">
+                            <div class="guard-avatar" style="width: 80px; height: 80px; margin: 0 auto; font-size: 2rem;">
+                                ${data.initials}
+                            </div>
+                            <h4 class="mt-3">${data.name}</h4>
+                            <span class="badge-role role-${data.role}">${formatRole(data.role)}</span>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong><i class="fas fa-id-card me-2"></i>Badge:</strong> ${data.badgeNumber}</p>
+                                <p><strong><i class="fas fa-envelope me-2"></i>Email:</strong> ${data.email}</p>
+                                <p><strong><i class="fas fa-phone me-2"></i>Phone:</strong> ${data.phoneNumber}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong><i class="fas fa-calendar me-2"></i>Joined:</strong> ${new Date(data.createdAt).toLocaleDateString()}</p>
+                                <p><strong><i class="fas fa-clock me-2"></i>Last Login:</strong> ${data.lastLogin ? new Date(data.lastLogin).toLocaleString() : 'Never'}</p>
+                                <p><strong><i class="fas fa-map-marker-alt me-2"></i>Status:</strong> ${data.isActive ? 'Active' : 'Inactive'}</p>
+                            </div>
+                        </div>
+                        
+                        <h6 class="mt-4"><i class="fas fa-clock me-2"></i>Shift Preferences</h6>
+                        <div class="mb-3">
+                            ${data.shiftPreferences?.preferredShifts?.map(s => 
+                                `<span class="badge bg-light text-dark me-2">${s}</span>`
+                            ).join('') || 'No preferences set'}
+                        </div>
+                        
+                        <h6><i class="fas fa-phone-alt me-2"></i>Emergency Contact</h6>
+                        ${data.emergencyContact ? `
+                            <p>${data.emergencyContact.name} (${data.emergencyContact.relationship})<br>
+                            ${data.emergencyContact.phone}</p>
+                        ` : '<p class="text-muted">No emergency contact provided</p>'}
+                    `;
+                    
+                    new bootstrap.Modal(document.getElementById('viewGuardModal')).show();
+                });
+        }
+
+        // Edit Guard
+        function editGuard(id) {
+            window.location.href = `/guards/edit/${id}`;
+        }
+
+        // Delete Guard
+        function deleteGuard(id) {
+            if (confirm('Are you sure you want to delete this guard? This action cannot be undone.')) {
+                fetch(`/guards/${id}`, {
+                    method: 'DELETE'
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        alert('Failed to delete guard');
+                    }
+                });
+            }
+        }
+
+        // Assign Shift
+        function assignShift(id) {
+            fetch(`/api/guards/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('shiftGuardId').value = id;
+                    document.getElementById('shiftGuardName').value = data.name;
+                    new bootstrap.Modal(document.getElementById('assignShiftModal')).show();
+                });
+        }
+
+        // Export Guards
+        function exportGuards() {
+            const format = prompt('Export format (pdf/excel/csv):', 'excel');
+            if (format) {
+                window.location.href = `/guards/export?format=${format}`;
+            }
+        }
+
+        // Filter Functions
+        function applyFilters() {
+            const status = document.getElementById('statusFilter').value;
+            const role = document.getElementById('roleFilter').value;
+            const zone = document.getElementById('zoneFilter').value;
+            const search = document.getElementById('searchInput').value;
+            
+            const table = $('#guardsTable').DataTable();
+            
+            // Custom filtering
+            $.fn.dataTable.ext.search.push(
+                function(settings, data, dataIndex) {
+                    const row = table.row(dataIndex).data();
+                    const rowStatus = row[4].toLowerCase();
+                    const rowRole = row[2].toLowerCase();
+                    const rowZone = row[5].toLowerCase();
+                    
+                    if (status && !rowStatus.includes(status)) return false;
+                    if (role && !rowRole.includes(role)) return false;
+                    if (zone && !rowZone.includes(zone)) return false;
+                    
+                    return true;
+                }
+            );
+            
+            table.search(search).draw();
+        }
+
+        function resetFilters() {
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('roleFilter').value = '';
+            document.getElementById('zoneFilter').value = '';
+            document.getElementById('searchInput').value = '';
+            
+            const table = $('#guardsTable').DataTable();
+            $.fn.dataTable.ext.search.pop();
+            table.search('').columns().search('').draw();
+        }
+
+        // Helper Functions
+        function formatRole(role) {
+            return role.charAt(0).toUpperCase() + role.slice(1);
+        }
+
+        // Initialize Charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Zone Distribution Chart
+            const zoneCtx = document.getElementById('zoneChart')?.getContext('2d');
+            if (zoneCtx) {
+                new Chart(zoneCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Main Gate', 'Hostels', 'Academic', 'Perimeter', 'Parking', 'Admin'],
+                        datasets: [{
+                            data: {{zoneStats}},
+                            backgroundColor: [
+                                '#4299e1',
+                                '#48bb78',
+                                '#ed8936',
+                                '#9f7aea',
+                                '#f56565',
+                                '#667eea'
+                            ],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Performance Chart
+            const perfCtx = document.getElementById('performanceChart')?.getContext('2d');
+            if (perfCtx) {
+                new Chart(perfCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'Patrol Completion %',
+                            data: [95, 92, 98, 94, 96, 89, 91],
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            fetch('/api/guards/status')
+                .then(response => response.json())
+                .then(data => {
+                    // Update online status indicators without page reload
+                    console.log('Status updated:', data);
+                });
+        }, 30000);
+    </script>
+</body>
+</html>

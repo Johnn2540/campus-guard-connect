@@ -1,0 +1,1618 @@
+<!-- views/admin/audit-logs.hbs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Logs - Campus Guard Connect</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    
+    <!-- DateRange Picker -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-brand i {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-badge i {
+            font-size: 1.3rem;
+            color: #64748b;
+            transition: color 0.3s ease;
+        }
+
+        .notification-badge:hover i {
+            color: #667eea;
+        }
+
+        .badge-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .user-profile:hover {
+            background: #eef2f6;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .user-info {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .user-info {
+                display: block;
+            }
+            
+            .user-info h6 {
+                font-weight: 700;
+                color: #1e293b;
+                margin-bottom: 0.2rem;
+                font-size: 0.9rem;
+            }
+            
+            .user-info p {
+                color: #64748b;
+                font-size: 0.8rem;
+                margin-bottom: 0;
+                text-transform: capitalize;
+            }
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            animation: fadeInDown 0.5s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-header h2 {
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+            font-size: 2rem;
+        }
+
+        .page-header p {
+            color: #64748b;
+            margin-bottom: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-outline {
+            border: 2px solid #e2e8f0;
+            background: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: #4a5568;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(245, 101, 101, 0.4);
+        }
+
+        /* Stats Cards */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: height 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            height: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon i {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .stat-trend {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .trend-up {
+            color: #48bb78;
+        }
+
+        .trend-down {
+            color: #f56565;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 160px;
+        }
+
+        .filter-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+
+        .filter-select, .filter-input {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .filter-select:focus, .filter-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        .date-range-picker {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 0.6rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .date-range-picker:hover {
+            border-color: #667eea;
+        }
+
+        .date-range-picker i {
+            color: #667eea;
+        }
+
+        .date-range-picker span {
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .btn-filter {
+            padding: 0.6rem 1.5rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            height: 42px;
+        }
+
+        .btn-filter:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .btn-reset {
+            padding: 0.6rem 1.5rem;
+            background: #e2e8f0;
+            color: #4a5568;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            height: 42px;
+        }
+
+        .btn-reset:hover {
+            background: #cbd5e0;
+        }
+
+        /* Audit Logs Table */
+        .table-container {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            animation: fadeIn 0.7s ease-out;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .table-header h5 {
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .table-header h5 i {
+            color: #667eea;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .logs-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .logs-table th {
+            text-align: left;
+            padding: 1rem;
+            background: #f8fafc;
+            font-weight: 700;
+            color: #4a5568;
+            border-bottom: 2px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        .logs-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+
+        .logs-table tbody tr {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .logs-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .logs-table tbody tr.selected {
+            background: rgba(102, 126, 234, 0.05);
+            border-left: 4px solid #667eea;
+        }
+
+        .user-info-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar-small {
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .category-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .category-auth {
+            background: rgba(66, 153, 225, 0.15);
+            color: #2c5282;
+        }
+
+        .category-incident {
+            background: rgba(245, 101, 101, 0.15);
+            color: #c53030;
+        }
+
+        .category-patrol {
+            background: rgba(72, 187, 120, 0.15);
+            color: #276749;
+        }
+
+        .category-shift {
+            background: rgba(237, 137, 54, 0.15);
+            color: #9c4221;
+        }
+
+        .category-user {
+            background: rgba(102, 126, 234, 0.15);
+            color: #434190;
+        }
+
+        .category-system {
+            background: rgba(159, 122, 234, 0.15);
+            color: #6b46a1;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: rgba(72, 187, 120, 0.15);
+            color: #276749;
+        }
+
+        .status-failure {
+            background: rgba(245, 101, 101, 0.15);
+            color: #c53030;
+        }
+
+        .status-pending {
+            background: rgba(237, 137, 54, 0.15);
+            color: #9c4221;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            color: #94a3b8;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            background: #eef2f6;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        /* Activity Timeline */
+        .timeline-container {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            margin-top: 2rem;
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .timeline-header h5 {
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.5rem;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px #667eea;
+            z-index: 2;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: -1rem;
+            top: 1rem;
+            bottom: 0;
+            width: 2px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        .timeline-item.auth::before {
+            background: #4299e1;
+            box-shadow: 0 0 0 2px #4299e1;
+        }
+
+        .timeline-item.incident::before {
+            background: #f56565;
+            box-shadow: 0 0 0 2px #f56565;
+        }
+
+        .timeline-item.patrol::before {
+            background: #48bb78;
+            box-shadow: 0 0 0 2px #48bb78;
+        }
+
+        .timeline-item.shift::before {
+            background: #ed8936;
+            box-shadow: 0 0 0 2px #ed8936;
+        }
+
+        .timeline-item.user::before {
+            background: #667eea;
+            box-shadow: 0 0 0 2px #667eea;
+        }
+
+        .timeline-item.system::before {
+            background: #9f7aea;
+            box-shadow: 0 0 0 2px #9f7aea;
+        }
+
+        .timeline-time {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-user {
+            font-size: 0.85rem;
+            color: #667eea;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-description {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .timeline-meta {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .timeline-meta i {
+            margin-right: 0.25rem;
+        }
+
+        /* Log Details Modal */
+        .modal-content {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border: none;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .log-detail-label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .log-detail-value {
+            color: #1e293b;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            word-break: break-word;
+        }
+
+        .changes-viewer {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .filter-bar {
+                flex-direction: column;
+            }
+            
+            .filter-group {
+                width: 100%;
+            }
+            
+            .logs-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .bulk-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .bulk-actions .btn-outline {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .navbar, .filter-bar, .header-actions, .action-btns, .bulk-actions {
+                display: none !important;
+            }
+            
+            .main-content {
+                padding: 0;
+            }
+            
+            .logs-table {
+                font-size: 10pt;
+            }
+            
+            .logs-table th {
+                background: #f0f0f0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-shield-alt"></i>
+                CampusGuard Connect
+            </a>
+            
+            <div class="user-menu">
+                <div class="notification-badge">
+                    <i class="far fa-bell"></i>
+                    <span class="badge-count">{{notificationCount}}</span>
+                </div>
+                
+                <div class="dropdown">
+                    <div class="user-profile" data-bs-toggle="dropdown">
+                        <div class="user-avatar">
+                            {{#if user}}
+                                {{user.initials}}
+                            {{else}}
+                                U
+                            {{/if}}
+                        </div>
+                        <div class="user-info">
+                            <h6>{{user.name}}</h6>
+                            <p>{{user.role}}</p>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h2><i class="fas fa-history me-2" style="color: #667eea;"></i>Audit Logs</h2>
+                <p>Track and monitor all system activities</p>
+            </div>
+            
+            <div class="header-actions">
+                <button class="btn-outline" onclick="refreshLogs()">
+                    <i class="fas fa-sync-alt me-2"></i>Refresh
+                </button>
+                <button class="btn-outline" onclick="exportLogs()">
+                    <i class="fas fa-download me-2"></i>Export
+                </button>
+                <button class="btn-primary" onclick="printLogs()">
+                    <i class="fas fa-print me-2"></i>Print
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <span class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i> {{stats.todayIncrease}}%
+                    </span>
+                </div>
+                <div class="stat-value">{{stats.totalLogs}}</div>
+                <div class="stat-label">Total Events</div>
+                <small class="text-muted">{{stats.todayLogs}} today</small>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{stats.successCount}}</div>
+                <div class="stat-label">Successful</div>
+                <small class="text-muted">{{stats.successRate}}% of total</small>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{stats.failureCount}}</div>
+                <div class="stat-label">Failed</div>
+                <small class="text-muted">{{stats.failureRate}}% of total</small>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{stats.uniqueUsers}}</div>
+                <div class="stat-label">Active Users</div>
+                <small class="text-muted">Last 30 days</small>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label><i class="fas fa-tag me-1"></i>Category</label>
+                <select class="filter-select" id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="auth">Authentication</option>
+                    <option value="incident">Incidents</option>
+                    <option value="patrol">Patrols</option>
+                    <option value="shift">Shifts</option>
+                    <option value="user">Users</option>
+                    <option value="system">System</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label><i class="fas fa-circle me-1"></i>Status</label>
+                <select class="filter-select" id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="success">Success</option>
+                    <option value="failure">Failure</option>
+                    <option value="pending">Pending</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label><i class="fas fa-user me-1"></i>User</label>
+                <select class="filter-select" id="userFilter">
+                    <option value="">All Users</option>
+                    {{#each users}}
+                    <option value="{{this._id}}">{{this.name}}</option>
+                    {{/each}}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label><i class="fas fa-calendar me-1"></i>Date Range</label>
+                <div class="date-range-picker" id="dateRangePicker">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="dateRangeText">Last 7 Days</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+
+            <div class="filter-actions">
+                <button class="btn-filter" onclick="applyFilters()">
+                    <i class="fas fa-filter me-2"></i>Apply
+                </button>
+                <button class="btn-reset" onclick="resetFilters()">
+                    <i class="fas fa-undo me-2"></i>Reset
+                </button>
+            </div>
+        </div>
+
+        <!-- Audit Logs Table -->
+        <div class="table-container">
+            <div class="table-header">
+                <h5>
+                    <i class="fas fa-list"></i>
+                    Event Logs
+                </h5>
+                <div class="bulk-actions">
+                    <span class="text-muted" id="selectedCount"></span>
+                    <button class="btn-outline" onclick="exportSelected()" style="display: none;" id="exportSelectedBtn">
+                        <i class="fas fa-download me-2"></i>Export Selected
+                    </button>
+                    <button class="btn-danger" onclick="deleteSelected()" style="display: none;" id="deleteSelectedBtn">
+                        <i class="fas fa-trash me-2"></i>Delete Selected
+                    </button>
+                </div>
+            </div>
+            
+            <table class="logs-table" id="logsTable">
+                <thead>
+                    <tr>
+                        <th style="width: 40px;">
+                            <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                        </th>
+                        <th>Timestamp</th>
+                        <th>User</th>
+                        <th>Category</th>
+                        <th>Action</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>IP Address</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each logs}}
+                    <tr onclick="toggleSelect(this)" data-id="{{this._id}}">
+                        <td onclick="event.stopPropagation()">
+                            <input type="checkbox" class="log-select" value="{{this._id}}" onchange="updateSelectedCount()">
+                        </td>
+                        <td>
+                            <div>{{formatDate this.createdAt "MMM DD, YYYY"}}</div>
+                            <small class="text-muted">{{formatDate this.createdAt "HH:mm:ss"}}</small>
+                        </td>
+                        <td>
+                            <div class="user-info-cell">
+                                <div class="user-avatar-small">
+                                    {{#if this.user}}
+                                        {{this.user.initials}}
+                                    {{else}}
+                                        S
+                                    {{/if}}
+                                </div>
+                                <div>
+                                    <div>{{this.user.name}}</div>
+                                    <small class="text-muted">{{this.user.role}}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="category-badge category-{{this.category}}">
+                                {{formatCategory this.category}}
+                            </span>
+                        </td>
+                        <td>
+                            <strong>{{this.action}}</strong>
+                            {{#if this.targetModel}}
+                            <br><small class="text-muted">{{this.targetModel}}</small>
+                            {{/if}}
+                        </td>
+                        <td>
+                            <div>{{truncate this.description 50}}</div>
+                            {{#if this.changes}}
+                            <small class="text-info">
+                                <i class="fas fa-code-branch me-1"></i>Has changes
+                            </small>
+                            {{/if}}
+                        </td>
+                        <td>
+                            <span class="status-badge status-{{this.status}}">
+                                {{this.status}}
+                            </span>
+                        </td>
+                        <td>
+                            <div>{{this.ipAddress}}</div>
+                            <small class="text-muted">{{this.userAgent}}</small>
+                        </td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn" onclick="viewLogDetails('{{this._id}}')" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn" onclick="copyLogJson('{{this._id}}')" title="Copy as JSON">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {{else}}
+                    <tr>
+                        <td colspan="9" class="text-center py-5">
+                            <i class="fas fa-history fa-4x mb-3" style="color: #cbd5e0;"></i>
+                            <h5 style="color: #94a3b8;">No audit logs found</h5>
+                            <p class="text-muted">System events will appear here as they occur</p>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+            
+            <!-- Pagination -->
+            {{#if pagination}}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item {{#unless pagination.prev}}disabled{{/unless}}">
+                        <a class="page-link" href="?page={{pagination.prevPage}}&limit={{pagination.limit}}">Previous</a>
+                    </li>
+                    {{#each pagination.pages}}
+                    <li class="page-item {{#if this.active}}active{{/if}}">
+                        <a class="page-link" href="?page={{this.page}}&limit={{../pagination.limit}}">{{this.page}}</a>
+                    </li>
+                    {{/each}}
+                    <li class="page-item {{#unless pagination.next}}disabled{{/unless}}">
+                        <a class="page-link" href="?page={{pagination.nextPage}}&limit={{pagination.limit}}">Next</a>
+                    </li>
+                </ul>
+            </nav>
+            {{/if}}
+        </div>
+
+        <!-- Activity Timeline -->
+        <div class="timeline-container">
+            <div class="timeline-header">
+                <h5>
+                    <i class="fas fa-clock"></i>
+                    Recent Activity Timeline
+                </h5>
+                <button class="btn-outline" onclick="refreshTimeline()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+            
+            <div class="timeline">
+                {{#each recentActivity}}
+                <div class="timeline-item {{this.category}}">
+                    <div class="timeline-time">{{formatDate this.createdAt "MMM DD, YYYY HH:mm:ss"}}</div>
+                    <div class="timeline-title">{{this.action}}</div>
+                    <div class="timeline-user">{{this.user.name}} ({{this.user.role}})</div>
+                    <div class="timeline-description">{{this.description}}</div>
+                    <div class="timeline-meta">
+                        <span><i class="fas fa-tag"></i> {{formatCategory this.category}}</span>
+                        <span><i class="fas fa-circle" style="color: {{statusColor this.status}};"></i> {{this.status}}</span>
+                        <span><i class="fas fa-network-wired"></i> {{this.ipAddress}}</span>
+                    </div>
+                </div>
+                {{else}}
+                <div class="text-center py-4">
+                    <i class="fas fa-clock fa-3x mb-3 text-muted"></i>
+                    <p class="text-muted">No recent activity</p>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+
+    <!-- Log Details Modal -->
+    <div class="modal fade" id="logDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Audit Log Details
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="logDetails">
+                    <!-- Dynamic content loaded via JS -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-primary" onclick="copyLogDetails()">
+                        <i class="fas fa-copy me-2"></i>Copy JSON
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    
+    <script>
+        // Initialize DataTable
+        $(document).ready(function() {
+            const table = $('#logsTable').DataTable({
+                pageLength: 25,
+                order: [[1, 'desc']],
+                language: {
+                    search: '<i class="fas fa-search"></i>',
+                    searchPlaceholder: 'Search logs...',
+                    lengthMenu: 'Show _MENU_ logs'
+                },
+                columnDefs: [
+                    { orderable: false, targets: [0, 8] } // Checkbox and actions columns
+                ]
+            });
+
+            // Initialize Select2
+            $('#userFilter').select2({
+                placeholder: 'Select user',
+                allowClear: true,
+                width: '100%'
+            });
+
+            // Initialize Date Range Picker
+            $('#dateRangePicker').daterangepicker({
+                startDate: moment().subtract(6, 'days'),
+                endDate: moment(),
+                ranges: {
+                   'Today': [moment(), moment()],
+                   'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                   'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                   'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                   'This Month': [moment().startOf('month'), moment().endOf('month')],
+                   'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                locale: {
+                    format: 'MMM D, YYYY'
+                }
+            }, function(start, end) {
+                $('#dateRangeText').text(start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY'));
+            });
+        });
+
+        // Selected logs array
+        let selectedLogs = [];
+
+        // Toggle row selection
+        function toggleSelect(row) {
+            const checkbox = row.querySelector('.log-select');
+            checkbox.checked = !checkbox.checked;
+            if (checkbox.checked) {
+                row.classList.add('selected');
+                selectedLogs.push(checkbox.value);
+            } else {
+                row.classList.remove('selected');
+                selectedLogs = selectedLogs.filter(id => id !== checkbox.value);
+            }
+            updateSelectedCount();
+        }
+
+        // Toggle select all
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.log-select');
+            const rows = document.querySelectorAll('#logsTable tbody tr');
+            
+            checkboxes.forEach((checkbox, index) => {
+                checkbox.checked = selectAll.checked;
+                if (selectAll.checked) {
+                    rows[index].classList.add('selected');
+                    if (!selectedLogs.includes(checkbox.value)) {
+                        selectedLogs.push(checkbox.value);
+                    }
+                } else {
+                    rows[index].classList.remove('selected');
+                    selectedLogs = [];
+                }
+            });
+            
+            updateSelectedCount();
+        }
+
+        // Update selected count
+        function updateSelectedCount() {
+            const count = selectedLogs.length;
+            const countSpan = document.getElementById('selectedCount');
+            const exportBtn = document.getElementById('exportSelectedBtn');
+            const deleteBtn = document.getElementById('deleteSelectedBtn');
+            
+            if (count > 0) {
+                countSpan.textContent = `${count} log${count > 1 ? 's' : ''} selected`;
+                exportBtn.style.display = 'inline-flex';
+                deleteBtn.style.display = 'inline-flex';
+            } else {
+                countSpan.textContent = '';
+                exportBtn.style.display = 'none';
+                deleteBtn.style.display = 'none';
+            }
+        }
+
+        // View log details
+        function viewLogDetails(logId) {
+            fetch(`/api/admin/audit-logs/${logId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const modalBody = document.getElementById('logDetails');
+                    modalBody.innerHTML = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="log-detail-label">Timestamp</div>
+                                <div class="log-detail-value">${new Date(data.createdAt).toLocaleString()}</div>
+                                
+                                <div class="log-detail-label">User</div>
+                                <div class="log-detail-value">
+                                    ${data.user ? `${data.user.name} (${data.user.email})` : 'System'}
+                                </div>
+                                
+                                <div class="log-detail-label">Category</div>
+                                <div class="log-detail-value">
+                                    <span class="category-badge category-${data.category}">
+                                        ${formatCategory(data.category)}
+                                    </span>
+                                </div>
+                                
+                                <div class="log-detail-label">Action</div>
+                                <div class="log-detail-value">${data.action}</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="log-detail-label">Status</div>
+                                <div class="log-detail-value">
+                                    <span class="status-badge status-${data.status}">${data.status}</span>
+                                </div>
+                                
+                                <div class="log-detail-label">IP Address</div>
+                                <div class="log-detail-value">${data.ipAddress || 'N/A'}</div>
+                                
+                                <div class="log-detail-label">User Agent</div>
+                                <div class="log-detail-value">${data.userAgent || 'N/A'}</div>
+                                
+                                ${data.targetModel ? `
+                                <div class="log-detail-label">Target</div>
+                                <div class="log-detail-value">${data.targetModel} (${data.targetId})</div>
+                                ` : ''}
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="log-detail-label">Description</div>
+                                <div class="log-detail-value">${data.description || 'No description'}</div>
+                            </div>
+                            
+                            ${data.changes ? `
+                            <div class="col-12 mt-3">
+                                <div class="log-detail-label">Changes</div>
+                                <pre class="changes-viewer">${JSON.stringify(data.changes, null, 2)}</pre>
+                            </div>
+                            ` : ''}
+                        </div>
+                    `;
+                    
+                    new bootstrap.Modal(document.getElementById('logDetailsModal')).show();
+                });
+        }
+
+        // Copy log as JSON
+        function copyLogJson(logId) {
+            fetch(`/api/admin/audit-logs/${logId}`)
+                .then(response => response.json())
+                .then(data => {
+                    navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+                    showToast('Log copied to clipboard', 'success');
+                });
+        }
+
+        // Copy log details
+        function copyLogDetails() {
+            const details = document.getElementById('logDetails').innerText;
+            navigator.clipboard.writeText(details);
+            showToast('Details copied to clipboard', 'success');
+        }
+
+        // Export selected logs
+        function exportSelected() {
+            if (selectedLogs.length === 0) return;
+            
+            const format = prompt('Export format (csv/json):', 'csv');
+            if (format) {
+                window.location.href = `/api/admin/audit-logs/export?ids=${selectedLogs.join(',')}&format=${format}`;
+            }
+        }
+
+        // Delete selected logs
+        function deleteSelected() {
+            if (selectedLogs.length === 0) return;
+            
+            if (confirm(`Are you sure you want to delete ${selectedLogs.length} log(s)?`)) {
+                fetch('/api/admin/audit-logs/bulk-delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids: selectedLogs })
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    }
+                });
+            }
+        }
+
+        // Export all logs
+        function exportLogs() {
+            const category = document.getElementById('categoryFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const user = document.getElementById('userFilter').value;
+            const dateRange = $('#dateRangePicker').data('daterangepicker');
+            
+            const params = new URLSearchParams({
+                category,
+                status,
+                user,
+                from: dateRange.startDate.format('YYYY-MM-DD'),
+                to: dateRange.endDate.format('YYYY-MM-DD'),
+                format: 'csv'
+            });
+            
+            window.location.href = `/api/admin/audit-logs/export?${params.toString()}`;
+        }
+
+        // Print logs
+        function printLogs() {
+            window.print();
+        }
+
+        // Refresh logs
+        function refreshLogs() {
+            window.location.reload();
+        }
+
+        // Refresh timeline
+        function refreshTimeline() {
+            fetch('/api/admin/audit-logs/recent')
+                .then(response => response.json())
+                .then(data => {
+                    // Update timeline dynamically
+                    location.reload(); // Simple approach
+                });
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const category = document.getElementById('categoryFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const user = document.getElementById('userFilter').value;
+            const dateRange = $('#dateRangePicker').data('daterangepicker');
+            
+            const params = new URLSearchParams({
+                category,
+                status,
+                user,
+                from: dateRange.startDate.format('YYYY-MM-DD'),
+                to: dateRange.endDate.format('YYYY-MM-DD')
+            });
+            
+            window.location.href = `/admin/audit-logs?${params.toString()}`;
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            $('#userFilter').val('').trigger('change');
+            
+            $('#dateRangePicker').data('daterangepicker').setStartDate(moment().subtract(6, 'days'));
+            $('#dateRangePicker').data('daterangepicker').setEndDate(moment());
+            $('#dateRangeText').text('Last 7 Days');
+            
+            window.location.href = '/admin/audit-logs';
+        }
+
+        // Helper Functions
+        function formatCategory(category) {
+            return category.charAt(0).toUpperCase() + category.slice(1);
+        }
+
+        function statusColor(status) {
+            switch(status) {
+                case 'success': return '#48bb78';
+                case 'failure': return '#f56565';
+                case 'pending': return '#ed8936';
+                default: return '#94a3b8';
+            }
+        }
+
+        // Toast notification
+        function showToast(message, type = 'info') {
+            // Create toast container if not exists
+            let container = document.querySelector('.toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+                document.body.appendChild(container);
+            }
+
+            // Create toast
+            const toastId = 'toast-' + Date.now();
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'primary'}`;
+            toast.id = toastId;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
+            toast.setAttribute('aria-atomic', 'true');
+            
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            
+            const bsToast = new bootstrap.Toast(toast, { delay: 3000 });
+            bsToast.show();
+            
+            toast.addEventListener('hidden.bs.toast', () => {
+                toast.remove();
+            });
+        }
+
+        // Auto-refresh every 60 seconds
+        setInterval(() => {
+            if (!document.hidden) {
+                fetch('/api/admin/audit-logs/recent-count')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.newLogs > 0) {
+                            showToast(`${data.newLogs} new log(s) available`, 'info');
+                        }
+                    });
+            }
+        }, 60000);
+    </script>
+</body>
+</html>

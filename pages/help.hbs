@@ -1,0 +1,1936 @@
+<!-- views/help.hbs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help & Support - Campus Guard Connect</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Prism.js for code syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-brand i {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-badge i {
+            font-size: 1.3rem;
+            color: #64748b;
+            transition: color 0.3s ease;
+        }
+
+        .notification-badge:hover i {
+            color: #667eea;
+        }
+
+        .badge-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .user-profile:hover {
+            background: #eef2f6;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .user-info {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .user-info {
+                display: block;
+            }
+            
+            .user-info h6 {
+                font-weight: 700;
+                color: #1e293b;
+                margin-bottom: 0.2rem;
+                font-size: 0.9rem;
+            }
+            
+            .user-info p {
+                color: #64748b;
+                font-size: 0.8rem;
+                margin-bottom: 0;
+                text-transform: capitalize;
+            }
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            animation: fadeInDown 0.5s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-header h2 {
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+            font-size: 2rem;
+        }
+
+        .page-header p {
+            color: #64748b;
+            margin-bottom: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-outline {
+            border: 2px solid #e2e8f0;
+            background: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: #4a5568;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        /* Search Bar */
+        .search-container {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            text-align: center;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .search-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .search-subtitle {
+            color: #64748b;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .search-box {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+
+        .search-box input {
+            width: 100%;
+            height: 60px;
+            padding: 0 20px 0 50px;
+            border: 2px solid #e2e8f0;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 70px;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+
+        .search-results.show {
+            display: block;
+        }
+
+        .search-result-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-item:hover {
+            background: #f8fafc;
+        }
+
+        .search-result-item h6 {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .search-result-item p {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+
+        /* Help Categories */
+        .categories-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            animation: fadeInUp 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .category-card:nth-child(1) { animation-delay: 0.1s; }
+        .category-card:nth-child(2) { animation-delay: 0.15s; }
+        .category-card:nth-child(3) { animation-delay: 0.2s; }
+        .category-card:nth-child(4) { animation-delay: 0.25s; }
+        .category-card:nth-child(5) { animation-delay: 0.3s; }
+        .category-card:nth-child(6) { animation-delay: 0.35s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .category-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+        }
+
+        .category-card.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        }
+
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .category-icon i {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .category-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .category-count {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        /* Help Content Layout */
+        .help-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Sidebar */
+        .help-sidebar {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar-title i {
+            color: #667eea;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #4a5568;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover {
+            background: #f8fafc;
+            color: #667eea;
+        }
+
+        .sidebar-menu a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .sidebar-menu a i {
+            width: 20px;
+        }
+
+        /* Help Articles */
+        .help-articles {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+        }
+
+        .article-section {
+            margin-bottom: 3rem;
+            scroll-margin-top: 100px;
+        }
+
+        .article-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .section-header i {
+            font-size: 2rem;
+            color: #667eea;
+        }
+
+        .section-header h3 {
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .article-card {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+            border-color: #667eea;
+        }
+
+        .article-card h4 {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .article-card h4 i {
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+
+        .article-card p {
+            color: #64748b;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .article-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-bottom: 1rem;
+        }
+
+        .article-meta i {
+            margin-right: 0.25rem;
+        }
+
+        .article-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .article-link:hover {
+            gap: 0.75rem;
+            color: #764ba2;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            margin-top: 2rem;
+        }
+
+        .faq-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .faq-header i {
+            font-size: 2rem;
+            color: #667eea;
+        }
+
+        .faq-header h3 {
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .accordion-item {
+            border: none;
+            margin-bottom: 1rem;
+            background: #f8fafc;
+            border-radius: 12px !important;
+            overflow: hidden;
+        }
+
+        .accordion-button {
+            background: #f8fafc;
+            color: #1e293b;
+            font-weight: 600;
+            padding: 1.25rem;
+            border: none;
+        }
+
+        .accordion-button:not(.collapsed) {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .accordion-button:focus {
+            box-shadow: none;
+            border-color: transparent;
+        }
+
+        .accordion-body {
+            padding: 1.25rem;
+            color: #64748b;
+            line-height: 1.7;
+        }
+
+        /* Contact Support */
+        .support-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-top: 2rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .support-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 50%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .support-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .support-content h3 {
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .support-content p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .support-options {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .support-option {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            min-width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        .support-option:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .support-option i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .support-option h4 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .support-option p {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .support-option a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Quick Tips */
+        .tips-section {
+            margin-top: 2rem;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .tip-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .tip-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.1);
+        }
+
+        .tip-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .tip-icon i {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tip-content h5 {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .tip-content p {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 0;
+            line-height: 1.5;
+        }
+
+        /* Code Blocks */
+        pre {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+        }
+
+        /* Video Tutorials */
+        .videos-section {
+            margin-top: 2rem;
+        }
+
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .video-card {
+            background: #f8fafc;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+        }
+
+        .video-thumbnail {
+            position: relative;
+            height: 180px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-thumbnail i {
+            font-size: 4rem;
+            color: white;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+
+        .video-card:hover .video-thumbnail i {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        .video-info {
+            padding: 1.5rem;
+        }
+
+        .video-info h5 {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .video-info p {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .video-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #94a3b8;
+            font-size: 0.8rem;
+        }
+
+        .video-meta i {
+            margin-right: 0.25rem;
+        }
+
+        /* Feedback Form */
+        .feedback-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            margin-top: 2rem;
+        }
+
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .feedback-header i {
+            font-size: 2rem;
+            color: #667eea;
+        }
+
+        .feedback-header h3 {
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .rating-stars i {
+            font-size: 1.5rem;
+            color: #cbd5e0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .rating-stars i:hover,
+        .rating-stars i.active {
+            color: #fbbf24;
+            transform: scale(1.1);
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .help-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .help-sidebar {
+                position: static;
+                margin-bottom: 1rem;
+            }
+            
+            .search-title {
+                font-size: 1.5rem;
+            }
+            
+            .support-options {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .support-option {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-shield-alt"></i>
+                CampusGuard Connect
+            </a>
+            
+            <div class="user-menu">
+                <div class="notification-badge">
+                    <i class="far fa-bell"></i>
+                    <span class="badge-count">{{notificationCount}}</span>
+                </div>
+                
+                <div class="dropdown">
+                    <div class="user-profile" data-bs-toggle="dropdown">
+                        <div class="user-avatar">
+                            {{#if user}}
+                                {{user.initials}}
+                            {{else}}
+                                U
+                            {{/if}}
+                        </div>
+                        <div class="user-info">
+                            <h6>{{user.name}}</h6>
+                            <p>{{user.role}}</p>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                        <li><a class="dropdown-item" href="/help"><i class="fas fa-question-circle me-2"></i>Help</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h2><i class="fas fa-question-circle me-2" style="color: #667eea;"></i>Help & Support</h2>
+                <p>Find answers, tutorials, and get support</p>
+            </div>
+            
+            <div class="header-actions">
+                <button class="btn-outline" onclick="window.print()">
+                    <i class="fas fa-print me-2"></i>Print Guide
+                </button>
+                <button class="btn-primary" onclick="scrollToFeedback()">
+                    <i class="fas fa-comment me-2"></i>Send Feedback
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Container -->
+        <div class="search-container">
+            <div class="search-title">How can we help you today?</div>
+            <div class="search-subtitle">Search our knowledge base for answers</div>
+            
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="helpSearch" placeholder="Search for help articles...">
+                
+                <div class="search-results" id="searchResults">
+                    <!-- Dynamic search results will appear here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Categories -->
+        <div class="categories-row">
+            <div class="category-card active" onclick="filterByCategory('all')">
+                <div class="category-icon">
+                    <i class="fas fa-compass"></i>
+                </div>
+                <div class="category-title">All Topics</div>
+                <div class="category-count">{{totalArticles}} articles</div>
+            </div>
+            
+            <div class="category-card" onclick="filterByCategory('getting-started')">
+                <div class="category-icon">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <div class="category-title">Getting Started</div>
+                <div class="category-count">{{categoryCounts.gettingStarted}} articles</div>
+            </div>
+            
+            <div class="category-card" onclick="filterByCategory('guards')">
+                <div class="category-icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="category-title">Guards</div>
+                <div class="category-count">{{categoryCounts.guards}} articles</div>
+            </div>
+            
+            <div class="category-card" onclick="filterByCategory('incidents')">
+                <div class="category-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="category-title">Incidents</div>
+                <div class="category-count">{{categoryCounts.incidents}} articles</div>
+            </div>
+            
+            <div class="category-card" onclick="filterByCategory('patrols')">
+                <div class="category-icon">
+                    <i class="fas fa-route"></i>
+                </div>
+                <div class="category-title">Patrols</div>
+                <div class="category-count">{{categoryCounts.patrols}} articles</div>
+            </div>
+            
+            <div class="category-card" onclick="filterByCategory('reports')">
+                <div class="category-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="category-title">Reports</div>
+                <div class="category-count">{{categoryCounts.reports}} articles</div>
+            </div>
+        </div>
+
+        <!-- Help Layout -->
+        <div class="help-layout">
+            <!-- Sidebar Navigation -->
+            <div class="help-sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">
+                        <i class="fas fa-book-open"></i>
+                        Quick Links
+                    </div>
+                    <ul class="sidebar-menu">
+                        <li><a href="#getting-started" class="active"><i class="fas fa-rocket"></i> Getting Started</a></li>
+                        <li><a href="#guards"><i class="fas fa-user-shield"></i> Guard Management</a></li>
+                        <li><a href="#incidents"><i class="fas fa-exclamation-triangle"></i> Incident Handling</a></li>
+                        <li><a href="#patrols"><i class="fas fa-route"></i> Patrol Operations</a></li>
+                        <li><a href="#reports"><i class="fas fa-chart-line"></i> Reports & Analytics</a></li>
+                        <li><a href="#faq"><i class="fas fa-question"></i> Frequently Asked Questions</a></li>
+                        <li><a href="#videos"><i class="fas fa-video"></i> Video Tutorials</a></li>
+                        <li><a href="#tips"><i class="fas fa-lightbulb"></i> Pro Tips</a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-title">
+                        <i class="fas fa-clock"></i>
+                        Recent Updates
+                    </div>
+                    <ul class="sidebar-menu">
+                        {{#each recentUpdates}}
+                        <li><a href="#{{this.id}}"><i class="fas fa-circle" style="color: #48bb78; font-size: 0.5rem;"></i> {{this.title}}</a></li>
+                        {{/each}}
+                    </ul>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-title">
+                        <i class="fas fa-headset"></i>
+                        Need Help?
+                    </div>
+                    <p class="text-muted small mb-2">Contact our support team</p>
+                    <a href="mailto:support@campusguard.com" class="btn btn-outline w-100 mb-2">
+                        <i class="fas fa-envelope me-2"></i>Email Support
+                    </a>
+                    <a href="tel:+254700000000" class="btn btn-outline w-100">
+                        <i class="fas fa-phone me-2"></i>Call Support
+                    </a>
+                </div>
+            </div>
+
+            <!-- Help Articles -->
+            <div class="help-articles">
+                <!-- Getting Started Section -->
+                <div class="article-section" id="getting-started">
+                    <div class="section-header">
+                        <i class="fas fa-rocket"></i>
+                        <h3>Getting Started</h3>
+                    </div>
+                    
+                    <div class="articles-grid">
+                        <div class="article-card">
+                            <h4><i class="fas fa-user-plus"></i> Creating Your Account</h4>
+                            <p>Learn how to create and set up your account, choose your role, and complete your profile.</p>
+                            <div class="article-meta">
+                                <span><i class="fas fa-clock"></i> 5 min read</span>
+                                <span><i class="fas fa-users"></i> Beginner</span>
+                            </div>
+                            <a href="#" class="article-link" onclick="showArticle('account-creation')">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+
+                        <div class="article-card">
+                            <h4><i class="fas fa-sign-in-alt"></i> First Time Login</h4>
+                            <p>Step-by-step guide to logging in for the first time and navigating the dashboard.</p>
+                            <div class="article-meta">
+                                <span><i class="fas fa-clock"></i> 3 min read</span>
+                                <span><i class="fas fa-users"></i> Beginner</span>
+                            </div>
+                            <a href="#" class="article-link" onclick="showArticle('first-login')">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+
+                        <div class="article-card">
+                            <h4><i class="fas fa-cog"></i> Profile Settings</h4>
+                            <p>How to update your profile, change password, and configure notification preferences.</p>
+                            <div class="article-meta">
+                                <span><i class="fas fa-clock"></i> 4 min read</span>
+                                <span><i class="fas fa-users"></i> Beginner</span>
+                            </div>
+                            <a href="#" class="article-link" onclick="showArticle('profile-settings')">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guard Management Section -->
+                <div class="article-section" id="guards">
+                    <div class="section-header">
+                        <i class="fas fa-user-shield"></i>
+                        <h3>Guard Management</h3>
+                    </div>
+                    
+                    <div class="articles-grid">
+                        <div class="article-card">
+                            <h4><i class="fas fa-calendar-check"></i> Managing Shifts</h4>
+                            <p>Learn how to create, assign, and manage guard shifts efficiently.</p>
+                            <div class="article-meta">
+                                <span><i class="fas fa-clock"></i> 6 min read</span>
+                                <span><i class="fas fa-users"></i> Supervisor</span>
+                            </div>
+                            <a href="#" class="article-link" onclick="showArticle('manage-shifts')">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+
+                        <div class="article-card">
+                            <h4><i class="fas fa-clock"></i> Attendance Tracking</h4>
+                            <p>Using biometric and QR code check-in/out for accurate attendance monitoring.</p>
+                            <div class="article-meta">
+                                <span><i class="fas fa-clock"></i> 5 min read</span>
+                                <span><i class="fas fa-users"></i> All Users</span>
+                            </div>
+                            <a href="#" class="article-link" onclick="showArticle('attendance')">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+
+                        <div class="article-card">
+                            <h4><i class="fas fa-star"></i> Performance Reviews</h4>
+                            <p>How to evaluate guard performance and generate review reports.</p>
+                            <div class="article-meta">
+                                <span><i class="fas fa-clock"></i> 7 min read</span>
+                                <span><i class="fas fa-users"></i> Admin</span>
+                            </div>
+                            <a href="#" class="article-link" onclick="showArticle('performance')">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Incident Handling Section -->
+                <div class="article-section" id="incidents">
+                    <div class="section-header">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Incident Handling</h3>
+                    </div>
+                    
+                    <div class="articles-grid">
+                        <div class="article-card">
+                            <h4><i class="fas fa-plus-circle"></i> Reporting Incidents</h4>
+                            <p>Step-by-step guide to reporting new incidents with photo evidence.</p>
+                            <div class="article-meta">
+                                <span><i class="fas fa-clock"></i> 4 min read</span>
+                                <span><i class="fas fa-users"></i> All Users</span>
+                            </div>
+                            <a href="#" class="article-link" onclick="showArticle('report-incident')">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+
+                        <div class="article-card">
+                            <h4><i class="fas fa-tasks"></i> Incident Workflow</h4>
+                            <p>Understanding the incident lifecycle from report to resolution.</p>
+                            <div class="article-meta">
+                                <span><i class="fas fa-clock"></i> 8 min read</span>
+                                <span><i class="fas fa-users"></i> All Users</span>
+                            </div>
+                            <a href="#" class="article-link" onclick="showArticle('incident-workflow')">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+
+                        <div class="article-card">
+                            <h4><i class="fas fa-chart-bar"></i> Incident Analytics</h4>
+                            <p>Analyzing incident patterns and generating reports for improvement.</p>
+                            <div class="article-meta">
+                                <span><i class="fas fa-clock"></i> 6 min read</span>
+                                <span><i class="fas fa-users"></i> Admin</span>
+                            </div>
+                            <a href="#" class="article-link" onclick="showArticle('incident-analytics')">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patrol Operations Section -->
+                <div class="article-section" id="patrols">
+                    <div class="section-header">
+                        <i class="fas fa-route"></i>
+                        <h3>Patrol Operations</h3>
+                    </div>
+                    
+                    <div class="articles-grid">
+                        <div class="article-card">
+                            <h4><i class="fas fa-play"></i> Starting a Patrol</h4>
+                            <p>How to start, conduct, and complete patrol routes effectively.</p>
+                            <div class="article-meta">
+                                <span><i class="fas fa-clock"></i> 5 min read</span>
+                                <span><i class="fas fa-users"></i> Guard</span>
+                            </div>
+                            <a href="#" class="article-link" onclick="showArticle('start-patrol')">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+
+                        <div class="article-card">
+                            <h4><i class="fas fa-qrcode"></i> Checkpoint Scanning</h4>
+                            <p>Using QR codes and NFC for checkpoint verification during patrols.</p>
+                            <div class="article-meta">
+                                <span><i class="fas fa-clock"></i> 4 min read</span>
+                                <span><i class="fas fa-users"></i> Guard</span>
+                            </div>
+                            <a href="#" class="article-link" onclick="showArticle('checkpoints')">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+
+                        <div class="article-card">
+                            <h4><i class="fas fa-map-marked-alt"></i> Live Tracking</h4>
+                            <p>Understanding the live tracking feature and map interface.</p>
+                            <div class="article-meta">
+                                <span><i class="fas fa-clock"></i> 5 min read</span>
+                                <span><i class="fas fa-users"></i> All Users</span>
+                            </div>
+                            <a href="#" class="article-link" onclick="showArticle('live-tracking')">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports Section -->
+                <div class="article-section" id="reports">
+                    <div class="section-header">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Reports & Analytics</h3>
+                    </div>
+                    
+                    <div class="articles-grid">
+                        <div class="article-card">
+                            <h4><i class="fas fa-file-pdf"></i> Generating Reports</h4>
+                            <p>How to create and customize various report types.</p>
+                            <div class="article-meta">
+                                <span><i class="fas fa-clock"></i> 6 min read</span>
+                                <span><i class="fas fa-users"></i> Admin</span>
+                            </div>
+                            <a href="#" class="article-link" onclick="showArticle('generate-reports')">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+
+                        <div class="article-card">
+                            <h4><i class="fas fa-chart-bar"></i> Understanding Metrics</h4>
+                            <p>Interpreting KPIs and performance metrics in the dashboard.</p>
+                            <div class="article-meta">
+                                <span><i class="fas fa-clock"></i> 7 min read</span>
+                                <span><i class="fas fa-users"></i> All Users</span>
+                            </div>
+                            <a href="#" class="article-link" onclick="showArticle('metrics')">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+
+                        <div class="article-card">
+                            <h4><i class="fas fa-download"></i> Exporting Data</h4>
+                            <p>Export reports in different formats (PDF, Excel, CSV).</p>
+                            <div class="article-meta">
+                                <span><i class="fas fa-clock"></i> 4 min read</span>
+                                <span><i class="fas fa-users"></i> Admin</span>
+                            </div>
+                            <a href="#" class="article-link" onclick="showArticle('export-data')">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Code Example (API Documentation) -->
+                <div class="article-section" id="api">
+                    <div class="section-header">
+                        <i class="fas fa-code"></i>
+                        <h3>API Documentation</h3>
+                    </div>
+                    
+                    <div class="article-card">
+                        <h4><i class="fas fa-exchange-alt"></i> Authentication</h4>
+                        <pre><code class="language-javascript">// Example API call with authentication
+fetch('https://api.campusguard.com/v1/incidents', {
+    headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    }
+})</code></pre>
+                        <a href="#" class="article-link">View Full API Docs <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq-section" id="faq">
+            <div class="faq-header">
+                <i class="fas fa-question-circle"></i>
+                <h3>Frequently Asked Questions</h3>
+            </div>
+            
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            How do I reset my password?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Click on "Forgot Password" on the login page. Enter your email address and you'll receive a password reset link. For security, the link expires in 24 hours.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            What should I do in an emergency?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Use the emergency button on the dashboard or mobile app. This immediately notifies all supervisors and administrators. For life-threatening emergencies, always call campus security directly.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                            Can I use the system offline?
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Yes, the mobile app supports offline mode. Patrol data and incident reports are stored locally and sync automatically when connection is restored.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                            How are biometric data stored?
+                        </button>
+                    </h2>
+                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Biometric data is encrypted and stored securely. Only hash values are stored, never raw biometric data, ensuring compliance with data protection regulations.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Tutorials -->
+        <div class="videos-section" id="videos">
+            <div class="faq-header">
+                <i class="fas fa-video"></i>
+                <h3>Video Tutorials</h3>
+            </div>
+            
+            <div class="videos-grid">
+                <div class="video-card">
+                    <div class="video-thumbnail">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="video-info">
+                        <h5>Getting Started with Campus Guard</h5>
+                        <p>A complete walkthrough for new users</p>
+                        <div class="video-meta">
+                            <span><i class="fas fa-clock"></i> 10:30</span>
+                            <span><i class="fas fa-eye"></i> 1.2k views</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="video-card">
+                    <div class="video-thumbnail">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="video-info">
+                        <h5>Advanced Patrol Techniques</h5>
+                        <p>Optimizing patrol routes and efficiency</p>
+                        <div class="video-meta">
+                            <span><i class="fas fa-clock"></i> 15:45</span>
+                            <span><i class="fas fa-eye"></i> 856 views</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="video-card">
+                    <div class="video-thumbnail">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="video-info">
+                        <h5>Incident Management Masterclass</h5>
+                        <p>Best practices for incident reporting</p>
+                        <div class="video-meta">
+                            <span><i class="fas fa-clock"></i> 12:20</span>
+                            <span><i class="fas fa-eye"></i> 2.3k views</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pro Tips -->
+        <div class="tips-section" id="tips">
+            <div class="faq-header">
+                <i class="fas fa-lightbulb"></i>
+                <h3>Pro Tips & Best Practices</h3>
+            </div>
+            
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="tip-content">
+                        <h5>Quick Check-In</h5>
+                        <p>Use the QR code scanner on the dashboard for faster check-in during peak hours.</p>
+                    </div>
+                </div>
+
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <div class="tip-content">
+                        <h5>Photo Evidence</h5>
+                        <p>Always take multiple photos from different angles when reporting incidents.</p>
+                    </div>
+                </div>
+
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="tip-content">
+                        <h5>Notification Settings</h5>
+                        <p>Customize your notification preferences to avoid alert fatigue.</p>
+                    </div>
+                </div>
+
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <div class="tip-content">
+                        <h5>Regular Sync</h5>
+                        <p>Sync your mobile app daily to ensure all offline data is uploaded.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Form -->
+        <div class="feedback-section" id="feedback">
+            <div class="feedback-header">
+                <i class="fas fa-comment"></i>
+                <h3>Send Feedback</h3>
+            </div>
+            
+            <form id="feedbackForm">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" name="name" value="{{user.name}}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email" value="{{user.email}}">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Rating</label>
+                    <div class="rating-stars" id="ratingStars">
+                        <i class="far fa-star" data-rating="1"></i>
+                        <i class="far fa-star" data-rating="2"></i>
+                        <i class="far fa-star" data-rating="3"></i>
+                        <i class="far fa-star" data-rating="4"></i>
+                        <i class="far fa-star" data-rating="5"></i>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" name="category">
+                        <option value="general">General Feedback</option>
+                        <option value="bug">Bug Report</option>
+                        <option value="feature">Feature Request</option>
+                        <option value="documentation">Documentation Issue</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Message</label>
+                    <textarea class="form-control" name="message" rows="4" placeholder="Tell us how we can improve..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-paper-plane me-2"></i>Submit Feedback
+                </button>
+            </form>
+        </div>
+
+        <!-- Contact Support -->
+        <div class="support-section">
+            <div class="support-content">
+                <h3>Still Need Help?</h3>
+                <p>Our support team is available 24/7 to assist you</p>
+                
+                <div class="support-options">
+                    <div class="support-option">
+                        <i class="fas fa-envelope"></i>
+                        <h4>Email</h4>
+                        <p>Get a response within 2 hours</p>
+                        <a href="mailto:support@campusguard.com">support@campusguard.com</a>
+                    </div>
+                    
+                    <div class="support-option">
+                        <i class="fas fa-phone"></i>
+                        <h4>Phone</h4>
+                        <p>Speak with a support agent</p>
+                        <a href="tel:+254700000000">+254 700 000 000</a>
+                    </div>
+                    
+                    <div class="support-option">
+                        <i class="fas fa-comment"></i>
+                        <h4>Live Chat</h4>
+                        <p>Instant messaging support</p>
+                        <a href="#" onclick="startLiveChat()">Start Chat</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Article Modal -->
+    <div class="modal fade" id="articleModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="articleModalTitle">Article Title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="articleModalContent">
+                    <!-- Dynamic content loaded via JS -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-primary" onclick="printArticle()">
+                        <i class="fas fa-print me-2"></i>Print
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    
+    <script>
+        // Search functionality
+        const searchInput = document.getElementById('helpSearch');
+        const searchResults = document.getElementById('searchResults');
+        
+        const articles = [
+            { title: 'Creating Your Account', category: 'getting-started', content: '...' },
+            { title: 'First Time Login', category: 'getting-started', content: '...' },
+            { title: 'Managing Shifts', category: 'guards', content: '...' },
+            { title: 'Reporting Incidents', category: 'incidents', content: '...' },
+            { title: 'Starting a Patrol', category: 'patrols', content: '...' },
+            { title: 'Generating Reports', category: 'reports', content: '...' }
+        ];
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            
+            if (query.length < 2) {
+                searchResults.classList.remove('show');
+                return;
+            }
+
+            const results = articles.filter(article => 
+                article.title.toLowerCase().includes(query)
+            );
+
+            if (results.length > 0) {
+                searchResults.innerHTML = results.map(article => `
+                    <div class="search-result-item" onclick="showArticle('${article.title}')">
+                        <h6>${article.title}</h6>
+                        <p>${article.category}</p>
+                    </div>
+                `).join('');
+                searchResults.classList.add('show');
+            } else {
+                searchResults.innerHTML = '<div class="search-result-item">No results found</div>';
+                searchResults.classList.add('show');
+            }
+        });
+
+        // Close search results when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
+                searchResults.classList.remove('show');
+            }
+        });
+
+        // Category filtering
+        function filterByCategory(category) {
+            // Update active class
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // Filter articles (implement based on your needs)
+            console.log('Filtering by:', category);
+        }
+
+        // Show article in modal
+        function showArticle(articleId) {
+            // In production, fetch article content from server
+            const modalTitle = document.getElementById('articleModalTitle');
+            const modalContent = document.getElementById('articleModalContent');
+            
+            modalTitle.textContent = articleId.replace('-', ' ');
+            modalContent.innerHTML = `
+                <h4>${articleId.replace('-', ' ')}</h4>
+                <p>This is a detailed help article about ${articleId.replace('-', ' ')}. In production, this content would be loaded from your knowledge base.</p>
+                
+                <h5>Steps:</h5>
+                <ol>
+                    <li>First step to accomplish this task</li>
+                    <li>Second step with important details</li>
+                    <li>Third step and any warnings</li>
+                </ol>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Pro tip: Remember to save your changes before navigating away.
+                </div>
+            `;
+            
+            new bootstrap.Modal(document.getElementById('articleModal')).show();
+        }
+
+        // Print article
+        function printArticle() {
+            window.print();
+        }
+
+        // Star rating
+        const stars = document.querySelectorAll('.rating-stars i');
+        let currentRating = 0;
+
+        stars.forEach(star => {
+            star.addEventListener('mouseover', function() {
+                const rating = this.dataset.rating;
+                highlightStars(rating);
+            });
+
+            star.addEventListener('mouseout', function() {
+                highlightStars(currentRating);
+            });
+
+            star.addEventListener('click', function() {
+                currentRating = this.dataset.rating;
+                highlightStars(currentRating);
+            });
+        });
+
+        function highlightStars(rating) {
+            stars.forEach(star => {
+                if (star.dataset.rating <= rating) {
+                    star.classList.remove('far');
+                    star.classList.add('fas', 'active');
+                } else {
+                    star.classList.remove('fas', 'active');
+                    star.classList.add('far');
+                }
+            });
+        }
+
+        // Feedback form submission
+        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch('/api/feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: formData.get('name'),
+                    email: formData.get('email'),
+                    rating: currentRating,
+                    category: formData.get('category'),
+                    message: formData.get('message')
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Thank you for your feedback!', 'success');
+                    this.reset();
+                    currentRating = 0;
+                    highlightStars(0);
+                }
+            });
+        });
+
+        // Start live chat
+        function startLiveChat() {
+            showToast('Live chat feature coming soon!', 'info');
+        }
+
+        // Scroll to feedback section
+        function scrollToFeedback() {
+            document.getElementById('feedback').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Toast notification
+        function showToast(message, type = 'info') {
+            let container = document.querySelector('.toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+                document.body.appendChild(container);
+            }
+
+            const toastId = 'toast-' + Date.now();
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'primary'}`;
+            toast.id = toastId;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
+            toast.setAttribute('aria-atomic', 'true');
+            
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            
+            const bsToast = new bootstrap.Toast(toast, { delay: 3000 });
+            bsToast.show();
+            
+            toast.addEventListener('hidden.bs.toast', () => {
+                toast.remove();
+            });
+        }
+
+        // Smooth scroll for sidebar links
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Update active class
+                document.querySelectorAll('.sidebar-menu a').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                
+                const targetId = this.getAttribute('href').substring(1);
+                const target = document.getElementById(targetId);
+                
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Highlight active section on scroll
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('.article-section');
+            const navLinks = document.querySelectorAll('.sidebar-menu a');
+            
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 120;
+                if (window.scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

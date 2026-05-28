@@ -1,0 +1,1529 @@
+<!-- views/reports.hbs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Analytics - Campus Guard Connect</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- ApexCharts -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1/dist/apexcharts.css">
+    
+    <!-- DateRange Picker -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-brand i {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-badge i {
+            font-size: 1.3rem;
+            color: #64748b;
+            transition: color 0.3s ease;
+        }
+
+        .notification-badge:hover i {
+            color: #667eea;
+        }
+
+        .badge-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .user-profile:hover {
+            background: #eef2f6;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .user-info {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .user-info {
+                display: block;
+            }
+            
+            .user-info h6 {
+                font-weight: 700;
+                color: #1e293b;
+                margin-bottom: 0.2rem;
+                font-size: 0.9rem;
+            }
+            
+            .user-info p {
+                color: #64748b;
+                font-size: 0.8rem;
+                margin-bottom: 0;
+                text-transform: capitalize;
+            }
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            animation: fadeInDown 0.5s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-header h2 {
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+            font-size: 2rem;
+        }
+
+        .page-header p {
+            color: #64748b;
+            margin-bottom: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-outline {
+            border: 2px solid #e2e8f0;
+            background: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: #4a5568;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        /* Date Range Picker */
+        .date-range-picker {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .date-range-picker:hover {
+            border-color: #667eea;
+        }
+
+        .date-range-picker i {
+            color: #667eea;
+        }
+
+        .date-range-picker span {
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        /* Report Type Cards */
+        .report-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .report-type-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            animation: fadeInUp 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .report-type-card:nth-child(1) { animation-delay: 0.1s; }
+        .report-type-card:nth-child(2) { animation-delay: 0.2s; }
+        .report-type-card:nth-child(3) { animation-delay: 0.3s; }
+        .report-type-card:nth-child(4) { animation-delay: 0.4s; }
+        .report-type-card:nth-child(5) { animation-delay: 0.5s; }
+        .report-type-card:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .report-type-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+        }
+
+        .report-type-card.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        }
+
+        .report-type-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .report-type-icon i {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .report-type-title {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .report-type-desc {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        /* KPI Cards */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: height 0.3s ease;
+        }
+
+        .kpi-card:hover::before {
+            height: 100%;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+        }
+
+        .kpi-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .kpi-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .kpi-icon i {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .kpi-label {
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .kpi-change {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .change-positive {
+            color: #48bb78;
+        }
+
+        .change-negative {
+            color: #f56565;
+        }
+
+        /* Chart Containers */
+        .chart-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            animation: fadeIn 0.7s ease-out;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-header h5 {
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-header h5 i {
+            color: #667eea;
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chart-action-btn {
+            width: 36px;
+            height: 36px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            color: #64748b;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-action-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .chart-wrapper {
+            height: 300px;
+            position: relative;
+        }
+
+        /* Data Tables */
+        .table-container {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .table-header h5 {
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .table-header h5 i {
+            color: #667eea;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 1rem;
+            background: #f8fafc;
+            font-weight: 700;
+            color: #4a5568;
+            border-bottom: 2px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+
+        .data-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .data-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .severity-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .severity-critical {
+            background: rgba(245, 101, 101, 0.15);
+            color: #c53030;
+        }
+
+        .severity-high {
+            background: rgba(245, 158, 11, 0.15);
+            color: #b45309;
+        }
+
+        .severity-medium {
+            background: rgba(251, 191, 36, 0.15);
+            color: #92400e;
+        }
+
+        .severity-low {
+            background: rgba(72, 187, 120, 0.15);
+            color: #276749;
+        }
+
+        .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-resolved {
+            background: rgba(72, 187, 120, 0.15);
+            color: #276749;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: #b45309;
+        }
+
+        /* Export Modal */
+        .modal-content {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border: none;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .export-format-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .export-format-card:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+        }
+
+        .export-format-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        }
+
+        .export-format-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .export-format-title {
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .chart-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .kpi-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .report-types {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .data-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-shield-alt"></i>
+                CampusGuard Connect
+            </a>
+            
+            <div class="user-menu">
+                <div class="notification-badge">
+                    <i class="far fa-bell"></i>
+                    <span class="badge-count">{{notificationCount}}</span>
+                </div>
+                
+                <div class="dropdown">
+                    <div class="user-profile" data-bs-toggle="dropdown">
+                        <div class="user-avatar">
+                            {{#if user}}
+                                {{user.initials}}
+                            {{else}}
+                                U
+                            {{/if}}
+                        </div>
+                        <div class="user-info">
+                            <h6>{{user.name}}</h6>
+                            <p>{{user.role}}</p>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h2><i class="fas fa-chart-pie me-2" style="color: #667eea;"></i>Reports & Analytics</h2>
+                <p>Comprehensive insights and performance metrics</p>
+            </div>
+            
+            <div class="header-actions">
+                <div class="date-range-picker" id="dateRangePicker">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="dateRangeText">Last 30 Days</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <button class="btn-primary" data-bs-toggle="modal" data-bs-target="#exportModal">
+                    <i class="fas fa-download"></i>
+                    Export Report
+                </button>
+            </div>
+        </div>
+
+        <!-- Report Type Selector -->
+        <div class="report-types">
+            <div class="report-type-card active" data-report="incidents" onclick="switchReport('incidents')">
+                <div class="report-type-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="report-type-title">Incidents</div>
+                <div class="report-type-desc">Security incidents and responses</div>
+            </div>
+            
+            <div class="report-type-card" data-report="patrols" onclick="switchReport('patrols')">
+                <div class="report-type-icon">
+                    <i class="fas fa-route"></i>
+                </div>
+                <div class="report-type-title">Patrols</div>
+                <div class="report-type-desc">Patrol coverage and efficiency</div>
+            </div>
+            
+            <div class="report-type-card" data-report="guards" onclick="switchReport('guards')">
+                <div class="report-type-icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="report-type-title">Guards</div>
+                <div class="report-type-desc">Personnel performance metrics</div>
+            </div>
+            
+            <div class="report-type-card" data-report="attendance" onclick="switchReport('attendance')">
+                <div class="report-type-icon">
+                    <i class="fas fa-fingerprint"></i>
+                </div>
+                <div class="report-type-title">Attendance</div>
+                <div class="report-type-desc">Check-in/out analytics</div>
+            </div>
+            
+            <div class="report-type-card" data-report="shifts" onclick="switchReport('shifts')">
+                <div class="report-type-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="report-type-title">Shifts</div>
+                <div class="report-type-desc">Shift coverage and overtime</div>
+            </div>
+            
+            <div class="report-type-card" data-report="compliance" onclick="switchReport('compliance')">
+                <div class="report-type-icon">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <div class="report-type-title">Compliance</div>
+                <div class="report-type-desc">Safety and protocol adherence</div>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpi-row" id="kpiContainer">
+            <!-- Incident KPIs -->
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <div class="kpi-icon">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <span class="kpi-change change-positive">
+                        <i class="fas fa-arrow-down"></i> 12%
+                    </span>
+                </div>
+                <div class="kpi-value">{{stats.totalIncidents}}</div>
+                <div class="kpi-label">Total Incidents</div>
+                <small class="text-muted">{{stats.periodIncidents}} in selected period</small>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <div class="kpi-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <span class="kpi-change change-negative">
+                        <i class="fas fa-arrow-up"></i> 5%
+                    </span>
+                </div>
+                <div class="kpi-value">{{stats.avgResponseTime}}min</div>
+                <div class="kpi-label">Avg Response Time</div>
+                <small class="text-muted">Target: 3min</small>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <div class="kpi-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="kpi-value">{{stats.resolutionRate}}%</div>
+                <div class="kpi-label">Resolution Rate</div>
+                <small class="text-muted">{{stats.resolvedIncidents}} resolved</small>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <div class="kpi-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+                <div class="kpi-value">{{stats.criticalIncidents}}</div>
+                <div class="kpi-label">Critical Incidents</div>
+                <small class="text-muted">{{stats.criticalChange}} from last period</small>
+            </div>
+        </div>
+
+        <!-- Charts Row 1 -->
+        <div class="chart-row">
+            <!-- Incidents Over Time -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h5>
+                        <i class="fas fa-chart-line"></i>
+                        Incidents Over Time
+                    </h5>
+                    <div class="chart-actions">
+                        <button class="chart-action-btn" onclick="downloadChart('incidentsTimeline')">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="chart-action-btn" onclick="refreshChart('incidentsTimeline')">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="incidentsTimeline"></canvas>
+                </div>
+            </div>
+
+            <!-- Incident Severity Distribution -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h5>
+                        <i class="fas fa-chart-pie"></i>
+                        Incident Severity
+                    </h5>
+                    <div class="chart-actions">
+                        <button class="chart-action-btn" onclick="downloadChart('severityPie')">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="severityPie"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row 2 -->
+        <div class="chart-row">
+            <!-- Response Times by Zone -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h5>
+                        <i class="fas fa-clock"></i>
+                        Response Times by Zone
+                    </h5>
+                    <div class="chart-actions">
+                        <button class="chart-action-btn" onclick="downloadChart('responseTimes')">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="responseTimes"></canvas>
+                </div>
+            </div>
+
+            <!-- Incident Types Breakdown -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h5>
+                        <i class="fas fa-tags"></i>
+                        Incident Types
+                    </h5>
+                    <div class="chart-actions">
+                        <button class="chart-action-btn" onclick="downloadChart('incidentTypes')">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="incidentTypes"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Incidents Table -->
+        <div class="table-container">
+            <div class="table-header">
+                <h5>
+                    <i class="fas fa-list"></i>
+                    Recent Incidents
+                </h5>
+                <a href="/incidents" class="btn-outline">
+                    View All <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Severity</th>
+                        <th>Location</th>
+                        <th>Reported By</th>
+                        <th>Status</th>
+                        <th>Response Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each recentIncidents}}
+                    <tr>
+                        <td>#{{inc @index}}</td>
+                        <td>
+                            <strong>{{title}}</strong>
+                            <br><small class="text-muted">{{formatDate createdAt}}</small>
+                        </td>
+                        <td>{{formatType type}}</td>
+                        <td>
+                            <span class="severity-badge severity-{{severity}}">
+                                {{formatSeverity severity}}
+                            </span>
+                        </td>
+                        <td>
+                            <i class="fas fa-map-marker-alt me-1" style="color: #667eea;"></i>
+                            {{location.name}}
+                        </td>
+                        <td>{{reportedBy.name}}</td>
+                        <td>
+                            <span class="status-badge status-{{status}}">
+                                {{formatStatus status}}
+                            </span>
+                        </td>
+                        <td>
+                            {{#if responseTime}}
+                                {{responseTime}}min
+                            {{else}}
+                                <span class="text-muted">Pending</span>
+                            {{/if}}
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Performance Summary -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="table-container">
+                    <h5 class="mb-3">
+                        <i class="fas fa-user-shield me-2" style="color: #667eea;"></i>
+                        Top Performing Guards
+                    </h5>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Guard</th>
+                                <th>Patrols</th>
+                                <th>Incidents</th>
+                                <th>Response Time</th>
+                                <th>Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each topGuards}}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">
+                                            {{initials}}
+                                        </div>
+                                        <span>{{name}}</span>
+                                    </div>
+                                </td>
+                                <td>{{patrols}}</td>
+                                <td>{{incidents}}</td>
+                                <td>{{responseTime}}min</td>
+                                <td>
+                                    <i class="fas fa-star text-warning"></i>
+                                    {{rating}}
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="table-container">
+                    <h5 class="mb-3">
+                        <i class="fas fa-exclamation-triangle me-2" style="color: #667eea;"></i>
+                        High Risk Zones
+                    </h5>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Zone</th>
+                                <th>Incidents</th>
+                                <th>Avg Response</th>
+                                <th>Risk Level</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each highRiskZones}}
+                            <tr>
+                                <td>{{formatZone zone}}</td>
+                                <td>{{incidentCount}}</td>
+                                <td>{{avgResponse}}min</td>
+                                <td>
+                                    <span class="severity-badge severity-{{riskLevel}}">
+                                        {{formatSeverity riskLevel}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="focusZone('{{zone}}')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="modal fade" id="exportModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-download me-2"></i>
+                        Export Report
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h6 class="mb-3">Select Report Type</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="export-format-card" onclick="selectReport('incidents')">
+                                <div class="export-format-icon">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="export-format-title">Incidents</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="export-format-card" onclick="selectReport('patrols')">
+                                <div class="export-format-icon">
+                                    <i class="fas fa-route"></i>
+                                </div>
+                                <div class="export-format-title">Patrols</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="export-format-card" onclick="selectReport('guards')">
+                                <div class="export-format-icon">
+                                    <i class="fas fa-user-shield"></i>
+                                </div>
+                                <div class="export-format-title">Guards</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h6 class="mb-3">Select Format</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <div class="export-format-card" onclick="selectFormat('pdf')">
+                                <div class="export-format-icon">
+                                    <i class="fas fa-file-pdf" style="color: #f56565;"></i>
+                                </div>
+                                <div class="export-format-title">PDF</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="export-format-card" onclick="selectFormat('excel')">
+                                <div class="export-format-icon">
+                                    <i class="fas fa-file-excel" style="color: #48bb78;"></i>
+                                </div>
+                                <div class="export-format-title">Excel</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="export-format-card" onclick="selectFormat('csv')">
+                                <div class="export-format-icon">
+                                    <i class="fas fa-file-csv" style="color: #4299e1;"></i>
+                                </div>
+                                <div class="export-format-title">CSV</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="export-format-card" onclick="selectFormat('json')">
+                                <div class="export-format-icon">
+                                    <i class="fas fa-file-code" style="color: #9f7aea;"></i>
+                                </div>
+                                <div class="export-format-title">JSON</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h6 class="mb-3">Date Range</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">From</label>
+                            <input type="date" class="form-control" id="exportFromDate">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">To</label>
+                            <input type="date" class="form-control" id="exportToDate">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn-primary" onclick="exportReport()">
+                        <i class="fas fa-download me-2"></i>
+                        Export
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <script>
+        // Initialize Charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Incidents Timeline Chart
+            const timelineCtx = document.getElementById('incidentsTimeline')?.getContext('2d');
+            if (timelineCtx) {
+                new Chart(timelineCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        datasets: [{
+                            label: 'Incidents',
+                            data: [65, 59, 80, 81, 56, 55, 72, 68, 74, 82, 71, 69],
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#667eea',
+                            pointBorderColor: 'white',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: '#2d3748',
+                                titleColor: 'white',
+                                bodyColor: '#cbd5e0',
+                                borderColor: '#4a5568',
+                                borderWidth: 1
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: '#e2e8f0',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    stepSize: 20
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Severity Pie Chart
+            const severityCtx = document.getElementById('severityPie')?.getContext('2d');
+            if (severityCtx) {
+                new Chart(severityCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Critical', 'High', 'Medium', 'Low'],
+                        datasets: [{
+                            data: [12, 23, 45, 20],
+                            backgroundColor: [
+                                '#f56565',
+                                '#ed8936',
+                                '#ecc94b',
+                                '#48bb78'
+                            ],
+                            borderWidth: 0,
+                            hoverOffset: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Response Times by Zone
+            const responseCtx = document.getElementById('responseTimes')?.getContext('2d');
+            if (responseCtx) {
+                new Chart(responseCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Main Gate', 'Hostels', 'Academic', 'Perimeter', 'Parking', 'Admin'],
+                        datasets: [{
+                            label: 'Response Time (minutes)',
+                            data: [2.5, 3.2, 2.8, 4.1, 3.5, 2.2],
+                            backgroundColor: [
+                                '#4299e1',
+                                '#48bb78',
+                                '#ed8936',
+                                '#9f7aea',
+                                '#f56565',
+                                '#667eea'
+                            ],
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: '#e2e8f0'
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Minutes',
+                                    color: '#64748b'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Incident Types Chart
+            const typesCtx = document.getElementById('incidentTypes')?.getContext('2d');
+            if (typesCtx) {
+                new Chart(typesCtx, {
+                    type: 'polarArea',
+                    data: {
+                        labels: ['Theft', 'Vandalism', 'Unauthorized Access', 'Medical', 'Fire', 'Other'],
+                        datasets: [{
+                            data: [25, 18, 15, 12, 8, 22],
+                            backgroundColor: [
+                                'rgba(102, 126, 234, 0.8)',
+                                'rgba(72, 187, 120, 0.8)',
+                                'rgba(237, 137, 54, 0.8)',
+                                'rgba(245, 101, 101, 0.8)',
+                                'rgba(159, 122, 234, 0.8)',
+                                'rgba(160, 174, 192, 0.8)'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    usePointStyle: true
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Date Range Picker
+            $('#dateRangePicker').daterangepicker({
+                startDate: moment().subtract(29, 'days'),
+                endDate: moment(),
+                ranges: {
+                   'Today': [moment(), moment()],
+                   'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                   'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                   'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                   'This Month': [moment().startOf('month'), moment().endOf('month')],
+                   'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                locale: {
+                    format: 'MMM D, YYYY'
+                }
+            }, function(start, end) {
+                $('#dateRangeText').text(start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY'));
+                refreshData(start, end);
+            });
+        });
+
+        // Report Type Switching
+        function switchReport(type) {
+            // Update active class
+            document.querySelectorAll('.report-type-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // Fetch new report data
+            fetch(`/api/reports/${type}`)
+                .then(response => response.json())
+                .then(data => {
+                    updateCharts(data);
+                    updateKPIs(data);
+                    updateTables(data);
+                });
+        }
+
+        // Chart Functions
+        function downloadChart(chartId) {
+            const canvas = document.getElementById(chartId);
+            const link = document.createElement('a');
+            link.download = `${chartId}-${moment().format('YYYY-MM-DD')}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function refreshChart(chartId) {
+            // Reinitialize chart with new data
+            console.log('Refreshing chart:', chartId);
+        }
+
+        // Export Functions
+        let selectedReport = 'incidents';
+        let selectedFormat = 'pdf';
+
+        function selectReport(report) {
+            selectedReport = report;
+            document.querySelectorAll('.export-format-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        }
+
+        function selectFormat(format) {
+            selectedFormat = format;
+            document.querySelectorAll('.export-format-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        }
+
+        function exportReport() {
+            const fromDate = document.getElementById('exportFromDate').value;
+            const toDate = document.getElementById('exportToDate').value;
+            
+            window.location.href = `/reports/export?type=${selectedReport}&format=${selectedFormat}&from=${fromDate}&to=${toDate}`;
+        }
+
+        // Data Refresh
+        function refreshData(start, end) {
+            fetch(`/api/reports/data?from=${start.format('YYYY-MM-DD')}&to=${end.format('YYYY-MM-DD')}`)
+                .then(response => response.json())
+                .then(data => {
+                    updateCharts(data);
+                    updateKPIs(data);
+                });
+        }
+
+        function updateCharts(data) {
+            // Update chart data dynamically
+            console.log('Updating charts with:', data);
+        }
+
+        function updateKPIs(data) {
+            // Update KPI cards
+            console.log('Updating KPIs with:', data);
+        }
+
+        function updateTables(data) {
+            // Update data tables
+            console.log('Updating tables with:', data);
+        }
+
+        // Zone Focus
+        function focusZone(zone) {
+            window.location.href = `/zones/${zone}`;
+        }
+
+        // Auto-refresh every 5 minutes
+        setInterval(() => {
+            const dateRange = $('#dateRangePicker').data('daterangepicker');
+            refreshData(dateRange.startDate, dateRange.endDate);
+        }, 300000);
+
+        // Helper Functions
+        function formatType(type) {
+            return type.split('_').map(word => 
+                word.charAt(0).toUpperCase() + word.slice(1)
+            ).join(' ');
+        }
+
+        function formatSeverity(severity) {
+            return severity.charAt(0).toUpperCase() + severity.slice(1);
+        }
+
+        function formatStatus(status) {
+            return status.split('_').map(word => 
+                word.charAt(0).toUpperCase() + word.slice(1)
+            ).join(' ');
+        }
+
+        function formatZone(zone) {
+            const zones = {
+                'main_gate': 'Main Gate',
+                'hostels': 'Hostels',
+                'academic': 'Academic',
+                'perimeter': 'Perimeter',
+                'parking': 'Parking',
+                'admin': 'Admin'
+            };
+            return zones[zone] || zone;
+        }
+    </script>
+</body>
+</html>

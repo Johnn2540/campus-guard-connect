@@ -1,0 +1,1545 @@
+<!-- views/system-settings.hbs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Settings - Campus Guard Connect</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Prism.js for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-brand i {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-badge i {
+            font-size: 1.3rem;
+            color: #64748b;
+            transition: color 0.3s ease;
+        }
+
+        .notification-badge:hover i {
+            color: #667eea;
+        }
+
+        .badge-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .user-profile:hover {
+            background: #eef2f6;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .user-info {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .user-info {
+                display: block;
+            }
+            
+            .user-info h6 {
+                font-weight: 700;
+                color: #1e293b;
+                margin-bottom: 0.2rem;
+                font-size: 0.9rem;
+            }
+            
+            .user-info p {
+                color: #64748b;
+                font-size: 0.8rem;
+                margin-bottom: 0;
+                text-transform: capitalize;
+            }
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            animation: fadeInDown 0.5s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-header h2 {
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+            font-size: 2rem;
+        }
+
+        .page-header p {
+            color: #64748b;
+            margin-bottom: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-outline {
+            border: 2px solid #e2e8f0;
+            background: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: #4a5568;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(245, 101, 101, 0.4);
+        }
+
+        /* Server Info Bar */
+        .server-info-bar {
+            background: white;
+            border-radius: 20px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            align-items: center;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .server-info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .server-info-item i {
+            font-size: 1.2rem;
+            color: #667eea;
+        }
+
+        .server-info-item .label {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .server-info-item .value {
+            font-weight: 700;
+            color: #1e293b;
+            margin-left: 0.25rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .status-healthy {
+            background: #48bb78;
+            box-shadow: 0 0 0 2px rgba(72, 187, 120, 0.2);
+        }
+
+        /* Settings Navigation */
+        .settings-nav {
+            background: white;
+            border-radius: 20px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            animation: fadeIn 0.7s ease-out;
+        }
+
+        .settings-nav-item {
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .settings-nav-item:hover {
+            background: #f8fafc;
+            color: #667eea;
+        }
+
+        .settings-nav-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .settings-nav-item i {
+            font-size: 1.1rem;
+        }
+
+        /* Settings Panel */
+        .settings-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.8s ease-out;
+            display: none;
+        }
+
+        .settings-panel.active {
+            display: block;
+        }
+
+        .panel-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .panel-header h3 {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .panel-header p {
+            color: #64748b;
+            margin-bottom: 0;
+        }
+
+        .settings-form {
+            max-width: 800px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            display: block;
+        }
+
+        .form-control, .form-select {
+            height: 48px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        .form-control.is-invalid, .form-select.is-invalid {
+            border-color: #f56565;
+        }
+
+        .invalid-feedback {
+            color: #f56565;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        .form-text {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        .form-check {
+            margin-bottom: 1rem;
+        }
+
+        .form-check-input {
+            width: 1.2rem;
+            height: 1.2rem;
+            margin-right: 0.5rem;
+            cursor: pointer;
+        }
+
+        .form-check-label {
+            color: #4a5568;
+            cursor: pointer;
+        }
+
+        .secret-mask {
+            background: #f8fafc;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon i {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Logs Table */
+        .logs-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+        }
+
+        .logs-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .logs-table th {
+            position: sticky;
+            top: 0;
+            background: #f8fafc;
+            padding: 1rem;
+            font-weight: 700;
+            color: #4a5568;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .logs-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .log-level {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .log-level-info {
+            background: rgba(66, 153, 225, 0.15);
+            color: #2c5282;
+        }
+
+        .log-level-warning {
+            background: rgba(237, 137, 54, 0.15);
+            color: #9c4221;
+        }
+
+        .log-level-error {
+            background: rgba(245, 101, 101, 0.15);
+            color: #c53030;
+        }
+
+        /* Modal */
+        .modal-content {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border: none;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .server-info-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .settings-nav {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding: 0.5rem;
+            }
+            
+            .settings-nav-item {
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-shield-alt"></i>
+                CampusGuard Connect
+            </a>
+            
+            <div class="user-menu">
+                <div class="notification-badge">
+                    <i class="far fa-bell"></i>
+                    <span class="badge-count">{{notificationCount}}</span>
+                </div>
+                
+                <div class="dropdown">
+                    <div class="user-profile" data-bs-toggle="dropdown">
+                        <div class="user-avatar">
+                            {{#if user}}
+                                {{user.initials}}
+                            {{else}}
+                                U
+                            {{/if}}
+                        </div>
+                        <div class="user-info">
+                            <h6>{{user.name}}</h6>
+                            <p>{{user.role}}</p>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h2><i class="fas fa-cogs me-2" style="color: #667eea;"></i>System Settings</h2>
+                <p>Configure and manage system-wide settings</p>
+            </div>
+            
+            <div class="header-actions">
+                <button class="btn-outline" onclick="testSystem()">
+                    <i class="fas fa-heartbeat me-2"></i>Run System Test
+                </button>
+                <button class="btn-primary" onclick="saveAllSettings()">
+                    <i class="fas fa-save me-2"></i>Save Changes
+                </button>
+            </div>
+        </div>
+
+        <!-- Server Info Bar -->
+        <div class="server-info-bar">
+            <div class="server-info-item">
+                <i class="fas fa-server"></i>
+                <span class="label">Server:</span>
+                <span class="value">{{config.siteName}}</span>
+            </div>
+            <div class="server-info-item">
+                <i class="fas fa-clock"></i>
+                <span class="label">Server Time:</span>
+                <span class="value">{{serverTime}}</span>
+            </div>
+            <div class="server-info-item">
+                <i class="fas fa-database"></i>
+                <span class="label">Database:</span>
+                <span class="value">{{stats.databaseSize}}</span>
+            </div>
+            <div class="server-info-item">
+                <i class="fas fa-users"></i>
+                <span class="label">Active Sessions:</span>
+                <span class="value">{{activeSessions}}</span>
+            </div>
+            <div class="server-info-item">
+                <span class="status-badge status-healthy"></span>
+                <span class="label">System Health:</span>
+                <span class="value text-success">Healthy</span>
+            </div>
+        </div>
+
+        <!-- Settings Navigation -->
+        <div class="settings-nav">
+            <div class="settings-nav-item active" onclick="showPanel('general')">
+                <i class="fas fa-sliders-h"></i>
+                General
+            </div>
+            <div class="settings-nav-item" onclick="showPanel('email')">
+                <i class="fas fa-envelope"></i>
+                Email
+            </div>
+            <div class="settings-nav-item" onclick="showPanel('security')">
+                <i class="fas fa-shield-alt"></i>
+                Security
+            </div>
+            <div class="settings-nav-item" onclick="showPanel('notifications')">
+                <i class="fas fa-bell"></i>
+                Notifications
+            </div>
+            <div class="settings-nav-item" onclick="showPanel('backup')">
+                <i class="fas fa-database"></i>
+                Backup & Restore
+            </div>
+            <div class="settings-nav-item" onclick="showPanel('logs')">
+                <i class="fas fa-history"></i>
+                System Logs
+            </div>
+        </div>
+
+        <!-- General Settings Panel -->
+        <div class="settings-panel active" id="panel-general">
+            <div class="panel-header">
+                <h3>General Settings</h3>
+                <p>Configure basic system information and preferences</p>
+            </div>
+
+            <div class="settings-form">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Site Name</label>
+                            <input type="text" class="form-control" id="siteName" value="{{config.siteName}}">
+                            <div class="form-text">The name displayed throughout the application</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Site URL</label>
+                            <input type="url" class="form-control" id="siteUrl" value="{{config.siteUrl}}">
+                            <div class="form-text">Base URL for the application</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Support Email</label>
+                            <input type="email" class="form-control" id="supportEmail" value="{{config.supportEmail}}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Default User Role</label>
+                            <select class="form-select" id="defaultUserRole">
+                                <option value="student" {{#if (eq config.defaultUserRole "student")}}selected{{/if}}>Student</option>
+                                <option value="guard" {{#if (eq config.defaultUserRole "guard")}}selected{{/if}}>Guard</option>
+                                <option value="supervisor" {{#if (eq config.defaultUserRole "supervisor")}}selected{{/if}}>Supervisor</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Timezone</label>
+                            <select class="form-select" id="timezone">
+                                <option value="Africa/Nairobi" {{#if (eq config.timezone "Africa/Nairobi")}}selected{{/if}}>Africa/Nairobi (EAT)</option>
+                                <option value="Africa/Lagos" {{#if (eq config.timezone "Africa/Lagos")}}selected{{/if}}>Africa/Lagos (WAT)</option>
+                                <option value="Africa/Johannesburg" {{#if (eq config.timezone "Africa/Johannesburg")}}selected{{/if}}>Africa/Johannesburg (SAST)</option>
+                                <option value="America/New_York" {{#if (eq config.timezone "America/New_York")}}selected{{/if}}>America/New York (EST)</option>
+                                <option value="Europe/London" {{#if (eq config.timezone "Europe/London")}}selected{{/if}}>Europe/London (GMT)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Date Format</label>
+                            <select class="form-select" id="dateFormat">
+                                <option value="MM/DD/YYYY" {{#if (eq config.dateFormat "MM/DD/YYYY")}}selected{{/if}}>MM/DD/YYYY</option>
+                                <option value="DD/MM/YYYY" {{#if (eq config.dateFormat "DD/MM/YYYY")}}selected{{/if}}>DD/MM/YYYY</option>
+                                <option value="YYYY-MM-DD" {{#if (eq config.dateFormat "YYYY-MM-DD")}}selected{{/if}}>YYYY-MM-DD</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Time Format</label>
+                            <select class="form-select" id="timeFormat">
+                                <option value="12h" {{#if (eq config.timeFormat "12h")}}selected{{/if}}>12-hour (AM/PM)</option>
+                                <option value="24h" {{#if (eq config.timeFormat "24h")}}selected{{/if}}>24-hour</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="allowRegistration" {{#if config.allowRegistration}}checked{{/if}}>
+                            <label class="form-check-label" for="allowRegistration">
+                                Allow Public Registration
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="requireEmailVerification" {{#if config.requireEmailVerification}}checked{{/if}}>
+                            <label class="form-check-label" for="requireEmailVerification">
+                                Require Email Verification
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="twoFactorAuth" {{#if config.twoFactorAuth}}checked{{/if}}>
+                            <label class="form-check-label" for="twoFactorAuth">
+                                Enable Two-Factor Authentication
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Max Login Attempts</label>
+                            <input type="number" class="form-control" id="maxLoginAttempts" value="{{config.maxLoginAttempts}}" min="1" max="10">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Session Timeout (hours)</label>
+                            <input type="number" class="form-control" id="sessionTimeout" value="{{config.sessionTimeout}}" min="1" max="720">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Password Minimum Length</label>
+                            <input type="number" class="form-control" id="passwordMinLength" value="{{config.passwordMinLength}}" min="6" max="32">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Email Settings Panel -->
+        <div class="settings-panel" id="panel-email">
+            <div class="panel-header">
+                <h3>Email Settings</h3>
+                <p>Configure email server and notification settings</p>
+            </div>
+
+            <div class="settings-form">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">SMTP Host</label>
+                            <input type="text" class="form-control" id="emailHost" value="{{emailSettings.host}}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">SMTP Port</label>
+                            <input type="number" class="form-control" id="emailPort" value="{{emailSettings.port}}" min="1" max="65535">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="emailSecure" {{#if emailSettings.secure}}checked{{/if}}>
+                            <label class="form-check-label" for="emailSecure">
+                                Use Secure Connection (TLS/SSL)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">SMTP Username</label>
+                            <input type="text" class="form-control" id="emailUser" value="{{emailSettings.user}}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">SMTP Password</label>
+                            <input type="password" class="form-control" id="emailPassword" placeholder="Leave blank to keep current">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">From Email</label>
+                            <input type="email" class="form-control" id="emailFrom" value="{{emailSettings.fromEmail}}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">From Name</label>
+                            <input type="text" class="form-control" id="emailFromName" value="{{emailSettings.fromName}}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Test Email</label>
+                            <div class="input-group">
+                                <input type="email" class="form-control" id="testEmail" placeholder="test@example.com">
+                                <button class="btn btn-outline-primary" onclick="testEmail()">Send Test</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Settings Panel -->
+        <div class="settings-panel" id="panel-security">
+            <div class="panel-header">
+                <h3>Security Settings</h3>
+                <p>Configure security parameters and encryption</p>
+            </div>
+
+            <div class="settings-form">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">bcrypt Rounds</label>
+                            <input type="number" class="form-control" id="bcryptRounds" value="{{securitySettings.bcryptRounds}}" min="8" max="14">
+                            <div class="form-text">Higher = more secure but slower (8-14 recommended)</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Session Secret</label>
+                            <div class="secret-mask" id="sessionSecret">{{securitySettings.sessionSecret}}</div>
+                            <button class="btn btn-sm btn-outline-primary mt-2" onclick="generateSecret('session')">
+                                <i class="fas fa-sync-alt me-1"></i>Generate New
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">JWT Secret</label>
+                            <div class="secret-mask" id="jwtSecret">{{securitySettings.jwtSecret}}</div>
+                            <button class="btn btn-sm btn-outline-primary mt-2" onclick="generateSecret('jwt')">
+                                <i class="fas fa-sync-alt me-1"></i>Generate New
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">CORS Origins</label>
+                            <input type="text" class="form-control" id="corsOrigins" value="{{securitySettings.corsOrigins}}">
+                            <div class="form-text">Comma-separated list or * for all</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Rate Limit (requests)</label>
+                            <input type="number" class="form-control" id="rateLimit" value="{{securitySettings.rateLimit}}" min="10" max="1000">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Rate Limit Window (ms)</label>
+                            <input type="number" class="form-control" id="rateLimitWindow" value="{{securitySettings.rateLimitWindow}}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Settings Panel -->
+        <div class="settings-panel" id="panel-notifications">
+            <div class="panel-header">
+                <h3>Notification Settings</h3>
+                <p>Configure system notifications and alerts</p>
+            </div>
+
+            <div class="settings-form">
+                <h6 class="mb-3">Channel Preferences</h6>
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="emailNotifications" {{#if notificationSettings.emailNotifications}}checked{{/if}}>
+                            <label class="form-check-label" for="emailNotifications">
+                                Email Notifications
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="smsNotifications" {{#if notificationSettings.smsNotifications}}checked{{/if}}>
+                            <label class="form-check-label" for="smsNotifications">
+                                SMS Notifications
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="pushNotifications" {{#if notificationSettings.pushNotifications}}checked{{/if}}>
+                            <label class="form-check-label" for="pushNotifications">
+                                Push Notifications
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <h6 class="mb-3">Alert Types</h6>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="incidentAlerts" {{#if notificationSettings.incidentAlerts}}checked{{/if}}>
+                            <label class="form-check-label" for="incidentAlerts">
+                                Incident Alerts
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="patrolAlerts" {{#if notificationSettings.patrolAlerts}}checked{{/if}}>
+                            <label class="form-check-label" for="patrolAlerts">
+                                Patrol Alerts
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="shiftReminders" {{#if notificationSettings.shiftReminders}}checked{{/if}}>
+                            <label class="form-check-label" for="shiftReminders">
+                                Shift Reminders
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Backup & Restore Panel -->
+        <div class="settings-panel" id="panel-backup">
+            <div class="panel-header">
+                <h3>Backup & Restore</h3>
+                <p>Manage system backups and data restoration</p>
+            </div>
+
+            <div class="stats-grid mb-4">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">{{stats.databaseSize}}</div>
+                    <div class="stat-label">Database Size</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">{{#if stats.lastBackup}}{{formatDate stats.lastBackup}}{{else}}Never{{/if}}</div>
+                    <div class="stat-label">Last Backup</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-file-archive"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">{{stats.totalBackups}}</div>
+                    <div class="stat-label">Total Backups</div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-3">
+                <button class="btn-primary" onclick="createBackup()">
+                    <i class="fas fa-download me-2"></i>Create Backup
+                </button>
+                <button class="btn-outline" onclick="restoreBackup()">
+                    <i class="fas fa-upload me-2"></i>Restore Backup
+                </button>
+                <button class="btn-outline" onclick="clearCache()">
+                    <i class="fas fa-trash me-2"></i>Clear Cache
+                </button>
+            </div>
+
+            <div class="mt-4">
+                <h6>Recent Backups</h6>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Size</th>
+                                <th>Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each backups}}
+                            <tr>
+                                <td>{{formatDate this.createdAt}}</td>
+                                <td>{{this.size}}</td>
+                                <td>{{this.type}}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="downloadBackup('{{this._id}}')">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteBackup('{{this._id}}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {{else}}
+                            <tr>
+                                <td colspan="4" class="text-center py-4">
+                                    <i class="fas fa-database fa-3x mb-3 text-muted"></i>
+                                    <p class="text-muted">No backups available</p>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Logs Panel -->
+        <div class="settings-panel" id="panel-logs">
+            <div class="panel-header">
+                <h3>System Logs</h3>
+                <p>View recent system activity and errors</p>
+            </div>
+
+            <div class="mb-3 d-flex gap-2">
+                <select class="form-select w-auto" id="logLevel">
+                    <option value="">All Levels</option>
+                    <option value="info">Info</option>
+                    <option value="warning">Warning</option>
+                    <option value="error">Error</option>
+                </select>
+                <input type="date" class="form-control w-auto" id="logFrom">
+                <input type="date" class="form-control w-auto" id="logTo">
+                <button class="btn-filter" onclick="filterLogs()">
+                    <i class="fas fa-filter me-2"></i>Filter
+                </button>
+                <button class="btn-outline" onclick="exportLogs()">
+                    <i class="fas fa-download me-2"></i>Export
+                </button>
+            </div>
+
+            <div class="logs-container">
+                <table class="logs-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Level</th>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Description</th>
+                            <th>IP Address</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each recentLogs}}
+                        <tr>
+                            <td>{{this.time}}</td>
+                            <td>
+                                <span class="log-level log-level-{{this.level}}">
+                                    {{this.level}}
+                                </span>
+                            </td>
+                            <td>{{this.user.name}}</td>
+                            <td>{{this.action}}</td>
+                            <td>{{this.description}}</td>
+                            <td>{{this.ipAddress}}</td>
+                        </tr>
+                        {{else}}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">
+                                <i class="fas fa-history fa-3x mb-3 text-muted"></i>
+                                <p class="text-muted">No logs available</p>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="confirmModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalTitle">Confirm Action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="confirmModalBody">
+                    Are you sure you want to perform this action?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-primary" id="confirmModalBtn">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    
+    <script>
+        // Panel switching
+        function showPanel(panelId) {
+            // Update navigation
+            document.querySelectorAll('.settings-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // Show selected panel
+            document.querySelectorAll('.settings-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.getElementById(`panel-${panelId}`).classList.add('active');
+        }
+
+        // Save all settings
+        function saveAllSettings() {
+            showConfirmModal(
+                'Save Changes',
+                'Are you sure you want to save all system settings?',
+                () => {
+                    // Collect general settings
+                    const generalSettings = {
+                        siteName: document.getElementById('siteName').value,
+                        siteUrl: document.getElementById('siteUrl').value,
+                        supportEmail: document.getElementById('supportEmail').value,
+                        defaultUserRole: document.getElementById('defaultUserRole').value,
+                        timezone: document.getElementById('timezone').value,
+                        dateFormat: document.getElementById('dateFormat').value,
+                        timeFormat: document.getElementById('timeFormat').value,
+                        allowRegistration: document.getElementById('allowRegistration').checked,
+                        requireEmailVerification: document.getElementById('requireEmailVerification').checked,
+                        twoFactorAuth: document.getElementById('twoFactorAuth').checked,
+                        maxLoginAttempts: document.getElementById('maxLoginAttempts').value,
+                        sessionTimeout: document.getElementById('sessionTimeout').value,
+                        passwordMinLength: document.getElementById('passwordMinLength').value
+                    };
+
+                    // Collect email settings
+                    const emailSettings = {
+                        host: document.getElementById('emailHost').value,
+                        port: document.getElementById('emailPort').value,
+                        secure: document.getElementById('emailSecure').checked,
+                        user: document.getElementById('emailUser').value,
+                        password: document.getElementById('emailPassword').value,
+                        fromEmail: document.getElementById('emailFrom').value,
+                        fromName: document.getElementById('emailFromName').value
+                    };
+
+                    // Collect security settings
+                    const securitySettings = {
+                        bcryptRounds: document.getElementById('bcryptRounds').value,
+                        sessionSecret: document.getElementById('sessionSecret').textContent,
+                        jwtSecret: document.getElementById('jwtSecret').textContent,
+                        corsOrigins: document.getElementById('corsOrigins').value,
+                        rateLimit: document.getElementById('rateLimit').value,
+                        rateLimitWindow: document.getElementById('rateLimitWindow').value
+                    };
+
+                    // Collect notification settings
+                    const notificationSettings = {
+                        emailNotifications: document.getElementById('emailNotifications').checked,
+                        smsNotifications: document.getElementById('smsNotifications').checked,
+                        pushNotifications: document.getElementById('pushNotifications').checked,
+                        incidentAlerts: document.getElementById('incidentAlerts').checked,
+                        patrolAlerts: document.getElementById('patrolAlerts').checked,
+                        shiftReminders: document.getElementById('shiftReminders').checked
+                    };
+
+                    // Save general settings
+                    fetch('/api/settings/general', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(generalSettings)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast('General settings saved', 'success');
+                        }
+                    });
+
+                    // Save email settings
+                    fetch('/api/settings/email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(emailSettings)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast('Email settings saved', 'success');
+                        }
+                    });
+
+                    // Save security settings
+                    fetch('/api/settings/security', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(securitySettings)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast('Security settings saved', 'success');
+                        }
+                    });
+
+                    // Save notification settings
+                    fetch('/api/settings/notifications', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(notificationSettings)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast('Notification settings saved', 'success');
+                        }
+                    });
+                }
+            );
+        }
+
+        // Generate secret
+        function generateSecret(type) {
+            const length = 32;
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+            let secret = '';
+            for (let i = 0; i < length; i++) {
+                secret += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            
+            document.getElementById(`${type}Secret`).textContent = secret;
+            showToast('New secret generated', 'success');
+        }
+
+        // Test email
+        function testEmail() {
+            const testEmail = document.getElementById('testEmail').value;
+            if (!testEmail) {
+                showToast('Please enter a test email address', 'error');
+                return;
+            }
+
+            fetch('/api/settings/test-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ testEmail })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(`Test email sent to ${testEmail}`, 'success');
+                } else {
+                    showToast(data.error, 'error');
+                }
+            });
+        }
+
+        // Create backup
+        function createBackup() {
+            showConfirmModal(
+                'Create Backup',
+                'This will create a full database backup. Continue?',
+                () => {
+                    window.location.href = '/api/system/backup';
+                }
+            );
+        }
+
+        // Restore backup
+        function restoreBackup() {
+            showConfirmModal(
+                'Restore Backup',
+                'This will overwrite current data. This action cannot be undone. Continue?',
+                () => {
+                    // Show file input
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.json';
+                    input.onchange = (e) => {
+                        const file = e.target.files[0];
+                        const formData = new FormData();
+                        formData.append('backup', file);
+                        
+                        fetch('/api/system/restore', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                showToast('Database restored successfully', 'success');
+                                setTimeout(() => window.location.reload(), 2000);
+                            }
+                        });
+                    };
+                    input.click();
+                }
+            );
+        }
+
+        // Clear cache
+        function clearCache() {
+            showConfirmModal(
+                'Clear Cache',
+                'This will clear all system caches. Continue?',
+                () => {
+                    fetch('/api/system/clear-cache', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast('Cache cleared successfully', 'success');
+                        }
+                    });
+                }
+            );
+        }
+
+        // Filter logs
+        function filterLogs() {
+            const level = document.getElementById('logLevel').value;
+            const from = document.getElementById('logFrom').value;
+            const to = document.getElementById('logTo').value;
+            
+            window.location.href = `/settings/system?level=${level}&from=${from}&to=${to}`;
+        }
+
+        // Export logs
+        function exportLogs() {
+            const level = document.getElementById('logLevel').value;
+            const from = document.getElementById('logFrom').value;
+            const to = document.getElementById('logTo').value;
+            
+            window.location.href = `/api/system/logs/export?level=${level}&from=${from}&to=${to}`;
+        }
+
+        // Run system test
+        function testSystem() {
+            fetch('/api/system/health')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'healthy') {
+                        showToast('System is healthy', 'success');
+                    } else {
+                        showToast('System issues detected', 'error');
+                    }
+                });
+        }
+
+        // Confirmation modal
+        function showConfirmModal(title, message, callback) {
+            document.getElementById('confirmModalTitle').textContent = title;
+            document.getElementById('confirmModalBody').textContent = message;
+            document.getElementById('confirmModalBtn').onclick = () => {
+                callback();
+                bootstrap.Modal.getInstance(document.getElementById('confirmModal')).hide();
+            };
+            new bootstrap.Modal(document.getElementById('confirmModal')).show();
+        }
+
+        // Toast notification
+        function showToast(message, type = 'info') {
+            // Create toast container if not exists
+            let container = document.querySelector('.toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+                document.body.appendChild(container);
+            }
+
+            // Create toast
+            const toastId = 'toast-' + Date.now();
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'primary'}`;
+            toast.id = toastId;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
+            toast.setAttribute('aria-atomic', 'true');
+            
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            
+            const bsToast = new bootstrap.Toast(toast, { delay: 3000 });
+            bsToast.show();
+            
+            toast.addEventListener('hidden.bs.toast', () => {
+                toast.remove();
+            });
+        }
+    </script>
+</body>
+</html>
