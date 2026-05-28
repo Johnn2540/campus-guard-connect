@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role Management - Campus Guard Connect</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-brand i {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-badge i {
+            font-size: 1.3rem;
+            color: #64748b;
+            transition: color 0.3s ease;
+        }
+
+        .notification-badge:hover i {
+            color: #667eea;
+        }
+
+        .badge-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .user-profile:hover {
+            background: #eef2f6;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .user-info h6 {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.2rem;
+            font-size: 0.9rem;
+        }
+
+        .user-info p {
+            color: #64748b;
+            font-size: 0.8rem;
+            margin-bottom: 0;
+            text-transform: capitalize;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-header h2 {
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+            font-size: 2rem;
+        }
+
+        .page-header p {
+            color: #64748b;
+            margin-bottom: 0;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Stats Cards */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: height 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            height: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon i {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Role Badges */
+        .role-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .role-admin {
+            background: rgba(220, 53, 69, 0.15);
+            color: #dc3545;
+        }
+
+        .role-supervisor {
+            background: rgba(253, 126, 20, 0.15);
+            color: #fd7e14;
+        }
+
+        .role-guard {
+            background: rgba(13, 110, 253, 0.15);
+            color: #0d6efd;
+        }
+
+        .role-student {
+            background: rgba(25, 135, 84, 0.15);
+            color: #198754;
+        }
+
+        /* Role Cards */
+        .role-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .role-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .role-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .role-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .role-icon i {
+            font-size: 2rem;
+        }
+
+        .permission-list {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 0 0;
+        }
+
+        .permission-list li {
+            padding: 0.5rem 0;
+            font-size: 0.85rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .permission-list li i {
+            color: #48bb78;
+            font-size: 0.8rem;
+        }
+
+        /* Table */
+        .table-container {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .users-table th {
+            text-align: left;
+            padding: 1rem;
+            background: #f8fafc;
+            font-weight: 700;
+            color: #4a5568;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .users-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+
+        .user-avatar-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .users-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-shield-alt"></i>
+                CampusGuard Connect
+            </a>
+            
+            <div class="user-menu">
+                <div class="notification-badge">
+                    <i class="far fa-bell"></i>
+                    <span class="badge-count">{{notificationCount}}</span>
+                </div>
+                
+                <div class="dropdown">
+                    <div class="user-profile" data-bs-toggle="dropdown">
+                        <div class="user-avatar">
+                            {{#if user}}
+                                {{#if user.firstName}}
+                                    {{user.firstName.[0]}}{{user.lastName.[0]}}
+                                {{else}}
+                                    {{user.email.[0]}}
+                                {{/if}}
+                            {{else}}
+                                U
+                            {{/if}}
+                        </div>
+                        <div class="user-info">
+                            <h6>{{#if user}}{{user.firstName}} {{user.lastName}}{{else}}User{{/if}}</h6>
+                            <p>{{#if user}}{{user.role}}{{else}}Guest{{/if}}</p>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                        <li><a class="dropdown-item" href="/help"><i class="fas fa-question-circle me-2"></i>Help</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h2><i class="fas fa-users-cog me-2" style="color: #667eea;"></i>Role Management</h2>
+                <p>Manage user roles and permissions across the campus security system</p>
+            </div>
+            
+            <button class="btn-primary" onclick="showBulkUpdate()">
+                <i class="fas fa-edit me-2"></i>
+                Bulk Update Roles
+            </button>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{roleStats.total}}</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{roleStats.admin}}</div>
+                <div class="stat-label">Administrators</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{roleStats.supervisor}}</div>
+                <div class="stat-label">Supervisors</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{roleStats.guard}}</div>
+                <div class="stat-label">Security Guards</div>
+            </div>
+        </div>
+
+        <!-- Role Cards -->
+        <div class="role-cards">
+            <div class="role-card">
+                <div class="role-icon" style="background: rgba(220, 53, 69, 0.1);">
+                    <i class="fas fa-crown" style="color: #dc3545;"></i>
+                </div>
+                <h4>Administrator</h4>
+                <p class="text-muted small">Full system access with all permissions</p>
+                <ul class="permission-list">
+                    <li><i class="fas fa-check-circle"></i> Full system access</li>
+                    <li><i class="fas fa-check-circle"></i> Manage all users</li>
+                    <li><i class="fas fa-check-circle"></i> System configuration</li>
+                    <li><i class="fas fa-check-circle"></i> View all reports</li>
+                    <li><i class="fas fa-check-circle"></i> Audit logs access</li>
+                </ul>
+            </div>
+
+            <div class="role-card">
+                <div class="role-icon" style="background: rgba(253, 126, 20, 0.1);">
+                    <i class="fas fa-user-tie" style="color: #fd7e14;"></i>
+                </div>
+                <h4>Supervisor</h4>
+                <p class="text-muted small">Manage guards, patrols, and incidents</p>
+                <ul class="permission-list">
+                    <li><i class="fas fa-check-circle"></i> Manage guards</li>
+                    <li><i class="fas fa-check-circle"></i> Assign patrols</li>
+                    <li><i class="fas fa-check-circle"></i> Review incidents</li>
+                    <li><i class="fas fa-check-circle"></i> Generate reports</li>
+                    <li><i class="fas fa-check-circle"></i> Approve time off</li>
+                </ul>
+            </div>
+
+            <div class="role-card">
+                <div class="role-icon" style="background: rgba(13, 110, 253, 0.1);">
+                    <i class="fas fa-shield-alt" style="color: #0d6efd;"></i>
+                </div>
+                <h4>Security Guard</h4>
+                <p class="text-muted small">Patrol management and incident reporting</p>
+                <ul class="permission-list">
+                    <li><i class="fas fa-check-circle"></i> Start/completes patrols</li>
+                    <li><i class="fas fa-check-circle"></i> Scan checkpoints</li>
+                    <li><i class="fas fa-check-circle"></i> Report incidents</li>
+                    <li><i class="fas fa-check-circle"></i> View schedule</li>
+                    <li><i class="fas fa-check-circle"></i> Submit reports</li>
+                </ul>
+            </div>
+
+            <div class="role-card">
+                <div class="role-icon" style="background: rgba(25, 135, 84, 0.1);">
+                    <i class="fas fa-graduation-cap" style="color: #198754;"></i>
+                </div>
+                <h4>Student</h4>
+                <p class="text-muted small">Basic campus safety access</p>
+                <ul class="permission-list">
+                    <li><i class="fas fa-check-circle"></i> Report incidents</li>
+                    <li><i class="fas fa-check-circle"></i> View campus status</li>
+                    <li><i class="fas fa-check-circle"></i> Emergency contacts</li>
+                    <li><i class="fas fa-check-circle"></i> Safety alerts</li>
+                    <li><i class="fas fa-check-circle"></i> Campus announcements</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="table-container">
+            <h5 class="mb-3">System Users</h5>
+            <table class="users-table" id="usersTable">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;"><input type="checkbox" id="selectAll"></th>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Current Role</th>
+                        <th>Last Login</th>
+                        <th>Joined</th>
+                        <th style="width: 150px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each users}}
+                    <tr data-user-id="{{this.id}}">
+                        <td>
+                            {{#if (ifNotEquals this.id ../user._id)}}
+                                <input type="checkbox" class="user-checkbox" value="{{this.id}}">
+                            {{/if}}
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="user-avatar-small">
+                                    {{this.initials}}
+                                </div>
+                                <div>
+                                    <div class="fw-bold">{{this.fullName}}</div>
+                                    <small class="text-muted">{{this.badgeNumber}}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{this.email}}</td>
+                        <td>
+                            <span class="role-badge role-{{this.role}}">
+                                <i class="fas 
+                                    {{#ifEquals this.role 'admin'}}fa-crown{{/ifEquals}}
+                                    {{#ifEquals this.role 'supervisor'}}fa-user-tie{{/ifEquals}}
+                                    {{#ifEquals this.role 'guard'}}fa-shield-alt{{/ifEquals}}
+                                    {{#ifEquals this.role 'student'}}fa-graduation-cap{{/ifEquals}}
+                                "></i>
+                                {{this.role}}
+                            </span>
+                        </td>
+                        <td>{{formatDate this.lastLogin "MMM DD, YYYY"}}</td>
+                        <td>{{formatDate this.createdAt "MMM DD, YYYY"}}</td>
+                        <td>
+                            <select class="form-select form-select-sm role-select" data-user-id="{{this.id}}" 
+                                    style="width: 130px;" {{#ifEquals this.id ../user._id}}disabled{{/ifEquals}}>
+                                <option value="admin" {{#ifEquals this.role 'admin'}}selected{{/ifEquals}}>Administrator</option>
+                                <option value="supervisor" {{#ifEquals this.role 'supervisor'}}selected{{/ifEquals}}>Supervisor</option>
+                                <option value="guard" {{#ifEquals this.role 'guard'}}selected{{/ifEquals}}>Security Guard</option>
+                                <option value="student" {{#ifEquals this.role 'student'}}selected{{/ifEquals}}>Student</option>
+                            </select>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bulk Update Modal -->
+    <div class="modal fade" id="bulkUpdateModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bulk Update Roles</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Update role for <strong><span id="selectedCount">0</span></strong> selected user(s):</p>
+                    <select class="form-select" id="bulkRoleSelect">
+                        <option value="admin">Administrator</option>
+                        <option value="supervisor">Supervisor</option>
+                        <option value="guard">Security Guard</option>
+                        <option value="student">Student</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="applyBulkUpdate()">Apply Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Initialize DataTable
+            $('#usersTable').DataTable({
+                pageLength: 25,
+                order: [[3, 'asc']],
+                language: {
+                    search: "Search users:",
+                    lengthMenu: "Show _MENU_ users per page",
+                    info: "Showing _START_ to _END_ of _TOTAL_ users"
+                }
+            });
+            
+            // Individual role update
+            $('.role-select').change(function() {
+                const userId = $(this).data('user-id');
+                const newRole = $(this).val();
+                
+                if (confirm('Are you sure you want to change this user\'s role?')) {
+                    $.ajax({
+                        url: `/admin/roles/${userId}`,
+                        method: 'PUT',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ role: newRole }),
+                        success: function(response) {
+                            alert(response.message);
+                            location.reload();
+                        },
+                        error: function(xhr) {
+                            alert(xhr.responseJSON?.error || 'Failed to update role');
+                            location.reload();
+                        }
+                    });
+                } else {
+                    location.reload();
+                }
+            });
+            
+            // Select all checkbox
+            $('#selectAll').change(function() {
+                $('.user-checkbox').prop('checked', $(this).prop('checked'));
+            });
+        });
+        
+        let selectedUsers = [];
+        
+        function showBulkUpdate() {
+            selectedUsers = [];
+            $('.user-checkbox:checked').each(function() {
+                selectedUsers.push($(this).val());
+            });
+            
+            if (selectedUsers.length === 0) {
+                alert('Please select at least one user');
+                return;
+            }
+            
+            $('#selectedCount').text(selectedUsers.length);
+            $('#bulkUpdateModal').modal('show');
+        }
+        
+        function applyBulkUpdate() {
+            const newRole = $('#bulkRoleSelect').val();
+            
+            if (!confirm(`Are you sure you want to update ${selectedUsers.length} user(s) to ${newRole} role?`)) {
+                return;
+            }
+            
+            $.ajax({
+                url: '/admin/roles/bulk',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    userIds: selectedUsers,
+                    role: newRole
+                }),
+                success: function(response) {
+                    alert(response.message);
+                    location.reload();
+                },
+                error: function(xhr) {
+                    alert(xhr.responseJSON?.error || 'Failed to update roles');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

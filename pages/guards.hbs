@@ -5,894 +5,344 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guard Management - Campus Guard Connect</title>
-    
-    <!-- Bootstrap 5 CSS -->
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- DataTables CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-    
-    <!-- Select2 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    
-    <!-- Animate.css -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --brand-50:  #f0f3ff;
+            --brand-100: #e0e7ff;
+            --brand-400: #7c8fe8;
+            --brand-500: #4f66e5;
+            --brand-600: #3b52d4;
+            --brand-700: #2c3fb5;
+            --success:   #12b76a;
+            --warning:   #f59e0b;
+            --danger:    #ef4444;
+            --bg:        #f4f6fb;
+            --surface:   #ffffff;
+            --border:    rgba(0,0,0,.07);
+            --text-1:    #0f172a;
+            --text-2:    #475569;
+            --text-3:    #94a3b8;
+            --nav-h:     72px;
+            --radius-xl: 18px;
+            --radius-lg: 12px;
+            --radius-md: 8px;
+            --shadow-sm: 0 1px 4px rgba(0,0,0,.06);
+            --shadow-md: 0 4px 16px rgba(0,0,0,.08);
+            --shadow-lg: 0 12px 40px rgba(79,102,229,.18);
+            --ease-spring: cubic-bezier(.34,1.56,.64,1);
+            --ease-out:    cubic-bezier(.22,1,.36,1);
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f8fafc;
-            min-height: 100vh;
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'DM Sans', sans-serif; font-size: 15px; background: var(--bg); color: var(--text-1); -webkit-font-smoothing: antialiased; }
+        h1,h2,h3,h4,h5,h6 { font-family: 'Syne', sans-serif; letter-spacing: -.02em; }
+        a { text-decoration: none; color: inherit; }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--brand-100); border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--brand-400); }
+
+        @keyframes fadeUp   { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
+        @keyframes badge-pop { 0%{transform:scale(0)} 70%{transform:scale(1.15)} 100%{transform:scale(1)} }
+        @keyframes spin     { to { transform:rotate(360deg); } }
+        @keyframes pulse-dot {
+            0%,100% { box-shadow:0 0 0 0 rgba(18,183,106,.5); }
+            50%      { box-shadow:0 0 0 6px rgba(18,183,106,0); }
         }
 
-        /* Navbar */
+        /* ── Navbar ── */
         .navbar {
-            background: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .navbar-brand {
-            font-weight: 800;
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .navbar-brand i {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 2rem;
-        }
-
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .notification-badge {
-            position: relative;
-            cursor: pointer;
-        }
-
-        .notification-badge i {
-            font-size: 1.3rem;
-            color: #64748b;
-            transition: color 0.3s ease;
-        }
-
-        .notification-badge:hover i {
-            color: #667eea;
-        }
-
-        .badge-count {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
-            color: white;
-            font-size: 0.7rem;
-            font-weight: 600;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            cursor: pointer;
-            padding: 0.5rem 1rem;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            background: #f8fafc;
-        }
-
-        .user-profile:hover {
-            background: #eef2f6;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 1rem;
-        }
-
-        .user-info {
-            display: none;
-        }
-
-        @media (min-width: 768px) {
-            .user-info {
-                display: block;
-            }
-            
-            .user-info h6 {
-                font-weight: 700;
-                color: #1e293b;
-                margin-bottom: 0.2rem;
-                font-size: 0.9rem;
-            }
-            
-            .user-info p {
-                color: #64748b;
-                font-size: 0.8rem;
-                margin-bottom: 0;
-                text-transform: capitalize;
-            }
-        }
-
-        /* Main Content */
-        .main-content {
-            padding: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* Page Header */
-        .page-header {
-            margin-bottom: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-            animation: fadeInDown 0.5s ease-out;
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .page-header h2 {
-            font-weight: 800;
-            color: #1e293b;
-            margin-bottom: 0.25rem;
-            font-size: 2rem;
-        }
-
-        .page-header p {
-            color: #64748b;
-            margin-bottom: 0;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            color: white;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-outline {
-            border: 2px solid #e2e8f0;
-            background: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            color: #4a5568;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-outline:hover {
-            border-color: #667eea;
-            color: #667eea;
-        }
-
-        /* Stats Cards */
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 20px;
-            padding: 1.5rem;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            animation: fadeInUp 0.5s ease-out;
-            animation-fill-mode: both;
-        }
-
-        .stat-card:nth-child(1) { animation-delay: 0.1s; }
-        .stat-card:nth-child(2) { animation-delay: 0.2s; }
-        .stat-card:nth-child(3) { animation-delay: 0.3s; }
-        .stat-card:nth-child(4) { animation-delay: 0.4s; }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transition: height 0.3s ease;
-        }
-
-        .stat-card:hover::before {
-            height: 100%;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
-        }
-
-        .stat-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-        }
-
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 15px;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .stat-icon i {
-            font-size: 2rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #1e293b;
-            margin-bottom: 0.25rem;
-        }
-
-        .stat-label {
-            color: #64748b;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .stat-trend {
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .trend-up {
-            color: #48bb78;
-        }
-
-        .trend-down {
-            color: #f56565;
-        }
-
-        /* Filter Bar */
-        .filter-bar {
-            background: white;
-            border-radius: 20px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
-            border: 1px solid #e2e8f0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            align-items: flex-end;
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        .filter-group {
-            flex: 1;
-            min-width: 180px;
-        }
-
-        .filter-group label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #64748b;
-            margin-bottom: 0.25rem;
-            display: block;
-        }
-
-        .filter-select, .filter-input {
-            width: 100%;
-            padding: 0.6rem 1rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .filter-select:focus, .filter-input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-            outline: none;
-        }
-
-        .filter-actions {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-
-        .btn-filter {
-            padding: 0.6rem 1.5rem;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            height: 42px;
-        }
-
-        .btn-filter:hover {
-            background: #764ba2;
-            transform: translateY(-2px);
-        }
-
-        .btn-reset {
-            padding: 0.6rem 1.5rem;
-            background: #e2e8f0;
-            color: #4a5568;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            height: 42px;
-        }
-
-        .btn-reset:hover {
-            background: #cbd5e0;
-        }
-
-        /* Guards Table */
-        .table-container {
-            background: white;
-            border-radius: 20px;
-            padding: 1.5rem;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
-            border: 1px solid #e2e8f0;
-            animation: fadeIn 0.7s ease-out;
-        }
-
-        .guards-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .guards-table th {
-            text-align: left;
-            padding: 1rem;
-            background: #f8fafc;
-            font-weight: 700;
-            color: #4a5568;
-            border-bottom: 2px solid #e2e8f0;
-            font-size: 0.9rem;
-        }
-
-        .guards-table td {
-            padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            vertical-align: middle;
-        }
-
-        .guards-table tbody tr {
-            transition: all 0.3s ease;
-        }
-
-        .guards-table tbody tr:hover {
-            background: #f8fafc;
-        }
-
-        .guard-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .guard-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 1rem;
-        }
-
-        .guard-details h6 {
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 0.25rem;
-        }
-
-        .guard-details small {
-            color: #64748b;
-            font-size: 0.8rem;
-        }
-
-        .badge-role {
-            padding: 0.35rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .role-admin {
-            background: rgba(102, 126, 234, 0.15);
-            color: #434190;
-        }
-
-        .role-supervisor {
-            background: rgba(237, 137, 54, 0.15);
-            color: #9c4221;
-        }
-
-        .role-guard {
-            background: rgba(72, 187, 120, 0.15);
-            color: #276749;
-        }
-
-        .role-student {
-            background: rgba(160, 174, 192, 0.15);
-            color: #4a5568;
-        }
-
-        .status-badge {
-            padding: 0.35rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .status-active {
-            background: rgba(72, 187, 120, 0.15);
-            color: #276749;
-        }
-
-        .status-inactive {
-            background: rgba(245, 101, 101, 0.15);
-            color: #c53030;
-        }
-
-        .status-online {
-            background: rgba(72, 187, 120, 0.15);
-            color: #276749;
-            position: relative;
-            padding-left: 1.5rem;
-        }
-
-        .status-online::before {
-            content: '';
-            position: absolute;
-            left: 0.5rem;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #48bb78;
-            animation: pulse 2s infinite;
-        }
-
-        .status-offline {
-            background: rgba(160, 174, 192, 0.15);
-            color: #4a5568;
-            position: relative;
-            padding-left: 1.5rem;
-        }
-
-        .status-offline::before {
-            content: '';
-            position: absolute;
-            left: 0.5rem;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #a0aec0;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: translateY(-50%) scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: translateY(-50%) scale(1.2);
-                opacity: 0.7;
-            }
-        }
-
-        .action-btns {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .action-btn {
-            width: 36px;
-            height: 36px;
-            border: none;
-            background: transparent;
-            border-radius: 8px;
-            color: #94a3b8;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .action-btn:hover {
-            background: #eef2f6;
-            color: #667eea;
-            transform: translateY(-2px);
-        }
-
-        .action-btn.view-btn:hover {
-            color: #4299e1;
-        }
-
-        .action-btn.edit-btn:hover {
-            color: #48bb78;
-        }
-
-        .action-btn.delete-btn:hover {
-            color: #f56565;
-        }
-
-        .action-btn.shift-btn:hover {
-            color: #9f7aea;
-        }
-
-        /* Modal Styles */
-        .modal-content {
-            border: none;
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .modal-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1.5rem;
-            border: none;
-        }
-
-        .modal-header .btn-close {
-            filter: brightness(0) invert(1);
-            opacity: 0.8;
-        }
-
-        .modal-header .btn-close:hover {
-            opacity: 1;
-        }
-
-        .modal-body {
-            padding: 2rem;
-        }
-
-        .modal-footer {
-            padding: 1.5rem;
-            border-top: 2px solid #e2e8f0;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: #4a5568;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .form-control, .form-select {
-            height: 48px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 0.75rem 1rem;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus, .form-select:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-            outline: none;
-        }
-
-        .form-control.is-invalid, .form-select.is-invalid {
-            border-color: #f56565;
-        }
-
-        .invalid-feedback {
-            color: #f56565;
-            font-size: 0.8rem;
-            margin-top: 0.25rem;
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #e2e8f0;
-            border-top-color: #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 2rem auto;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Tooltip */
-        [data-tooltip] {
-            position: relative;
-            cursor: help;
-        }
-        
-        [data-tooltip]:before {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 0.5rem 1rem;
-            background: #2d3748;
-            color: white;
-            font-size: 0.8rem;
-            white-space: nowrap;
-            border-radius: 8px;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            pointer-events: none;
-            z-index: 1000;
-        }
-        
-        [data-tooltip]:hover:before {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) translateY(-5px);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .main-content {
-                padding: 1rem;
-            }
-            
-            .stats-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .filter-bar {
-                flex-direction: column;
-            }
-            
-            .filter-group {
-                width: 100%;
-            }
-            
-            .guards-table {
-                display: block;
-                overflow-x: auto;
-            }
-            
-            .header-actions {
-                width: 100%;
-            }
-            
-            .btn-primary, .btn-outline {
-                flex: 1;
-                justify-content: center;
-            }
+            position: sticky; top: 0; height: var(--nav-h);
+            background: var(--surface); border-bottom: 1px solid var(--border);
+            z-index: 1030; padding: 0 1.5rem;
+            display: flex; align-items: center; gap: 1rem;
+            animation: fadeIn .4s var(--ease-out) both;
+        }
+        .navbar-brand { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; color:var(--brand-500); display:flex; align-items:center; gap:.6rem; white-space:nowrap; flex-shrink:0; }
+        .brand-icon { width:36px; height:36px; border-radius:var(--radius-md); background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); display:grid; place-items:center; color:#fff; font-size:.9rem; box-shadow:0 4px 12px rgba(79,102,229,.35); flex-shrink:0; }
+        .nav-right { margin-left:auto; display:flex; align-items:center; gap:.75rem; }
+        .nav-icon-btn { width:40px; height:40px; border:1.5px solid var(--border); border-radius:var(--radius-md); background:var(--surface); display:grid; place-items:center; color:var(--text-2); cursor:pointer; position:relative; transition:border-color .2s,color .2s,transform .15s var(--ease-spring); }
+        .nav-icon-btn:hover { border-color:var(--brand-400); color:var(--brand-500); transform:translateY(-1px); }
+        .nav-icon-btn .badge-count { position:absolute; top:-6px; right:-6px; background:var(--danger); color:#fff; font-size:.65rem; font-weight:700; min-width:18px; height:18px; border-radius:99px; display:grid; place-items:center; padding:0 4px; border:2px solid var(--surface); animation:badge-pop .4s var(--ease-spring) both; }
+        .user-chip { display:flex; align-items:center; gap:.6rem; padding:.3rem .5rem .3rem .3rem; border:1.5px solid var(--border); border-radius:var(--radius-lg); cursor:pointer; transition:border-color .2s,background .2s; }
+        .user-chip:hover { border-color:var(--brand-400); background:var(--brand-50); }
+        .user-avatar { width:34px; height:34px; border-radius:var(--radius-md); background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); display:grid; place-items:center; color:#fff; font-family:'Syne',sans-serif; font-size:.8rem; font-weight:700; flex-shrink:0; }
+        .user-chip-info { display:none; }
+        @media (min-width:768px) {
+            .user-chip-info { display:block; }
+            .user-chip-info .name { font-family:'Syne',sans-serif; font-size:.8rem; font-weight:700; color:var(--text-1); line-height:1.2; }
+            .user-chip-info .role { font-size:.72rem; color:var(--text-3); text-transform:capitalize; }
+        }
+        .dropdown-menu { border:1.5px solid var(--border) !important; border-radius:var(--radius-lg) !important; box-shadow:var(--shadow-md) !important; padding:.4rem !important; font-size:.875rem; animation:fadeUp .2s var(--ease-out) both; }
+        .dropdown-item { border-radius:var(--radius-md); padding:.55rem .85rem; color:var(--text-2); font-weight:500; transition:background .15s,color .15s; }
+        .dropdown-item:hover { background:var(--brand-50); color:var(--brand-600); }
+        .dropdown-item.text-danger:hover { background:#fff1f1; color:var(--danger); }
+        .dropdown-divider { border-color:var(--border); margin:.3rem 0; }
+
+        /* ── Main Content ── */
+        .main-content { max-width:1400px; margin:0 auto; padding:1.75rem; }
+        .main-content > * { animation:fadeUp .4s var(--ease-out) both; }
+        .main-content > *:nth-child(1) { animation-delay:.06s; }
+        .main-content > *:nth-child(2) { animation-delay:.12s; }
+        .main-content > *:nth-child(3) { animation-delay:.18s; }
+        .main-content > *:nth-child(4) { animation-delay:.24s; }
+        .main-content > *:nth-child(5) { animation-delay:.30s; }
+
+        /* ── Page Header ── */
+        .page-header { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem; margin-bottom:1.75rem; }
+        .page-header h2 { font-size:clamp(1.5rem,2.5vw,2rem); font-weight:800; color:var(--text-1); margin-bottom:.25rem; }
+        .page-header p { color:var(--text-3); margin:0; font-size:.9rem; }
+        .header-actions { display:flex; gap:.75rem; align-items:center; flex-shrink:0; }
+
+        /* ── Stat Cards ── */
+        .stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; margin-bottom:1.5rem; }
+        .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-xl); padding:1.4rem; position:relative; overflow:hidden; transition:transform .2s var(--ease-spring),box-shadow .2s; }
+        .stat-card:nth-child(1) { animation:fadeUp .4s var(--ease-out) .08s both; }
+        .stat-card:nth-child(2) { animation:fadeUp .4s var(--ease-out) .14s both; }
+        .stat-card:nth-child(3) { animation:fadeUp .4s var(--ease-out) .20s both; }
+        .stat-card:nth-child(4) { animation:fadeUp .4s var(--ease-out) .26s both; }
+        .stat-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-lg); }
+        .stat-card::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--brand-500),var(--brand-700)); transform:scaleX(0); transform-origin:left; transition:transform .3s var(--ease-out); }
+        .stat-card:hover::after { transform:scaleX(1); }
+        .stat-icon { width:48px; height:48px; border-radius:var(--radius-lg); background:var(--brand-50); display:grid; place-items:center; margin-bottom:.875rem; }
+        .stat-icon i { font-size:1.3rem; color:var(--brand-500); }
+        .stat-value { font-family:'Syne',sans-serif; font-size:1.875rem; font-weight:800; color:var(--text-1); line-height:1; margin-bottom:.25rem; }
+        .stat-label { font-size:.78rem; font-weight:500; color:var(--text-3); text-transform:uppercase; letter-spacing:.04em; }
+        .stat-meta { font-size:.78rem; color:var(--text-3); margin-top:.3rem; }
+        .stat-trend { font-size:.78rem; font-weight:600; display:flex; align-items:center; gap:.25rem; margin-top:.4rem; }
+        .trend-up { color:var(--success); }
+
+        /* ── Filter Bar ── */
+        .filter-bar { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-xl); padding:1.25rem 1.5rem; margin-bottom:1.5rem; display:flex; flex-wrap:wrap; gap:.875rem; align-items:flex-end; }
+        .filter-group { flex:1; min-width:140px; }
+        .filter-group label { font-size:.72rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--text-3); margin-bottom:.35rem; display:block; }
+        .filter-select, .filter-input { width:100%; height:40px; padding:0 .875rem; border:1.5px solid var(--border); border-radius:var(--radius-md); font-family:'DM Sans',sans-serif; font-size:.875rem; background:var(--bg); color:var(--text-1); transition:border-color .2s,box-shadow .2s; }
+        .filter-select:focus, .filter-input:focus { outline:none; border-color:var(--brand-400); box-shadow:0 0 0 4px rgba(79,102,229,.12); background:var(--surface); }
+        .filter-input::placeholder { color:var(--text-3); }
+        .filter-actions { display:flex; gap:.5rem; align-items:center; }
+        .btn-filter { height:40px; padding:0 1.25rem; background:var(--brand-500); color:#fff; border:none; border-radius:var(--radius-md); font-family:'DM Sans',sans-serif; font-weight:600; font-size:.875rem; cursor:pointer; display:inline-flex; align-items:center; gap:.4rem; transition:background .2s,transform .15s var(--ease-spring); }
+        .btn-filter:hover { background:var(--brand-700); transform:translateY(-1px); }
+        .btn-reset { height:40px; padding:0 1.25rem; background:var(--bg); color:var(--text-2); border:1.5px solid var(--border); border-radius:var(--radius-md); font-family:'DM Sans',sans-serif; font-weight:600; font-size:.875rem; cursor:pointer; display:inline-flex; align-items:center; gap:.4rem; transition:background .2s; }
+        .btn-reset:hover { background:#e2e8f0; }
+
+        /* ── Table Container ── */
+        .table-container { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-xl); overflow:hidden; margin-bottom:1.5rem; }
+        .table-toolbar { display:flex; justify-content:space-between; align-items:center; padding:1.25rem 1.5rem; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:.75rem; }
+        .table-toolbar h5 { font-size:.95rem; font-weight:700; color:var(--text-1); margin:0; display:flex; align-items:center; gap:.5rem; }
+        .table-toolbar h5 i { color:var(--brand-500); font-size:.9rem; }
+
+        /* ── DataTable overrides ── */
+        #guardsTable_wrapper .dataTables_length,
+        #guardsTable_wrapper .dataTables_filter { padding:1rem 1.5rem .5rem; }
+        #guardsTable_wrapper .dataTables_length select,
+        #guardsTable_wrapper .dataTables_filter input { border:1.5px solid var(--border) !important; border-radius:var(--radius-md) !important; font-family:'DM Sans',sans-serif !important; font-size:.875rem !important; height:38px; padding:0 .75rem !important; background:var(--bg) !important; color:var(--text-1) !important; transition:border-color .2s,box-shadow .2s; }
+        #guardsTable_wrapper .dataTables_filter input:focus { outline:none !important; border-color:var(--brand-400) !important; box-shadow:0 0 0 4px rgba(79,102,229,.12) !important; }
+        #guardsTable_wrapper .dataTables_info,
+        #guardsTable_wrapper .dataTables_paginate { padding:.75rem 1.5rem 1rem; }
+        #guardsTable_wrapper .page-link { border-radius:var(--radius-md) !important; border:1.5px solid var(--border) !important; color:var(--text-2) !important; font-size:.8rem !important; font-weight:600 !important; transition:all .15s; }
+        #guardsTable_wrapper .page-link:hover { background:var(--brand-50) !important; color:var(--brand-600) !important; border-color:var(--brand-400) !important; }
+        #guardsTable_wrapper .page-item.active .page-link { background:var(--brand-500) !important; border-color:var(--brand-500) !important; color:#fff !important; }
+
+        table.dataTable thead th, table.dataTable thead td { font-family:'DM Sans',sans-serif !important; font-size:.72rem !important; font-weight:700 !important; letter-spacing:.06em !important; text-transform:uppercase !important; color:var(--text-3) !important; padding:.875rem 1rem !important; border-bottom:1px solid var(--border) !important; background:var(--bg) !important; }
+        table.dataTable tbody td { padding:.875rem 1rem !important; vertical-align:middle !important; border-bottom:1px solid var(--border) !important; font-size:.875rem !important; }
+        table.dataTable tbody tr { transition:background .15s; }
+        table.dataTable tbody tr:hover td { background:var(--brand-50) !important; }
+        table.dataTable tbody tr:last-child td { border-bottom:none !important; }
+
+        /* ── Guard Info Cell ── */
+        .guard-info { display:flex; align-items:center; gap:.875rem; }
+        .guard-avatar { width:40px; height:40px; border-radius:var(--radius-md); background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); display:grid; place-items:center; color:#fff; font-family:'Syne',sans-serif; font-size:.78rem; font-weight:700; flex-shrink:0; }
+        .guard-details h6 { font-size:.875rem; font-weight:600; margin-bottom:2px; color:var(--text-1); }
+        .guard-details small { font-size:.75rem; color:var(--text-3); }
+
+        /* ── Badges ── */
+        .badge-role { padding:.25rem .65rem; border-radius:99px; font-size:.72rem; font-weight:700; letter-spacing:.02em; display:inline-block; }
+        .role-admin      { background:rgba(79,102,229,.12); color:var(--brand-700); }
+        .role-supervisor { background:rgba(245,158,11,.12); color:#92400e; }
+        .role-guard      { background:rgba(18,183,106,.12); color:#065f46; }
+
+        .status-badge { padding:.25rem .65rem; border-radius:99px; font-size:.72rem; font-weight:700; display:inline-flex; align-items:center; gap:.3rem; }
+        .status-badge::before { content:''; width:6px; height:6px; border-radius:50%; display:block; flex-shrink:0; }
+        .status-online   { background:rgba(18,183,106,.12); color:#065f46; }
+        .status-online::before { background:var(--success); animation:pulse-dot 2.5s infinite; }
+        .status-active   { background:rgba(18,183,106,.08); color:#065f46; }
+        .status-active::before { background:var(--success); opacity:.5; }
+        .status-inactive { background:rgba(239,68,68,.1); color:#991b1b; }
+        .status-inactive::before { background:var(--danger); }
+        .status-on-leave { background:rgba(245,158,11,.12); color:#92400e; }
+        .status-on-leave::before { background:var(--warning); }
+
+        .badge-zone { padding:.25rem .65rem; border-radius:99px; font-size:.72rem; font-weight:600; background:var(--brand-50); color:var(--brand-600); border:1px solid var(--brand-100); }
+
+        /* ── Action Buttons ── */
+        .action-btns { display:flex; gap:.35rem; }
+        .action-btn { width:32px; height:32px; border:none; background:transparent; border-radius:var(--radius-md); color:var(--text-3); cursor:pointer; display:grid; place-items:center; font-size:.85rem; transition:background .15s,color .15s,transform .15s var(--ease-spring); }
+        .action-btn:hover { transform:translateY(-2px); }
+        .view-btn:hover  { background:rgba(59,130,246,.1);  color:#2563eb; }
+        .edit-btn:hover  { background:rgba(18,183,106,.1);  color:#065f46; }
+        .shift-btn:hover { background:rgba(139,92,246,.1);  color:#6d28d9; }
+        .delete-btn:hover{ background:rgba(239,68,68,.1);   color:#991b1b; }
+
+        /* ── Buttons ── */
+        .btn-brand { background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); border:none; color:#fff; font-family:'DM Sans',sans-serif; font-weight:600; border-radius:var(--radius-md); padding:.6rem 1.25rem; display:inline-flex; align-items:center; gap:.5rem; font-size:.875rem; cursor:pointer; transition:transform .15s var(--ease-spring),box-shadow .15s; }
+        .btn-brand:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(79,102,229,.35); color:#fff; }
+        .btn-outline-brand { border:1.5px solid var(--border); background:var(--surface); font-family:'DM Sans',sans-serif; font-weight:600; border-radius:var(--radius-md); padding:.6rem 1.25rem; display:inline-flex; align-items:center; gap:.5rem; font-size:.875rem; color:var(--text-2); cursor:pointer; transition:border-color .2s,color .2s,background .2s,transform .15s var(--ease-spring); }
+        .btn-outline-brand:hover { border-color:var(--brand-400); color:var(--brand-600); background:var(--brand-50); transform:translateY(-1px); }
+
+        /* ── Chart Cards ── */
+        .chart-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-xl); padding:1.5rem; height:100%; transition:box-shadow .2s; }
+        .chart-card:hover { box-shadow:var(--shadow-md); }
+        .chart-card h5 { font-size:.95rem; font-weight:700; color:var(--text-1); margin-bottom:1.25rem; display:flex; align-items:center; gap:.5rem; }
+        .chart-card h5 i { color:var(--brand-500); font-size:.9rem; }
+
+        /* ── Modal ── */
+        .modal-content { border:none !important; border-radius:var(--radius-xl) !important; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.15) !important; }
+        .modal-header { background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); color:#fff; padding:1.25rem 1.5rem; border:none; }
+        .modal-header .modal-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; display:flex; align-items:center; gap:.5rem; }
+        .modal-header .btn-close { filter:brightness(0) invert(1); opacity:.8; }
+        .modal-body { padding:1.75rem; }
+        .modal-footer { padding:1.25rem 1.5rem; border-top:1px solid var(--border); background:var(--bg); }
+
+        .form-label { font-family:'DM Sans',sans-serif; font-size:.78rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--text-2); margin-bottom:.4rem; display:flex; align-items:center; gap:.35rem; }
+        .form-label i { color:var(--brand-500); font-size:.85rem; }
+        .form-control, .form-select { height:44px; border:1.5px solid var(--border); border-radius:var(--radius-md); padding:0 .875rem; font-family:'DM Sans',sans-serif; font-size:.9rem; color:var(--text-1); background:var(--bg); transition:border-color .2s,box-shadow .2s,background .2s; }
+        textarea.form-control { height:auto; padding:.75rem .875rem; }
+        .form-control:focus, .form-select:focus { outline:none; border-color:var(--brand-400); box-shadow:0 0 0 4px rgba(79,102,229,.12); background:var(--surface); }
+        .form-control[readonly] { background:var(--bg); color:var(--text-2); cursor:default; }
+        .form-text { font-size:.75rem; color:var(--text-3); }
+        .form-check-input:checked { background-color:var(--brand-500); border-color:var(--brand-500); }
+        .form-check-label { font-size:.875rem; color:var(--text-2); font-weight:500; }
+
+        /* ── Guard Detail Modal ── */
+        .guard-hero { text-align:center; padding:1.5rem 1rem; border-bottom:1px solid var(--border); margin-bottom:1.25rem; }
+        .guard-hero-avatar { width:72px; height:72px; border-radius:var(--radius-lg); background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); display:grid; place-items:center; color:#fff; font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:700; margin:0 auto 1rem; }
+        .guard-hero h4 { font-size:1.1rem; font-weight:700; margin-bottom:.35rem; }
+
+        .detail-group { margin-bottom:1rem; }
+        .detail-label { font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--text-3); margin-bottom:.3rem; }
+        .detail-value { background:var(--bg); border-radius:var(--radius-md); padding:.55rem .875rem; font-size:.875rem; color:var(--text-1); display:flex; align-items:center; gap:.5rem; }
+        .detail-value i { color:var(--text-3); font-size:.85rem; flex-shrink:0; }
+
+        /* ── Empty state ── */
+        .empty-state { text-align:center; padding:3rem 1rem; color:var(--text-3); }
+        .empty-state i { font-size:2.5rem; display:block; margin-bottom:.75rem; opacity:.3; }
+
+        /* ── Shift badge in assign modal ── */
+        .shift-option { display:flex; align-items:center; gap:.5rem; padding:.6rem .875rem; border:1.5px solid var(--border); border-radius:var(--radius-md); cursor:pointer; transition:border-color .2s,background .2s; margin-bottom:.5rem; }
+        .shift-option:hover { border-color:var(--brand-400); background:var(--brand-50); }
+        .shift-option input[type="radio"] { accent-color:var(--brand-500); }
+
+        /* ── Responsive ── */
+        @media (max-width:768px) {
+            .main-content { padding:1rem; }
+            .stats-row { grid-template-columns:1fr 1fr; }
+            .filter-bar { flex-direction:column; }
+            .filter-group { width:100%; }
+            .page-header { flex-direction:column; }
+            table.dataTable { display:block; overflow-x:auto; }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root { --bg:#0d1117; --surface:#161b22; --border:rgba(255,255,255,.08); --text-1:#f0f6fc; --text-2:#8b949e; --text-3:#484f58; }
+            .stat-icon { background:rgba(79,102,229,.15); }
+            .filter-select, .filter-input, .form-control, .form-select { background:var(--bg); color:var(--text-1); }
+            table.dataTable tbody tr:hover td { background:rgba(79,102,229,.06) !important; }
         }
     </style>
 </head>
 <body>
+
     <!-- Navbar -->
     <nav class="navbar">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/dashboard">
-                <i class="fas fa-shield-alt"></i>
-                CampusGuard Connect
-            </a>
-            
-            <div class="user-menu">
-                <div class="notification-badge" data-tooltip="Notifications">
-                    <i class="far fa-bell"></i>
-                    <span class="badge-count">{{notificationCount}}</span>
-                </div>
-                
-                <div class="dropdown">
-                    <div class="user-profile" data-bs-toggle="dropdown">
-                        <div class="user-avatar">
-                            {{#if user}}
-                                {{user.initials}}
-                            {{else}}
-                                U
-                            {{/if}}
-                        </div>
-                        <div class="user-info">
-                            <h6>{{user.name}}</h6>
-                            <p>{{user.role}}</p>
-                        </div>
+        <a class="navbar-brand" href="/dashboard">
+            <span class="brand-icon"><i class="fas fa-shield-alt"></i></span>
+            CampusGuard Connect
+        </a>
+        <div class="nav-right">
+            <div class="nav-icon-btn" role="button" aria-label="Notifications">
+                <i class="far fa-bell"></i>
+                <span class="badge-count">{{notificationCount}}</span>
+            </div>
+            <div class="dropdown">
+                <div class="user-chip" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="user-avatar">{{#if user}}{{user.initials}}{{else}}U{{/if}}</div>
+                    <div class="user-chip-info">
+                        <div class="name">{{user.name}}</div>
+                        <div class="role">{{user.role}}</div>
                     </div>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
-                        <li><a class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i>Settings</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                    </ul>
+                    <i class="fas fa-chevron-down ms-1" style="font-size:.7rem;color:var(--text-3);"></i>
                 </div>
+                <ul class="dropdown-menu dropdown-menu-end mt-1">
+                    <li><a class="dropdown-item" href="/profile"><i class="fas fa-user fa-fw me-2"></i>Profile</a></li>
+                    <li><a class="dropdown-item" href="/settings"><i class="fas fa-cog fa-fw me-2"></i>Settings</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt fa-fw me-2"></i>Logout</a></li>
+                </ul>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
     <div class="main-content">
+
         <!-- Page Header -->
         <div class="page-header">
             <div>
-                <h2><i class="fas fa-users me-2" style="color: #667eea;"></i>Guard Management</h2>
+                <h2><i class="fas fa-user-shield me-2" style="color:var(--brand-500);font-size:1.5rem;"></i>Guard Management</h2>
                 <p>Manage security personnel, assignments, and performance</p>
             </div>
-            
             <div class="header-actions">
-                <button class="btn-primary" data-bs-toggle="modal" data-bs-target="#addGuardModal">
-                    <i class="fas fa-user-plus"></i>
-                    Add New Guard
+                <button class="btn-brand" data-bs-toggle="modal" data-bs-target="#addGuardModal">
+                    <i class="fas fa-user-plus"></i>Add New Guard
                 </button>
-                <button class="btn-outline" onclick="exportGuards()">
-                    <i class="fas fa-download"></i>
-                    Export
+                <button class="btn-outline-brand" onclick="exportGuards()">
+                    <i class="fas fa-download"></i>Export
                 </button>
             </div>
         </div>
 
-        <!-- Stats Cards -->
+        <!-- Stat Cards -->
         <div class="stats-row">
             <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-icon">
-                        <i class="fas fa-user-shield"></i>
-                    </div>
-                    <span class="stat-trend trend-up">
-                        <i class="fas fa-arrow-up"></i> {{stats.newThisMonth}} this month
-                    </span>
-                </div>
+                <div class="stat-icon"><i class="fas fa-user-shield"></i></div>
                 <div class="stat-value">{{stats.totalGuards}}</div>
                 <div class="stat-label">Total Guards</div>
+                <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i>{{stats.newThisMonth}} this month</div>
             </div>
-
             <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-icon">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                </div>
+                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
                 <div class="stat-value">{{stats.activeGuards}}</div>
                 <div class="stat-label">Active Guards</div>
-                <small class="text-muted">{{stats.onDuty}} currently on duty</small>
+                <div class="stat-meta">{{stats.onDuty}} currently on duty</div>
             </div>
-
             <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                </div>
+                <div class="stat-icon"><i class="fas fa-umbrella-beach"></i></div>
                 <div class="stat-value">{{stats.onLeave}}</div>
                 <div class="stat-label">On Leave</div>
+                <div class="stat-meta">Scheduled absences</div>
             </div>
-
             <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-icon">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                </div>
+                <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
                 <div class="stat-value">{{stats.attendance}}%</div>
                 <div class="stat-label">Attendance Rate</div>
-                <small class="text-muted">Last 30 days</small>
+                <div class="stat-meta">Last 30 days</div>
             </div>
         </div>
 
         <!-- Filter Bar -->
         <div class="filter-bar">
             <div class="filter-group">
-                <label><i class="fas fa-filter me-1"></i>Status</label>
+                <label>Status</label>
                 <select class="filter-select" id="statusFilter">
                     <option value="">All Status</option>
                     <option value="active">Active</option>
@@ -902,9 +352,8 @@
                     <option value="onLeave">On Leave</option>
                 </select>
             </div>
-
             <div class="filter-group">
-                <label><i class="fas fa-tag me-1"></i>Role</label>
+                <label>Role</label>
                 <select class="filter-select" id="roleFilter">
                     <option value="">All Roles</option>
                     <option value="guard">Guard</option>
@@ -912,9 +361,8 @@
                     <option value="admin">Admin</option>
                 </select>
             </div>
-
             <div class="filter-group">
-                <label><i class="fas fa-map-marker-alt me-1"></i>Zone</label>
+                <label>Zone</label>
                 <select class="filter-select" id="zoneFilter">
                     <option value="">All Zones</option>
                     <option value="main_gate">Main Gate</option>
@@ -925,33 +373,35 @@
                     <option value="admin">Admin</option>
                 </select>
             </div>
-
             <div class="filter-group">
-                <label><i class="fas fa-search me-1"></i>Search</label>
-                <input type="text" class="filter-input" id="searchInput" placeholder="Name, email, badge...">
+                <label>Search</label>
+                <input type="text" class="filter-input" id="searchInput" placeholder="Name, badge, email…">
             </div>
-
             <div class="filter-actions">
-                <button class="btn-filter" onclick="applyFilters()">
-                    <i class="fas fa-filter me-2"></i>Apply
-                </button>
-                <button class="btn-reset" onclick="resetFilters()">
-                    <i class="fas fa-undo me-2"></i>Reset
-                </button>
+                <button class="btn-filter" onclick="applyFilters()"><i class="fas fa-filter"></i>Apply</button>
+                <button class="btn-reset" onclick="resetFilters()"><i class="fas fa-undo"></i>Reset</button>
             </div>
         </div>
 
         <!-- Guards Table -->
         <div class="table-container">
-            <table class="guards-table" id="guardsTable">
+            <div class="table-toolbar">
+                <h5><i class="fas fa-list"></i>Security Personnel</h5>
+                <div style="font-size:.8rem;color:var(--text-3);">
+                    <span class="me-3"><i class="fas fa-circle" style="color:var(--success);font-size:.5rem;vertical-align:middle;"></i> {{stats.onDuty}} On Duty</span>
+                    <span><i class="fas fa-circle" style="color:var(--text-3);font-size:.5rem;vertical-align:middle;"></i> {{stats.offDuty}} Off Duty</span>
+                </div>
+            </div>
+
+            <table class="table mb-0" id="guardsTable" style="width:100%">
                 <thead>
                     <tr>
                         <th>Guard</th>
-                        <th>Badge Number</th>
+                        <th>Badge</th>
                         <th>Role</th>
                         <th>Contact</th>
                         <th>Status</th>
-                        <th>Current Zone</th>
+                        <th>Zone</th>
                         <th>Shift</th>
                         <th>Actions</th>
                     </tr>
@@ -961,33 +411,25 @@
                     <tr>
                         <td>
                             <div class="guard-info">
-                                <div class="guard-avatar">
-                                    {{initials}}
-                                </div>
+                                <div class="guard-avatar">{{initials}}</div>
                                 <div class="guard-details">
                                     <h6>{{name}}</h6>
-                                    <small class="text-muted">Joined {{formatDate createdAt "MMM YYYY"}}</small>
+                                    <small>Joined {{formatDate createdAt "MMM YYYY"}}</small>
                                 </div>
                             </div>
                         </td>
+                        <td><span style="font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;">{{badgeNumber}}</span></td>
+                        <td><span class="badge-role role-{{role}}">{{formatRole role}}</span></td>
                         <td>
-                            <span class="fw-bold">{{badgeNumber}}</span>
-                        </td>
-                        <td>
-                            <span class="badge-role role-{{role}}">
-                                {{formatRole role}}
-                            </span>
-                        </td>
-                        <td>
-                            <div><i class="fas fa-envelope me-1 text-muted"></i> {{email}}</div>
-                            <small><i class="fas fa-phone me-1 text-muted"></i> {{phoneNumber}}</small>
+                            <div style="font-size:.875rem;"><i class="fas fa-envelope me-1" style="color:var(--text-3);"></i>{{email}}</div>
+                            <small style="color:var(--text-3);"><i class="fas fa-phone me-1"></i>{{phoneNumber}}</small>
                         </td>
                         <td>
                             {{#if isActive}}
                                 {{#if isOnline}}
-                                <span class="status-badge status-online">Online</span>
+                                    <span class="status-badge status-online">Online</span>
                                 {{else}}
-                                <span class="status-badge status-active">Active</span>
+                                    <span class="status-badge status-active">Active</span>
                                 {{/if}}
                             {{else}}
                                 <span class="status-badge status-inactive">Inactive</span>
@@ -997,40 +439,34 @@
                             {{#if currentZone}}
                                 <span class="badge-zone">{{formatZone currentZone}}</span>
                             {{else}}
-                                <span class="text-muted">Not assigned</span>
+                                <span style="color:var(--text-3);font-size:.8rem;">—</span>
                             {{/if}}
                         </td>
                         <td>
                             {{#if currentShift}}
-                                <div><strong>{{currentShift.start}} - {{currentShift.end}}</strong></div>
-                                <small class="text-muted">{{formatDate currentShift.date}}</small>
+                                <div style="font-size:.875rem;font-weight:600;">{{currentShift.start}}–{{currentShift.end}}</div>
+                                <small style="color:var(--text-3);">{{formatDate currentShift.date}}</small>
                             {{else}}
-                                <span class="text-muted">No shift today</span>
+                                <span style="color:var(--text-3);font-size:.8rem;">No shift today</span>
                             {{/if}}
                         </td>
                         <td>
                             <div class="action-btns">
-                                <button class="action-btn view-btn" onclick="viewGuard('{{_id}}')" data-tooltip="View Details">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="action-btn edit-btn" onclick="editGuard('{{_id}}')" data-tooltip="Edit Guard">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="action-btn shift-btn" onclick="assignShift('{{_id}}')" data-tooltip="Assign Shift">
-                                    <i class="fas fa-calendar-plus"></i>
-                                </button>
-                                <button class="action-btn delete-btn" onclick="deleteGuard('{{_id}}')" data-tooltip="Delete Guard">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                <button class="action-btn view-btn"  onclick="viewGuard('{{_id}}')"   title="View Details"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn edit-btn"  onclick="editGuard('{{_id}}')"   title="Edit Guard"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn shift-btn" onclick="assignShift('{{_id}}')" title="Assign Shift"><i class="fas fa-calendar-plus"></i></button>
+                                <button class="action-btn delete-btn" onclick="deleteGuard('{{_id}}')" title="Delete Guard"><i class="fas fa-trash"></i></button>
                             </div>
                         </td>
                     </tr>
                     {{else}}
                     <tr>
-                        <td colspan="8" class="text-center py-5">
-                            <i class="fas fa-user-shield fa-4x mb-3" style="color: #cbd5e0;"></i>
-                            <h5 style="color: #94a3b8;">No guards found</h5>
-                            <p class="text-muted">Click "Add New Guard" to create your first guard profile</p>
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <i class="fas fa-user-shield"></i>
+                                <h5 style="font-size:1rem;color:var(--text-2);">No guards found</h5>
+                                <p style="font-size:.875rem;">Click "Add New Guard" to get started</p>
+                            </div>
                         </td>
                     </tr>
                     {{/each}}
@@ -1038,96 +474,65 @@
             </table>
         </div>
 
-        <!-- Shift Distribution Chart (Optional) -->
-        <div class="row mt-4">
+        <!-- Charts Row -->
+        <div class="row g-3">
             <div class="col-md-6">
-                <div class="table-container">
-                    <h5 class="mb-3"><i class="fas fa-chart-pie me-2" style="color: #667eea;"></i>Guard Distribution by Zone</h5>
+                <div class="chart-card">
+                    <h5><i class="fas fa-chart-pie"></i>Guard Distribution by Zone</h5>
                     <canvas id="zoneChart" height="250"></canvas>
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="table-container">
-                    <h5 class="mb-3"><i class="fas fa-chart-line me-2" style="color: #667eea;"></i>Performance Metrics</h5>
+                <div class="chart-card">
+                    <h5><i class="fas fa-chart-line"></i>Patrol Performance (This Week)</h5>
                     <canvas id="performanceChart" height="250"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Add Guard Modal -->
+    <!-- ── Add Guard Modal ── -->
     <div class="modal fade" id="addGuardModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-user-plus me-2"></i>
-                        Add New Guard
-                    </h5>
+                    <h5 class="modal-title"><i class="fas fa-user-plus"></i>Add New Guard</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="addGuardForm" method="POST" action="/guards/add">
                     <div class="modal-body">
-                        <div class="row g-4">
+                        <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label">
-                                    <i class="fas fa-user me-2" style="color: #667eea;"></i>
-                                    First Name <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" class="form-control" name="firstName" required>
+                                <label class="form-label"><i class="fas fa-user"></i>First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="firstName" placeholder="e.g. John" required>
                             </div>
-                            
                             <div class="col-md-6">
-                                <label class="form-label">
-                                    <i class="fas fa-user me-2" style="color: #667eea;"></i>
-                                    Last Name <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" class="form-control" name="lastName" required>
+                                <label class="form-label"><i class="fas fa-user"></i>Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="lastName" placeholder="e.g. Doe" required>
                             </div>
-                            
                             <div class="col-md-6">
-                                <label class="form-label">
-                                    <i class="fas fa-envelope me-2" style="color: #667eea;"></i>
-                                    Email <span class="text-danger">*</span>
-                                </label>
-                                <input type="email" class="form-control" name="email" required>
+                                <label class="form-label"><i class="fas fa-envelope"></i>Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" name="email" placeholder="guard@campus.ac.ke" required>
                             </div>
-                            
                             <div class="col-md-6">
-                                <label class="form-label">
-                                    <i class="fas fa-phone me-2" style="color: #667eea;"></i>
-                                    Phone Number <span class="text-danger">*</span>
-                                </label>
-                                <input type="tel" class="form-control" name="phoneNumber" required>
+                                <label class="form-label"><i class="fas fa-phone"></i>Phone <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" name="phoneNumber" placeholder="+254 7XX XXX XXX" required>
                             </div>
-                            
                             <div class="col-md-6">
-                                <label class="form-label">
-                                    <i class="fas fa-id-card me-2" style="color: #667eea;"></i>
-                                    Badge Number <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" class="form-control" name="badgeNumber" 
-                                       placeholder="GC-{{year}}-{{inc lastBadge}}" required>
+                                <label class="form-label"><i class="fas fa-id-card"></i>Badge Number <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="badgeNumber" placeholder="GC-{{year}}-XXX" required>
                             </div>
-                            
                             <div class="col-md-6">
-                                <label class="form-label">
-                                    <i class="fas fa-tag me-2" style="color: #667eea;"></i>
-                                    Role <span class="text-danger">*</span>
-                                </label>
+                                <label class="form-label"><i class="fas fa-tag"></i>Role <span class="text-danger">*</span></label>
                                 <select class="form-select" name="role" required>
                                     <option value="guard">Security Guard</option>
                                     <option value="supervisor">Supervisor</option>
                                     <option value="admin">Administrator</option>
                                 </select>
                             </div>
-                            
                             <div class="col-12">
-                                <label class="form-label">
-                                    <i class="fas fa-map-marker-alt me-2" style="color: #667eea;"></i>
-                                    Assigned Zones
-                                </label>
-                                <select class="form-select" name="zones" multiple id="zoneSelect">
+                                <label class="form-label"><i class="fas fa-map-marker-alt"></i>Assigned Zones</label>
+                                <select class="form-select" name="zones" multiple style="height:auto;padding:.5rem .875rem;">
                                     <option value="main_gate">Main Gate</option>
                                     <option value="hostels">Hostels</option>
                                     <option value="academic">Academic Area</option>
@@ -1135,141 +540,121 @@
                                     <option value="parking">Parking Lots</option>
                                     <option value="admin">Admin Block</option>
                                 </select>
-                                <small class="text-muted">Hold Ctrl/Cmd to select multiple zones</small>
+                                <div class="form-text">Hold Ctrl / Cmd to select multiple zones</div>
                             </div>
-                            
                             <div class="col-12">
-                                <label class="form-label">
-                                    <i class="fas fa-clock me-2" style="color: #667eea;"></i>
-                                    Shift Preferences
-                                </label>
-                                <div class="row">
+                                <label class="form-label"><i class="fas fa-clock"></i>Shift Preferences</label>
+                                <div class="row g-2">
                                     <div class="col-md-4">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="shiftMorning" value="morning">
-                                            <label class="form-check-label">Morning (6AM - 2PM)</label>
-                                        </div>
+                                        <label class="shift-option">
+                                            <input type="checkbox" name="shiftMorning" value="morning">
+                                            <span>
+                                                <strong style="font-size:.875rem;">Morning</strong><br>
+                                                <span style="font-size:.75rem;color:var(--text-3);">06:00 – 14:00</span>
+                                            </span>
+                                        </label>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="shiftAfternoon" value="afternoon">
-                                            <label class="form-check-label">Afternoon (2PM - 10PM)</label>
-                                        </div>
+                                        <label class="shift-option">
+                                            <input type="checkbox" name="shiftAfternoon" value="afternoon">
+                                            <span>
+                                                <strong style="font-size:.875rem;">Afternoon</strong><br>
+                                                <span style="font-size:.75rem;color:var(--text-3);">14:00 – 22:00</span>
+                                            </span>
+                                        </label>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="shiftNight" value="night">
-                                            <label class="form-check-label">Night (10PM - 6AM)</label>
-                                        </div>
+                                        <label class="shift-option">
+                                            <input type="checkbox" name="shiftNight" value="night">
+                                            <span>
+                                                <strong style="font-size:.875rem;">Night</strong><br>
+                                                <span style="font-size:.75rem;color:var(--text-3);">22:00 – 06:00</span>
+                                            </span>
+                                        </label>
                                     </div>
                                 </div>
                             </div>
-                            
                             <div class="col-12">
-                                <label class="form-label">
-                                    <i class="fas fa-phone-alt me-2" style="color: #667eea;"></i>
-                                    Emergency Contact
-                                </label>
-                                <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <input type="text" class="form-control" name="emergencyName" placeholder="Contact Name">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <input type="text" class="form-control" name="emergencyRelationship" placeholder="Relationship">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <input type="tel" class="form-control" name="emergencyPhone" placeholder="Phone Number">
-                                    </div>
+                                <label class="form-label"><i class="fas fa-phone-alt"></i>Emergency Contact</label>
+                                <div class="row g-2">
+                                    <div class="col-md-4"><input type="text" class="form-control" name="emergencyName" placeholder="Contact Name"></div>
+                                    <div class="col-md-4"><input type="text" class="form-control" name="emergencyRelationship" placeholder="Relationship"></div>
+                                    <div class="col-md-4"><input type="tel" class="form-control" name="emergencyPhone" placeholder="Phone Number"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn-outline" data-bs-dismiss="modal">
-                            <i class="fas fa-times me-2"></i>Cancel
-                        </button>
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-save me-2"></i>Add Guard
-                        </button>
+                        <button type="button" class="btn-outline-brand" data-bs-dismiss="modal"><i class="fas fa-times"></i>Cancel</button>
+                        <button type="submit" class="btn-brand"><i class="fas fa-save"></i>Add Guard</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- View Guard Modal -->
+    <!-- ── View Guard Modal ── -->
     <div class="modal fade" id="viewGuardModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-user me-2"></i>
-                        Guard Details
-                    </h5>
+                    <h5 class="modal-title"><i class="fas fa-user-shield"></i>Guard Details</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body" id="guardDetails">
-                    <!-- Dynamic content loaded via JS -->
+                    <div class="text-center py-4">
+                        <div style="width:36px;height:36px;border:3px solid var(--brand-100);border-top-color:var(--brand-500);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto;"></div>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-outline" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn-primary" onclick="editGuard(currentGuardId)">
-                        <i class="fas fa-edit me-2"></i>Edit
-                    </button>
+                    <button type="button" class="btn-outline-brand" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-brand" onclick="editGuard(currentGuardId)"><i class="fas fa-edit"></i>Edit</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Assign Shift Modal -->
+    <!-- ── Assign Shift Modal ── -->
     <div class="modal fade" id="assignShiftModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-calendar-plus me-2"></i>
-                        Assign Shift
-                    </h5>
+                    <h5 class="modal-title"><i class="fas fa-calendar-plus"></i>Assign Shift</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="assignShiftForm" method="POST" action="/shifts/assign">
                     <div class="modal-body">
                         <input type="hidden" name="guardId" id="shiftGuardId">
-                        
                         <div class="mb-3">
-                            <label class="form-label">Guard</label>
+                            <label class="form-label"><i class="fas fa-user-shield"></i>Guard</label>
                             <input type="text" class="form-control" id="shiftGuardName" readonly>
                         </div>
-                        
                         <div class="mb-3">
-                            <label class="form-label">Date <span class="text-danger">*</span></label>
+                            <label class="form-label"><i class="fas fa-calendar"></i>Date <span class="text-danger">*</span></label>
                             <input type="date" class="form-control" name="date" min="{{todayDate}}" required>
                         </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Start Time <span class="text-danger">*</span></label>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label"><i class="fas fa-clock"></i>Start Time <span class="text-danger">*</span></label>
                                 <select class="form-select" name="startTime" required>
                                     <option value="">Select time</option>
-                                    <option value="06:00">06:00 (Morning)</option>
-                                    <option value="14:00">14:00 (Afternoon)</option>
-                                    <option value="22:00">22:00 (Night)</option>
+                                    <option value="06:00">06:00 — Morning</option>
+                                    <option value="14:00">14:00 — Afternoon</option>
+                                    <option value="22:00">22:00 — Night</option>
                                 </select>
                             </div>
-                            
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">End Time <span class="text-danger">*</span></label>
+                            <div class="col-md-6">
+                                <label class="form-label"><i class="fas fa-clock"></i>End Time <span class="text-danger">*</span></label>
                                 <select class="form-select" name="endTime" required>
                                     <option value="">Select time</option>
-                                    <option value="14:00">14:00 (Morning)</option>
-                                    <option value="22:00">22:00 (Afternoon)</option>
-                                    <option value="06:00">06:00 (Night)</option>
+                                    <option value="14:00">14:00 — Morning end</option>
+                                    <option value="22:00">22:00 — Afternoon end</option>
+                                    <option value="06:00">06:00 — Night end</option>
                                 </select>
                             </div>
                         </div>
-                        
                         <div class="mb-3">
-                            <label class="form-label">Zone <span class="text-danger">*</span></label>
+                            <label class="form-label"><i class="fas fa-map-marker-alt"></i>Zone <span class="text-danger">*</span></label>
                             <select class="form-select" name="zone" required>
                                 <option value="">Select zone</option>
                                 <option value="main_gate">Main Gate</option>
@@ -1280,258 +665,202 @@
                                 <option value="admin">Admin Block</option>
                             </select>
                         </div>
-                        
                         <div class="mb-3">
-                            <label class="form-label">Notes</label>
-                            <textarea class="form-control" name="notes" rows="2" 
-                                      placeholder="Special instructions..."></textarea>
+                            <label class="form-label"><i class="fas fa-sticky-note"></i>Notes</label>
+                            <textarea class="form-control" name="notes" rows="2" placeholder="Special instructions…"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn-outline" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn-primary">Assign Shift</button>
+                        <button type="button" class="btn-outline-brand" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn-brand"><i class="fas fa-calendar-check"></i>Assign Shift</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    
+
     <script>
-        // Initialize DataTable
+        let currentGuardId = null;
+        let dtTable;
+
         $(document).ready(function() {
-            const table = $('#guardsTable').DataTable({
+            dtTable = $('#guardsTable').DataTable({
                 pageLength: 10,
                 order: [[0, 'asc']],
                 language: {
-                    search: '<i class="fas fa-search"></i>',
-                    searchPlaceholder: 'Search guards...',
-                    lengthMenu: 'Show _MENU_ guards'
+                    searchPlaceholder: 'Search guards…',
+                    lengthMenu: 'Show _MENU_ guards',
+                    info: 'Showing _START_ to _END_ of _TOTAL_ guards'
                 },
-                columnDefs: [
-                    { orderable: false, targets: 7 } // Actions column
-                ]
-            });
-
-            // Initialize Select2
-            $('#zoneSelect').select2({
-                placeholder: 'Select zones',
-                width: '100%'
+                columnDefs: [{ orderable: false, targets: 7 }]
             });
         });
 
-        // Current guard ID for modals
-        let currentGuardId = null;
-
-        // View Guard
         function viewGuard(id) {
             currentGuardId = id;
-            fetch(`/api/guards/${id}`)
-                .then(response => response.json())
-                .then(data => {
-                    const modalBody = document.getElementById('guardDetails');
-                    modalBody.innerHTML = `
-                        <div class="text-center mb-4">
-                            <div class="guard-avatar" style="width: 80px; height: 80px; margin: 0 auto; font-size: 2rem;">
-                                ${data.initials}
-                            </div>
-                            <h4 class="mt-3">${data.name}</h4>
-                            <span class="badge-role role-${data.role}">${formatRole(data.role)}</span>
+            document.getElementById('guardDetails').innerHTML = '<div class="text-center py-4"><div style="width:36px;height:36px;border:3px solid var(--brand-100);border-top-color:var(--brand-500);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto;"></div></div>';
+            new bootstrap.Modal(document.getElementById('viewGuardModal')).show();
+
+            fetch(`/api/guards/${id}`).then(r => r.json()).then(d => {
+                document.getElementById('guardDetails').innerHTML = `
+                    <div class="guard-hero">
+                        <div class="guard-hero-avatar">${d.initials}</div>
+                        <h4>${d.name}</h4>
+                        <span class="badge-role role-${d.role}">${formatRole(d.role)}</span>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="detail-group"><div class="detail-label">Badge Number</div><div class="detail-value"><i class="fas fa-id-card"></i>${d.badgeNumber}</div></div>
+                            <div class="detail-group"><div class="detail-label">Email</div><div class="detail-value"><i class="fas fa-envelope"></i>${d.email}</div></div>
+                            <div class="detail-group"><div class="detail-label">Phone</div><div class="detail-value"><i class="fas fa-phone"></i>${d.phoneNumber}</div></div>
                         </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p><strong><i class="fas fa-id-card me-2"></i>Badge:</strong> ${data.badgeNumber}</p>
-                                <p><strong><i class="fas fa-envelope me-2"></i>Email:</strong> ${data.email}</p>
-                                <p><strong><i class="fas fa-phone me-2"></i>Phone:</strong> ${data.phoneNumber}</p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong><i class="fas fa-calendar me-2"></i>Joined:</strong> ${new Date(data.createdAt).toLocaleDateString()}</p>
-                                <p><strong><i class="fas fa-clock me-2"></i>Last Login:</strong> ${data.lastLogin ? new Date(data.lastLogin).toLocaleString() : 'Never'}</p>
-                                <p><strong><i class="fas fa-map-marker-alt me-2"></i>Status:</strong> ${data.isActive ? 'Active' : 'Inactive'}</p>
-                            </div>
+                        <div class="col-md-6">
+                            <div class="detail-group"><div class="detail-label">Status</div><div class="detail-value">${d.isActive ? '<span class="status-badge status-active">Active</span>' : '<span class="status-badge status-inactive">Inactive</span>'}</div></div>
+                            <div class="detail-group"><div class="detail-label">Last Login</div><div class="detail-value"><i class="fas fa-clock"></i>${d.lastLogin ? new Date(d.lastLogin).toLocaleString() : 'Never'}</div></div>
+                            <div class="detail-group"><div class="detail-label">Joined</div><div class="detail-value"><i class="fas fa-calendar"></i>${new Date(d.createdAt).toLocaleDateString()}</div></div>
                         </div>
-                        
-                        <h6 class="mt-4"><i class="fas fa-clock me-2"></i>Shift Preferences</h6>
-                        <div class="mb-3">
-                            ${data.shiftPreferences?.preferredShifts?.map(s => 
-                                `<span class="badge bg-light text-dark me-2">${s}</span>`
-                            ).join('') || 'No preferences set'}
+                    </div>
+                    <div class="detail-group mt-1">
+                        <div class="detail-label">Shift Preferences</div>
+                        <div class="detail-value" style="flex-wrap:wrap;gap:.3rem;">
+                            ${d.shiftPreferences?.preferredShifts?.map(s => `<span class="badge-zone">${s}</span>`).join('') || '<span style="color:var(--text-3);">No preferences set</span>'}
                         </div>
-                        
-                        <h6><i class="fas fa-phone-alt me-2"></i>Emergency Contact</h6>
-                        ${data.emergencyContact ? `
-                            <p>${data.emergencyContact.name} (${data.emergencyContact.relationship})<br>
-                            ${data.emergencyContact.phone}</p>
-                        ` : '<p class="text-muted">No emergency contact provided</p>'}
-                    `;
-                    
-                    new bootstrap.Modal(document.getElementById('viewGuardModal')).show();
-                });
+                    </div>
+                    ${d.emergencyContact ? `
+                    <div class="detail-group">
+                        <div class="detail-label"><i class="fas fa-phone-alt me-1"></i>Emergency Contact</div>
+                        <div class="detail-value" style="flex-direction:column;align-items:flex-start;gap:.1rem;">
+                            <strong>${d.emergencyContact.name}</strong>
+                            <span style="color:var(--text-3);font-size:.8rem;">${d.emergencyContact.relationship} · ${d.emergencyContact.phone}</span>
+                        </div>
+                    </div>` : ''}`;
+            });
         }
 
-        // Edit Guard
-        function editGuard(id) {
-            window.location.href = `/guards/edit/${id}`;
-        }
+        function editGuard(id) { window.location.href = `/guards/edit/${id}`; }
 
-        // Delete Guard
         function deleteGuard(id) {
-            if (confirm('Are you sure you want to delete this guard? This action cannot be undone.')) {
-                fetch(`/guards/${id}`, {
-                    method: 'DELETE'
-                }).then(response => {
-                    if (response.ok) {
-                        window.location.reload();
-                    } else {
-                        alert('Failed to delete guard');
-                    }
-                });
+            if (confirm('Delete this guard? This action cannot be undone.')) {
+                fetch(`/guards/${id}`, { method: 'DELETE' })
+                    .then(r => { if (r.ok) window.location.reload(); else alert('Failed to delete guard'); });
             }
         }
 
-        // Assign Shift
         function assignShift(id) {
-            fetch(`/api/guards/${id}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('shiftGuardId').value = id;
-                    document.getElementById('shiftGuardName').value = data.name;
-                    new bootstrap.Modal(document.getElementById('assignShiftModal')).show();
-                });
+            fetch(`/api/guards/${id}`).then(r => r.json()).then(d => {
+                document.getElementById('shiftGuardId').value = id;
+                document.getElementById('shiftGuardName').value = d.name;
+                new bootstrap.Modal(document.getElementById('assignShiftModal')).show();
+            });
         }
 
-        // Export Guards
         function exportGuards() {
-            const format = prompt('Export format (pdf/excel/csv):', 'excel');
-            if (format) {
-                window.location.href = `/guards/export?format=${format}`;
-            }
+            const fmt = prompt('Export format (pdf / excel / csv):', 'excel');
+            if (fmt) window.location.href = `/guards/export?format=${fmt}`;
         }
 
-        // Filter Functions
         function applyFilters() {
-            const status = document.getElementById('statusFilter').value;
-            const role = document.getElementById('roleFilter').value;
-            const zone = document.getElementById('zoneFilter').value;
+            const status = document.getElementById('statusFilter').value.toLowerCase();
+            const role   = document.getElementById('roleFilter').value.toLowerCase();
+            const zone   = document.getElementById('zoneFilter').value.toLowerCase();
             const search = document.getElementById('searchInput').value;
-            
-            const table = $('#guardsTable').DataTable();
-            
-            // Custom filtering
-            $.fn.dataTable.ext.search.push(
-                function(settings, data, dataIndex) {
-                    const row = table.row(dataIndex).data();
-                    const rowStatus = row[4].toLowerCase();
-                    const rowRole = row[2].toLowerCase();
-                    const rowZone = row[5].toLowerCase();
-                    
-                    if (status && !rowStatus.includes(status)) return false;
-                    if (role && !rowRole.includes(role)) return false;
-                    if (zone && !rowZone.includes(zone)) return false;
-                    
+
+            $.fn.dataTable.ext.search = [];
+            if (status || role || zone) {
+                $.fn.dataTable.ext.search.push((settings, data) => {
+                    if (status && !data[4].toLowerCase().includes(status)) return false;
+                    if (role   && !data[2].toLowerCase().includes(role))   return false;
+                    if (zone   && !data[5].toLowerCase().includes(zone))   return false;
                     return true;
-                }
-            );
-            
-            table.search(search).draw();
+                });
+            }
+            dtTable.search(search).draw();
         }
 
         function resetFilters() {
-            document.getElementById('statusFilter').value = '';
-            document.getElementById('roleFilter').value = '';
-            document.getElementById('zoneFilter').value = '';
+            ['statusFilter','roleFilter','zoneFilter'].forEach(id => document.getElementById(id).value = '');
             document.getElementById('searchInput').value = '';
-            
-            const table = $('#guardsTable').DataTable();
-            $.fn.dataTable.ext.search.pop();
-            table.search('').columns().search('').draw();
+            $.fn.dataTable.ext.search = [];
+            dtTable.search('').draw();
         }
 
-        // Helper Functions
-        function formatRole(role) {
-            return role.charAt(0).toUpperCase() + role.slice(1);
-        }
+        function formatRole(r) { return r ? r.charAt(0).toUpperCase() + r.slice(1) : r; }
 
-        // Initialize Charts
+        // Charts
+        Chart.defaults.font.family = "'DM Sans', sans-serif";
+        Chart.defaults.font.size = 12;
+        Chart.defaults.color = '#94a3b8';
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Zone Distribution Chart
             const zoneCtx = document.getElementById('zoneChart')?.getContext('2d');
             if (zoneCtx) {
                 new Chart(zoneCtx, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Main Gate', 'Hostels', 'Academic', 'Perimeter', 'Parking', 'Admin'],
+                        labels: ['Main Gate','Hostels','Academic','Perimeter','Parking','Admin'],
                         datasets: [{
                             data: {{zoneStats}},
-                            backgroundColor: [
-                                '#4299e1',
-                                '#48bb78',
-                                '#ed8936',
-                                '#9f7aea',
-                                '#f56565',
-                                '#667eea'
-                            ],
-                            borderWidth: 0
+                            backgroundColor: ['#4f66e5','#12b76a','#f59e0b','#8b5cf6','#ef4444','#06b6d4'],
+                            borderWidth: 0,
+                            hoverOffset: 6
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        cutout: '65%',
                         plugins: {
-                            legend: {
-                                position: 'bottom'
-                            }
-                        }
+                            legend: { position:'bottom', labels: { padding:16, usePointStyle:true, pointStyleWidth:10 } }
+                        },
+                        animation: { animateRotate:true, duration:1000, easing:'easeOutQuart' }
                     }
                 });
             }
 
-            // Performance Chart
             const perfCtx = document.getElementById('performanceChart')?.getContext('2d');
             if (perfCtx) {
                 new Chart(perfCtx, {
                     type: 'line',
                     data: {
-                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
                         datasets: [{
                             label: 'Patrol Completion %',
-                            data: [95, 92, 98, 94, 96, 89, 91],
-                            borderColor: '#667eea',
-                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                            tension: 0.4,
-                            fill: true
+                            data: [95,92,98,94,96,89,91],
+                            borderColor: '#4f66e5',
+                            backgroundColor: ctx => {
+                                const g = ctx.chart.ctx.createLinearGradient(0,0,0,200);
+                                g.addColorStop(0,'rgba(79,102,229,.18)');
+                                g.addColorStop(1,'rgba(79,102,229,0)');
+                                return g;
+                            },
+                            borderWidth: 2, tension: .4, fill: true,
+                            pointBackgroundColor: '#4f66e5', pointRadius: 4, pointHoverRadius: 6
                         }]
                     },
                     options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
                         scales: {
-                            y: {
-                                beginAtZero: true,
-                                max: 100
-                            }
-                        }
+                            y: { beginAtZero:false, min:80, max:100, grid: { color:'rgba(0,0,0,.05)' }, border: { dash:[4,4] } },
+                            x: { grid: { display:false } }
+                        },
+                        animation: { duration:1200, easing:'easeOutQuart' }
                     }
                 });
             }
         });
 
-        // Auto-refresh every 30 seconds
+        // Auto-refresh guard status every 30 seconds
         setInterval(() => {
             fetch('/api/guards/status')
-                .then(response => response.json())
-                .then(data => {
-                    // Update online status indicators without page reload
-                    console.log('Status updated:', data);
-                });
+                .then(r => r.json())
+                .then(d => { /* update inline status dots without reload */ })
+                .catch(() => {});
         }, 30000);
     </script>
 </body>

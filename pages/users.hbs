@@ -5,899 +5,518 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Management - Campus Guard Connect</title>
-    
-    <!-- Bootstrap 5 CSS -->
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- DataTables CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-    
-    <!-- Select2 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    
-    <!-- Animate.css -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --brand-50:  #f0f3ff;
+            --brand-100: #e0e7ff;
+            --brand-400: #7c8fe8;
+            --brand-500: #4f66e5;
+            --brand-600: #3b52d4;
+            --brand-700: #2c3fb5;
+            --success:   #12b76a;
+            --warning:   #f59e0b;
+            --danger:    #ef4444;
+            --bg:        #f4f6fb;
+            --surface:   #ffffff;
+            --border:    rgba(0,0,0,.07);
+            --text-1:    #0f172a;
+            --text-2:    #475569;
+            --text-3:    #94a3b8;
+            --nav-h:     72px;
+            --radius-xl: 18px;
+            --radius-lg: 12px;
+            --radius-md: 8px;
+            --shadow-sm: 0 1px 4px rgba(0,0,0,.06);
+            --shadow-md: 0 4px 16px rgba(0,0,0,.08);
+            --shadow-lg: 0 12px 40px rgba(79,102,229,.18);
+            --ease-spring: cubic-bezier(.34,1.56,.64,1);
+            --ease-out:    cubic-bezier(.22,1,.36,1);
         }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: #f8fafc;
-            min-height: 100vh;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            background: var(--bg);
+            color: var(--text-1);
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Navbar */
+        h1,h2,h3,h4,h5,h6 { font-family: 'Syne', sans-serif; letter-spacing: -.02em; }
+        a { text-decoration: none; color: inherit; }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--brand-100); border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--brand-400); }
+
+        @keyframes fadeUp   { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
+        @keyframes badge-pop { 0%{transform:scale(0)} 70%{transform:scale(1.15)} 100%{transform:scale(1)} }
+        @keyframes spin     { to { transform:rotate(360deg); } }
+        @keyframes pulse-dot {
+            0%,100% { box-shadow:0 0 0 0 rgba(18,183,106,.5); }
+            50%      { box-shadow:0 0 0 6px rgba(18,183,106,0); }
+        }
+
+        /* ── Navbar ── */
         .navbar {
-            background: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+            position: sticky; top: 0;
+            height: var(--nav-h);
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            z-index: 1030; padding: 0 1.5rem;
+            display: flex; align-items: center; gap: 1rem;
+            animation: fadeIn .4s var(--ease-out) both;
         }
-
         .navbar-brand {
-            font-weight: 800;
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800;
+            color: var(--brand-500); display: flex; align-items: center;
+            gap: .6rem; white-space: nowrap; flex-shrink: 0;
         }
-
-        .navbar-brand i {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 2rem;
+        .brand-icon {
+            width: 36px; height: 36px; border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+            display: grid; place-items: center; color: #fff; font-size: .9rem;
+            box-shadow: 0 4px 12px rgba(79,102,229,.35); flex-shrink: 0;
         }
-
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
+        .nav-right { margin-left: auto; display: flex; align-items: center; gap: .75rem; }
+        .nav-icon-btn {
+            width: 40px; height: 40px; border: 1.5px solid var(--border);
+            border-radius: var(--radius-md); background: var(--surface);
+            display: grid; place-items: center; color: var(--text-2);
+            cursor: pointer; position: relative;
+            transition: border-color .2s, color .2s, transform .15s var(--ease-spring);
         }
-
-        .notification-badge {
-            position: relative;
-            cursor: pointer;
+        .nav-icon-btn:hover { border-color: var(--brand-400); color: var(--brand-500); transform: translateY(-1px); }
+        .nav-icon-btn .badge-count {
+            position: absolute; top: -6px; right: -6px;
+            background: var(--danger); color: #fff; font-size: .65rem; font-weight: 700;
+            min-width: 18px; height: 18px; border-radius: 99px;
+            display: grid; place-items: center; padding: 0 4px;
+            border: 2px solid var(--surface);
+            animation: badge-pop .4s var(--ease-spring) both;
         }
-
-        .notification-badge i {
-            font-size: 1.3rem;
-            color: #64748b;
-            transition: color 0.3s ease;
+        .user-chip {
+            display: flex; align-items: center; gap: .6rem;
+            padding: .3rem .5rem .3rem .3rem;
+            border: 1.5px solid var(--border); border-radius: var(--radius-lg);
+            cursor: pointer; transition: border-color .2s, background .2s;
         }
-
-        .notification-badge:hover i {
-            color: #667eea;
-        }
-
-        .badge-count {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
-            color: white;
-            font-size: 0.7rem;
-            font-weight: 600;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            cursor: pointer;
-            padding: 0.5rem 1rem;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            background: #f8fafc;
-        }
-
-        .user-profile:hover {
-            background: #eef2f6;
-        }
-
+        .user-chip:hover { border-color: var(--brand-400); background: var(--brand-50); }
         .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 1rem;
+            width: 34px; height: 34px; border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+            display: grid; place-items: center; color: #fff;
+            font-family: 'Syne', sans-serif; font-size: .8rem; font-weight: 700; flex-shrink: 0;
         }
-
-        .user-info {
-            display: none;
-        }
-
+        .user-chip-info { display: none; }
         @media (min-width: 768px) {
-            .user-info {
-                display: block;
-            }
-            
-            .user-info h6 {
-                font-weight: 700;
-                color: #1e293b;
-                margin-bottom: 0.2rem;
-                font-size: 0.9rem;
-            }
-            
-            .user-info p {
-                color: #64748b;
-                font-size: 0.8rem;
-                margin-bottom: 0;
-                text-transform: capitalize;
-            }
+            .user-chip-info { display: block; }
+            .user-chip-info .name { font-family: 'Syne', sans-serif; font-size: .8rem; font-weight: 700; color: var(--text-1); line-height: 1.2; }
+            .user-chip-info .role { font-size: .72rem; color: var(--text-3); text-transform: capitalize; }
         }
+        .dropdown-menu {
+            border: 1.5px solid var(--border) !important; border-radius: var(--radius-lg) !important;
+            box-shadow: var(--shadow-md) !important; padding: .4rem !important;
+            font-size: .875rem; animation: fadeUp .2s var(--ease-out) both;
+        }
+        .dropdown-item { border-radius: var(--radius-md); padding: .55rem .85rem; color: var(--text-2); font-weight: 500; transition: background .15s, color .15s; }
+        .dropdown-item:hover { background: var(--brand-50); color: var(--brand-600); }
+        .dropdown-item.text-danger:hover { background: #fff1f1; color: var(--danger); }
+        .dropdown-divider { border-color: var(--border); margin: .3rem 0; }
 
-        /* Main Content */
+        /* ── Main Content ── */
         .main-content {
-            padding: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
+            max-width: 1400px; margin: 0 auto;
+            padding: 1.75rem;
         }
+        .main-content > * { animation: fadeUp .4s var(--ease-out) both; }
+        .main-content > *:nth-child(1) { animation-delay: .06s; }
+        .main-content > *:nth-child(2) { animation-delay: .12s; }
+        .main-content > *:nth-child(3) { animation-delay: .18s; }
+        .main-content > *:nth-child(4) { animation-delay: .24s; }
 
-        /* Page Header */
+        /* ── Page Header ── */
         .page-header {
-            margin-bottom: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-            animation: fadeInDown 0.5s ease-out;
+            display: flex; justify-content: space-between;
+            align-items: flex-start; flex-wrap: wrap; gap: 1rem;
+            margin-bottom: 1.75rem;
         }
+        .page-header h2 { font-size: clamp(1.5rem,2.5vw,2rem); font-weight: 800; color: var(--text-1); margin-bottom: .25rem; }
+        .page-header p { color: var(--text-3); margin: 0; font-size: .9rem; }
+        .header-actions { display: flex; gap: .75rem; align-items: center; flex-shrink: 0; }
 
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .page-header h2 {
-            font-weight: 800;
-            color: #1e293b;
-            margin-bottom: 0.25rem;
-            font-size: 2rem;
-        }
-
-        .page-header p {
-            color: #64748b;
-            margin-bottom: 0;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            color: white;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-outline {
-            border: 2px solid #e2e8f0;
-            background: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            color: #4a5568;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-outline:hover {
-            border-color: #667eea;
-            color: #667eea;
-        }
-
-        /* Stats Cards */
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
+        /* ── Stat Cards ── */
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap: 1rem; margin-bottom: 1.5rem; }
         .stat-card {
-            background: white;
-            border-radius: 20px;
-            padding: 1.5rem;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            animation: fadeInUp 0.5s ease-out;
-            animation-fill-mode: both;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius-xl); padding: 1.4rem;
+            position: relative; overflow: hidden;
+            transition: transform .2s var(--ease-spring), box-shadow .2s;
         }
-
-        .stat-card:nth-child(1) { animation-delay: 0.1s; }
-        .stat-card:nth-child(2) { animation-delay: 0.2s; }
-        .stat-card:nth-child(3) { animation-delay: 0.3s; }
-        .stat-card:nth-child(4) { animation-delay: 0.4s; }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .stat-card:nth-child(1) { animation: fadeUp .4s var(--ease-out) .08s both; }
+        .stat-card:nth-child(2) { animation: fadeUp .4s var(--ease-out) .14s both; }
+        .stat-card:nth-child(3) { animation: fadeUp .4s var(--ease-out) .20s both; }
+        .stat-card:nth-child(4) { animation: fadeUp .4s var(--ease-out) .26s both; }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+        .stat-card::after {
+            content: ''; position: absolute;
+            bottom: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--brand-500), var(--brand-700));
+            transform: scaleX(0); transform-origin: left;
+            transition: transform .3s var(--ease-out);
         }
+        .stat-card:hover::after { transform: scaleX(1); }
+        .stat-icon { width: 48px; height: 48px; border-radius: var(--radius-lg); background: var(--brand-50); display: grid; place-items: center; margin-bottom: .875rem; }
+        .stat-icon i { font-size: 1.3rem; color: var(--brand-500); }
+        .stat-value { font-family: 'Syne', sans-serif; font-size: 1.875rem; font-weight: 800; color: var(--text-1); line-height: 1; margin-bottom: .25rem; }
+        .stat-label { font-size: .78rem; font-weight: 500; color: var(--text-3); text-transform: uppercase; letter-spacing: .04em; }
+        .stat-trend { font-size: .78rem; font-weight: 600; display: flex; align-items: center; gap: .25rem; margin-top: .4rem; }
+        .trend-up { color: var(--success); }
+        .trend-down { color: var(--danger); }
 
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transition: height 0.3s ease;
-        }
-
-        .stat-card:hover::before {
-            height: 100%;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
-        }
-
-        .stat-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-        }
-
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .stat-icon i {
-            font-size: 1.8rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #1e293b;
-            margin-bottom: 0.25rem;
-        }
-
-        .stat-label {
-            color: #64748b;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .stat-trend {
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .trend-up {
-            color: #48bb78;
-        }
-
-        .trend-down {
-            color: #f56565;
-        }
-
-        /* Filter Bar */
+        /* ── Filter Bar ── */
         .filter-bar {
-            background: white;
-            border-radius: 20px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
-            border: 1px solid #e2e8f0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            align-items: flex-end;
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        .filter-group {
-            flex: 1;
-            min-width: 160px;
-        }
-
-        .filter-group label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #64748b;
-            margin-bottom: 0.25rem;
-            display: block;
-        }
-
-        .filter-select, .filter-input {
-            width: 100%;
-            padding: 0.6rem 1rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .filter-select:focus, .filter-input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-            outline: none;
-        }
-
-        .filter-actions {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-
-        .btn-filter {
-            padding: 0.6rem 1.5rem;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            height: 42px;
-        }
-
-        .btn-filter:hover {
-            background: #764ba2;
-            transform: translateY(-2px);
-        }
-
-        .btn-reset {
-            padding: 0.6rem 1.5rem;
-            background: #e2e8f0;
-            color: #4a5568;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            height: 42px;
-        }
-
-        .btn-reset:hover {
-            background: #cbd5e0;
-        }
-
-        /* Users Table */
-        .table-container {
-            background: white;
-            border-radius: 20px;
-            padding: 1.5rem;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
-            border: 1px solid #e2e8f0;
-            animation: fadeIn 0.7s ease-out;
-        }
-
-        .table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius-xl); padding: 1.25rem 1.5rem;
             margin-bottom: 1.5rem;
+            display: flex; flex-wrap: wrap; gap: .875rem; align-items: flex-end;
         }
-
-        .table-header h5 {
-            font-weight: 700;
-            color: #1e293b;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .filter-group { flex: 1; min-width: 140px; }
+        .filter-group label { font-size: .72rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--text-3); margin-bottom: .35rem; display: block; }
+        .filter-select, .filter-input {
+            width: 100%; height: 40px;
+            padding: 0 .875rem;
+            border: 1.5px solid var(--border); border-radius: var(--radius-md);
+            font-family: 'DM Sans', sans-serif; font-size: .875rem;
+            background: var(--bg); color: var(--text-1);
+            transition: border-color .2s, box-shadow .2s;
         }
-
-        .table-header h5 i {
-            color: #667eea;
+        .filter-select:focus, .filter-input:focus {
+            outline: none; border-color: var(--brand-400);
+            box-shadow: 0 0 0 4px rgba(79,102,229,.12); background: var(--surface);
         }
+        .filter-input::placeholder { color: var(--text-3); }
+        .filter-actions { display: flex; gap: .5rem; align-items: center; }
 
-        .users-table {
-            width: 100%;
-            border-collapse: collapse;
+        /* ── Table Container ── */
+        .table-container {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius-xl); overflow: hidden;
         }
-
-        .users-table th {
-            text-align: left;
-            padding: 1rem;
-            background: #f8fafc;
-            font-weight: 700;
-            color: #4a5568;
-            border-bottom: 2px solid #e2e8f0;
-            font-size: 0.9rem;
+        .table-toolbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
+            flex-wrap: wrap; gap: .75rem;
         }
-
-        .users-table td {
-            padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            vertical-align: middle;
+        .table-toolbar h5 {
+            font-size: .95rem; font-weight: 700; color: var(--text-1);
+            margin: 0; display: flex; align-items: center; gap: .5rem;
         }
+        .table-toolbar h5 i { color: var(--brand-500); font-size: .9rem; }
+        .table-toolbar .meta { display: flex; align-items: center; gap: 1rem; font-size: .8rem; color: var(--text-3); }
+        .table-toolbar .meta span { display: flex; align-items: center; gap: .35rem; }
 
-        .users-table tbody tr {
-            transition: all 0.3s ease;
+        /* ── DataTable overrides ── */
+        #usersTable_wrapper .dataTables_length,
+        #usersTable_wrapper .dataTables_filter { padding: 1rem 1.5rem .5rem; }
+        #usersTable_wrapper .dataTables_length select,
+        #usersTable_wrapper .dataTables_filter input {
+            border: 1.5px solid var(--border) !important; border-radius: var(--radius-md) !important;
+            font-family: 'DM Sans', sans-serif !important; font-size: .875rem !important;
+            height: 38px; padding: 0 .75rem !important;
+            background: var(--bg) !important; color: var(--text-1) !important;
+            transition: border-color .2s, box-shadow .2s;
         }
-
-        .users-table tbody tr:hover {
-            background: #f8fafc;
+        #usersTable_wrapper .dataTables_filter input:focus {
+            outline: none !important; border-color: var(--brand-400) !important;
+            box-shadow: 0 0 0 4px rgba(79,102,229,.12) !important;
         }
-
-        .user-info-cell {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
+        #usersTable_wrapper .dataTables_info,
+        #usersTable_wrapper .dataTables_paginate { padding: .75rem 1.5rem 1rem; }
+        #usersTable_wrapper .page-link {
+            border-radius: var(--radius-md) !important; border: 1.5px solid var(--border) !important;
+            color: var(--text-2) !important; font-size: .8rem !important; font-weight: 600 !important;
+            transition: all .15s;
         }
+        #usersTable_wrapper .page-link:hover { background: var(--brand-50) !important; color: var(--brand-600) !important; border-color: var(--brand-400) !important; }
+        #usersTable_wrapper .page-item.active .page-link { background: var(--brand-500) !important; border-color: var(--brand-500) !important; color: #fff !important; }
 
+        table.dataTable thead th, table.dataTable thead td {
+            font-family: 'DM Sans', sans-serif !important;
+            font-size: .72rem !important; font-weight: 700 !important;
+            letter-spacing: .06em !important; text-transform: uppercase !important;
+            color: var(--text-3) !important; padding: .875rem 1rem !important;
+            border-bottom: 1px solid var(--border) !important;
+            background: var(--bg) !important;
+        }
+        table.dataTable tbody td {
+            padding: .875rem 1rem !important; vertical-align: middle !important;
+            border-bottom: 1px solid var(--border) !important; font-size: .875rem !important;
+        }
+        table.dataTable tbody tr { transition: background .15s; }
+        table.dataTable tbody tr:hover td { background: var(--brand-50) !important; }
+        table.dataTable tbody tr:last-child td { border-bottom: none !important; }
+
+        /* sorting icons */
+        table.dataTable thead .sorting::after,
+        table.dataTable thead .sorting_asc::after,
+        table.dataTable thead .sorting_desc::after { opacity: .4; font-size: .7rem; }
+
+        /* ── User Info Cell ── */
+        .user-info-cell { display: flex; align-items: center; gap: .875rem; }
         .user-avatar-md {
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 1rem;
+            width: 40px; height: 40px; border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+            display: grid; place-items: center; color: #fff;
+            font-family: 'Syne', sans-serif; font-size: .78rem; font-weight: 700;
+            flex-shrink: 0;
         }
+        .user-details h6 { font-size: .875rem; font-weight: 600; margin-bottom: 2px; color: var(--text-1); }
+        .user-details small { font-size: .75rem; color: var(--text-3); }
 
-        .user-details h6 {
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 0.25rem;
-        }
-
-        .user-details small {
-            color: #64748b;
-            font-size: 0.8rem;
-        }
-
+        /* ── Badges ── */
         .badge-role {
-            padding: 0.35rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
+            padding: .25rem .65rem; border-radius: 99px;
+            font-size: .72rem; font-weight: 700; letter-spacing: .02em;
             display: inline-block;
         }
-
-        .role-admin {
-            background: rgba(102, 126, 234, 0.15);
-            color: #434190;
-        }
-
-        .role-supervisor {
-            background: rgba(237, 137, 54, 0.15);
-            color: #9c4221;
-        }
-
-        .role-guard {
-            background: rgba(72, 187, 120, 0.15);
-            color: #276749;
-        }
-
-        .role-student {
-            background: rgba(160, 174, 192, 0.15);
-            color: #4a5568;
-        }
+        .role-admin      { background: rgba(79,102,229,.12); color: var(--brand-700); }
+        .role-supervisor { background: rgba(245,158,11,.12); color: #92400e; }
+        .role-guard      { background: rgba(18,183,106,.12); color: #065f46; }
+        .role-student    { background: rgba(148,163,184,.15); color: var(--text-2); }
 
         .status-badge {
-            padding: 0.35rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: inline-block;
+            padding: .25rem .65rem; border-radius: 99px;
+            font-size: .72rem; font-weight: 700;
+            display: inline-flex; align-items: center; gap: .3rem;
         }
+        .status-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; display: block; }
+        .status-active   { background: rgba(18,183,106,.12); color: #065f46; }
+        .status-active::before { background: var(--success); animation: pulse-dot 2.5s infinite; }
+        .status-inactive { background: rgba(239,68,68,.1); color: #991b1b; }
+        .status-inactive::before { background: var(--danger); }
+        .status-pending  { background: rgba(245,158,11,.12); color: #92400e; }
+        .status-pending::before { background: var(--warning); }
 
-        .status-active {
-            background: rgba(72, 187, 120, 0.15);
-            color: #276749;
-        }
-
-        .status-inactive {
-            background: rgba(245, 101, 101, 0.15);
-            color: #c53030;
-        }
-
-        .status-pending {
-            background: rgba(245, 158, 11, 0.15);
-            color: #b45309;
-        }
-
-        .action-btns {
-            display: flex;
-            gap: 0.5rem;
-        }
-
+        /* ── Action Buttons ── */
+        .action-btns { display: flex; gap: .35rem; }
         .action-btn {
-            width: 32px;
-            height: 32px;
-            border: none;
-            background: transparent;
-            border-radius: 6px;
-            color: #94a3b8;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
+            width: 32px; height: 32px; border: none;
+            background: transparent; border-radius: var(--radius-md);
+            color: var(--text-3); cursor: pointer;
+            display: grid; place-items: center; font-size: .85rem;
+            transition: background .15s, color .15s, transform .15s var(--ease-spring);
         }
+        .action-btn:hover { transform: translateY(-2px); }
+        .view-btn:hover   { background: rgba(59,130,246,.1); color: #2563eb; }
+        .edit-btn:hover   { background: rgba(18,183,106,.1); color: #065f46; }
+        .reset-btn:hover  { background: rgba(139,92,246,.1); color: #6d28d9; }
+        .delete-btn:hover { background: rgba(239,68,68,.1); color: #991b1b; }
 
-        .action-btn:hover {
-            background: #eef2f6;
-            color: #667eea;
-            transform: translateY(-2px);
+        /* ── Buttons ── */
+        .btn-primary, .btn-brand {
+            background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+            border: none; color: #fff;
+            font-family: 'DM Sans', sans-serif; font-weight: 600;
+            border-radius: var(--radius-md); padding: .6rem 1.25rem;
+            display: inline-flex; align-items: center; gap: .5rem;
+            font-size: .875rem; cursor: pointer;
+            transition: transform .15s var(--ease-spring), box-shadow .15s;
         }
+        .btn-primary:hover, .btn-brand:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79,102,229,.35); color: #fff; }
+        .btn-primary:active, .btn-brand:active { transform: translateY(0); }
 
-        .action-btn.view-btn:hover {
-            color: #4299e1;
+        .btn-outline-brand {
+            border: 1.5px solid var(--border); background: var(--surface);
+            font-family: 'DM Sans', sans-serif; font-weight: 600;
+            border-radius: var(--radius-md); padding: .6rem 1.25rem;
+            display: inline-flex; align-items: center; gap: .5rem;
+            font-size: .875rem; color: var(--text-2); cursor: pointer;
+            transition: border-color .2s, color .2s, background .2s, transform .15s var(--ease-spring);
         }
+        .btn-outline-brand:hover { border-color: var(--brand-400); color: var(--brand-600); background: var(--brand-50); transform: translateY(-1px); }
 
-        .action-btn.edit-btn:hover {
-            color: #48bb78;
-        }
+        .btn-filter { height: 40px; padding: 0 1.25rem; background: var(--brand-500); color: #fff; border: none; border-radius: var(--radius-md); font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: .875rem; cursor: pointer; display: inline-flex; align-items: center; gap: .4rem; transition: background .2s, transform .15s var(--ease-spring); }
+        .btn-filter:hover { background: var(--brand-700); transform: translateY(-1px); }
+        .btn-reset  { height: 40px; padding: 0 1.25rem; background: var(--bg); color: var(--text-2); border: 1.5px solid var(--border); border-radius: var(--radius-md); font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: .875rem; cursor: pointer; display: inline-flex; align-items: center; gap: .4rem; transition: background .2s; }
+        .btn-reset:hover { background: var(--border); }
 
-        .action-btn.reset-btn:hover {
-            color: #9f7aea;
-        }
-
-        .action-btn.delete-btn:hover {
-            color: #f56565;
-        }
-
-        /* Modal Styles */
-        .modal-content {
-            border: none;
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
+        /* ── Modal ── */
+        .modal-content { border: none !important; border-radius: var(--radius-xl) !important; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.15) !important; }
         .modal-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1.5rem;
-            border: none;
+            background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+            color: #fff; padding: 1.25rem 1.5rem; border: none;
         }
+        .modal-header .modal-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: .5rem; }
+        .modal-header .btn-close { filter: brightness(0) invert(1); opacity: .8; }
+        .modal-body { padding: 1.75rem; }
+        .modal-footer { padding: 1.25rem 1.5rem; border-top: 1px solid var(--border); background: var(--bg); }
 
-        .modal-header .btn-close {
-            filter: brightness(0) invert(1);
-        }
-
-        .modal-body {
-            padding: 2rem;
-        }
-
-        .modal-footer {
-            padding: 1.5rem;
-            border-top: 2px solid #e2e8f0;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: #4a5568;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-        }
-
+        .form-label { font-family: 'DM Sans', sans-serif; font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--text-2); margin-bottom: .4rem; display: flex; align-items: center; gap: .35rem; }
+        .form-label i { color: var(--brand-500); font-size: .85rem; }
         .form-control, .form-select {
-            height: 48px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 0.75rem 1rem;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
+            height: 44px; border: 1.5px solid var(--border);
+            border-radius: var(--radius-md); padding: 0 .875rem;
+            font-family: 'DM Sans', sans-serif; font-size: .9rem;
+            color: var(--text-1); background: var(--bg);
+            transition: border-color .2s, box-shadow .2s, background .2s;
         }
+        textarea.form-control { height: auto; padding: .75rem .875rem; }
+        .form-control:focus, .form-select:focus { outline: none; border-color: var(--brand-400); box-shadow: 0 0 0 4px rgba(79,102,229,.12); background: var(--surface); }
+        .form-control.is-invalid, .form-select.is-invalid { border-color: var(--danger); }
+        .invalid-feedback { color: var(--danger); font-size: .78rem; }
+        .form-text { font-size: .75rem; color: var(--text-3); }
+        .form-check-input:checked { background-color: var(--brand-500); border-color: var(--brand-500); }
 
-        .form-control:focus, .form-select:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-            outline: none;
+        /* ── View User Modal ── */
+        .user-hero {
+            text-align: center; padding: 1.5rem 1rem;
+            border-bottom: 1px solid var(--border); margin-bottom: 1.25rem;
         }
-
-        .form-control.is-invalid, .form-select.is-invalid {
-            border-color: #f56565;
+        .user-hero-avatar {
+            width: 72px; height: 72px; border-radius: var(--radius-lg);
+            background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+            display: grid; place-items: center; color: #fff;
+            font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700;
+            margin: 0 auto 1rem;
         }
+        .user-hero h4 { font-size: 1.1rem; font-weight: 700; margin-bottom: .35rem; }
 
-        .invalid-feedback {
-            color: #f56565;
-            font-size: 0.8rem;
-            margin-top: 0.25rem;
-        }
+        .detail-group { margin-bottom: 1rem; }
+        .detail-label { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); margin-bottom: .3rem; }
+        .detail-value { background: var(--bg); border-radius: var(--radius-md); padding: .55rem .875rem; font-size: .875rem; color: var(--text-1); display: flex; align-items: center; gap: .5rem; }
+        .detail-value i { color: var(--text-3); font-size: .85rem; flex-shrink: 0; }
 
-        /* User Details in Modal */
-        .user-detail-label {
-            font-weight: 600;
-            color: #4a5568;
-            margin-bottom: 0.25rem;
-            font-size: 0.9rem;
-        }
+        /* ── Activity Timeline ── */
+        .activity-timeline { padding-left: 1.5rem; position: relative; }
+        .activity-item { position: relative; padding-bottom: 1rem; }
+        .activity-item::before { content: ''; position: absolute; left: -1.25rem; top: 4px; width: 8px; height: 8px; border-radius: 50%; background: var(--brand-500); border: 2px solid var(--surface); box-shadow: 0 0 0 2px var(--brand-500); }
+        .activity-item::after  { content: ''; position: absolute; left: -1.05rem; top: 14px; bottom: 0; width: 2px; background: var(--border); }
+        .activity-item:last-child::after { display: none; }
+        .activity-time   { font-size: .72rem; color: var(--text-3); margin-bottom: 2px; }
+        .activity-action { font-size: .875rem; font-weight: 600; color: var(--text-1); margin-bottom: 2px; }
+        .activity-desc   { font-size: .8rem; color: var(--text-2); }
 
-        .user-detail-value {
-            color: #1e293b;
-            margin-bottom: 1rem;
-            padding: 0.5rem;
-            background: #f8fafc;
-            border-radius: 8px;
-        }
+        /* ── Alert override ── */
+        .alert-info { background: var(--brand-50); border: 1.5px solid var(--brand-100); color: var(--brand-700); border-radius: var(--radius-md); font-size: .875rem; }
 
-        .activity-timeline {
-            position: relative;
-            padding-left: 2rem;
-        }
+        /* ── Empty state ── */
+        .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-3); }
+        .empty-state i { font-size: 2.5rem; display: block; margin-bottom: .75rem; color: var(--border); }
 
-        .activity-item {
-            position: relative;
-            padding-bottom: 1rem;
-        }
-
-        .activity-item::before {
-            content: '';
-            position: absolute;
-            left: -1.5rem;
-            top: 0;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #667eea;
-            border: 2px solid white;
-            box-shadow: 0 0 0 2px #667eea;
-        }
-
-        .activity-item::after {
-            content: '';
-            position: absolute;
-            left: -1.25rem;
-            top: 1rem;
-            bottom: 0;
-            width: 2px;
-            background: #e2e8f0;
-        }
-
-        .activity-item:last-child::after {
-            display: none;
-        }
-
-        .activity-time {
-            font-size: 0.8rem;
-            color: #94a3b8;
-            margin-bottom: 0.25rem;
-        }
-
-        .activity-action {
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 0.25rem;
-        }
-
-        .activity-desc {
-            font-size: 0.9rem;
-            color: #64748b;
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #e2e8f0;
-            border-top-color: #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 2rem auto;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Responsive */
+        /* ── Responsive ── */
         @media (max-width: 768px) {
-            .main-content {
-                padding: 1rem;
-            }
-            
-            .stats-row {
-                grid-template-columns: 1fr 1fr;
-            }
-            
-            .filter-bar {
-                flex-direction: column;
-            }
-            
-            .filter-group {
-                width: 100%;
-            }
-            
-            .users-table {
-                display: block;
-                overflow-x: auto;
-            }
-            
-            .user-info-cell {
-                min-width: 200px;
-            }
+            .main-content { padding: 1rem; }
+            .stats-row { grid-template-columns: 1fr 1fr; }
+            .filter-bar { flex-direction: column; }
+            .filter-group { width: 100%; }
+            .page-header { flex-direction: column; }
+            table.dataTable { display: block; overflow-x: auto; }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root { --bg: #0d1117; --surface: #161b22; --border: rgba(255,255,255,.08); --text-1: #f0f6fc; --text-2: #8b949e; --text-3: #484f58; }
+            .stat-icon { background: rgba(79,102,229,.15); }
+            .filter-select, .filter-input, .form-control, .form-select { background: var(--bg); color: var(--text-1); }
+            table.dataTable tbody tr:hover td { background: rgba(79,102,229,.06) !important; }
         }
     </style>
 </head>
 <body>
+
     <!-- Navbar -->
     <nav class="navbar">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/dashboard">
-                <i class="fas fa-shield-alt"></i>
-                CampusGuard Connect
-            </a>
-            
-            <div class="user-menu">
-                <div class="notification-badge">
-                    <i class="far fa-bell"></i>
-                    <span class="badge-count">{{notificationCount}}</span>
-                </div>
-                
-                <div class="dropdown">
-                    <div class="user-profile" data-bs-toggle="dropdown">
-                        <div class="user-avatar">
-                            {{#if user}}
-                                {{user.initials}}
-                            {{else}}
-                                U
-                            {{/if}}
-                        </div>
-                        <div class="user-info">
-                            <h6>{{user.name}}</h6>
-                            <p>{{user.role}}</p>
-                        </div>
+        <a class="navbar-brand" href="/dashboard">
+            <span class="brand-icon"><i class="fas fa-shield-alt"></i></span>
+            CampusGuard Connect
+        </a>
+
+        <div class="nav-right">
+            <div class="nav-icon-btn" role="button" aria-label="Notifications">
+                <i class="far fa-bell"></i>
+                <span class="badge-count">{{notificationCount}}</span>
+            </div>
+
+            <div class="dropdown">
+                <div class="user-chip" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="user-avatar">{{#if user}}{{user.initials}}{{else}}U{{/if}}</div>
+                    <div class="user-chip-info">
+                        <div class="name">{{user.name}}</div>
+                        <div class="role">{{user.role}}</div>
                     </div>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
-                        <li><a class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i>Settings</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                    </ul>
+                    <i class="fas fa-chevron-down ms-1" style="font-size:.7rem;color:var(--text-3);"></i>
                 </div>
+                <ul class="dropdown-menu dropdown-menu-end mt-1">
+                    <li><a class="dropdown-item" href="/profile"><i class="fas fa-user fa-fw me-2"></i>Profile</a></li>
+                    <li><a class="dropdown-item" href="/settings"><i class="fas fa-cog fa-fw me-2"></i>Settings</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt fa-fw me-2"></i>Logout</a></li>
+                </ul>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
     <div class="main-content">
+
         <!-- Page Header -->
         <div class="page-header">
             <div>
-                <h2><i class="fas fa-users-cog me-2" style="color: #667eea;"></i>User Management</h2>
+                <h2><i class="fas fa-users-cog me-2" style="color:var(--brand-500);font-size:1.5rem;"></i>User Management</h2>
                 <p>Manage system users, roles, and permissions</p>
             </div>
-            
             <div class="header-actions">
-                <button class="btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
-                    <i class="fas fa-user-plus"></i>
-                    Add New User
+                <button class="btn-brand" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                    <i class="fas fa-user-plus"></i>Add New User
                 </button>
-                <button class="btn-outline" onclick="exportUsers()">
-                    <i class="fas fa-download"></i>
-                    Export
+                <button class="btn-outline-brand" onclick="exportUsers()">
+                    <i class="fas fa-download"></i>Export
                 </button>
             </div>
         </div>
 
-        <!-- Stats Cards -->
+        <!-- Stat Cards -->
         <div class="stats-row">
             <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <span class="stat-trend trend-up">
-                        <i class="fas fa-arrow-up"></i> {{stats.newThisMonth}} this month
-                    </span>
-                </div>
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
                 <div class="stat-value">{{stats.totalUsers}}</div>
                 <div class="stat-label">Total Users</div>
+                <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> {{stats.newThisMonth}} this month</div>
             </div>
-
             <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-icon">
-                        <i class="fas fa-user-shield"></i>
-                    </div>
-                </div>
+                <div class="stat-icon"><i class="fas fa-user-shield"></i></div>
                 <div class="stat-value">{{stats.activeUsers}}</div>
                 <div class="stat-label">Active Users</div>
-                <small class="text-muted">{{stats.activePercentage}}% of total</small>
+                <div class="stat-trend" style="color:var(--text-3);">{{stats.activePercentage}}% of total</div>
             </div>
-
             <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-icon">
-                        <i class="fas fa-user-graduate"></i>
-                    </div>
-                </div>
+                <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
                 <div class="stat-value">{{stats.guardCount}}</div>
                 <div class="stat-label">Security Guards</div>
-                <small class="text-muted">{{stats.supervisorCount}} supervisors</small>
+                <div class="stat-trend" style="color:var(--text-3);">{{stats.supervisorCount}} supervisors</div>
             </div>
-
             <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-icon">
-                        <i class="fas fa-user-clock"></i>
-                    </div>
-                </div>
+                <div class="stat-icon"><i class="fas fa-circle" style="font-size:.85rem;color:var(--success);animation:pulse-dot 2.5s infinite;"></i></div>
                 <div class="stat-value">{{stats.onlineNow}}</div>
                 <div class="stat-label">Online Now</div>
-                <small class="text-muted">Last 30 minutes</small>
+                <div class="stat-trend" style="color:var(--text-3);">Last 30 minutes</div>
             </div>
         </div>
 
         <!-- Filter Bar -->
         <div class="filter-bar">
             <div class="filter-group">
-                <label><i class="fas fa-filter me-1"></i>Role</label>
+                <label>Role</label>
                 <select class="filter-select" id="roleFilter">
                     <option value="">All Roles</option>
                     <option value="admin">Admin</option>
@@ -906,9 +525,8 @@
                     <option value="student">Student</option>
                 </select>
             </div>
-
             <div class="filter-group">
-                <label><i class="fas fa-circle me-1"></i>Status</label>
+                <label>Status</label>
                 <select class="filter-select" id="statusFilter">
                     <option value="">All Status</option>
                     <option value="active">Active</option>
@@ -916,42 +534,33 @@
                     <option value="pending">Pending</option>
                 </select>
             </div>
-
             <div class="filter-group">
-                <label><i class="fas fa-search me-1"></i>Search</label>
-                <input type="text" class="filter-input" id="searchInput" placeholder="Name, email, badge...">
+                <label>Search</label>
+                <input type="text" class="filter-input" id="searchInput" placeholder="Name, email, badge…">
             </div>
-
             <div class="filter-actions">
-                <button class="btn-filter" onclick="applyFilters()">
-                    <i class="fas fa-filter me-2"></i>Apply
-                </button>
-                <button class="btn-reset" onclick="resetFilters()">
-                    <i class="fas fa-undo me-2"></i>Reset
-                </button>
+                <button class="btn-filter" onclick="applyFilters()"><i class="fas fa-filter"></i>Apply</button>
+                <button class="btn-reset" onclick="resetFilters()"><i class="fas fa-undo"></i>Reset</button>
             </div>
         </div>
 
         <!-- Users Table -->
         <div class="table-container">
-            <div class="table-header">
-                <h5>
-                    <i class="fas fa-list"></i>
-                    System Users
-                </h5>
-                <div>
-                    <span class="me-3"><i class="fas fa-check-circle text-success me-1"></i> {{stats.activeUsers}} Active</span>
-                    <span><i class="fas fa-clock text-warning me-1"></i> {{stats.pendingUsers}} Pending</span>
+            <div class="table-toolbar">
+                <h5><i class="fas fa-list"></i>System Users</h5>
+                <div class="meta">
+                    <span><i class="fas fa-check-circle" style="color:var(--success);"></i>{{stats.activeUsers}} Active</span>
+                    <span><i class="fas fa-clock" style="color:var(--warning);"></i>{{stats.pendingUsers}} Pending</span>
                 </div>
             </div>
-            
-            <table class="users-table" id="usersTable">
+
+            <table class="table mb-0" id="usersTable" style="width:100%">
                 <thead>
                     <tr>
                         <th>User</th>
                         <th>Role</th>
                         <th>Contact</th>
-                        <th>Badge/ID</th>
+                        <th>Badge / ID</th>
                         <th>Status</th>
                         <th>Last Active</th>
                         <th>Joined</th>
@@ -963,31 +572,23 @@
                     <tr>
                         <td>
                             <div class="user-info-cell">
-                                <div class="user-avatar-md">
-                                    {{this.initials}}
-                                </div>
+                                <div class="user-avatar-md">{{this.initials}}</div>
                                 <div class="user-details">
                                     <h6>{{this.name}}</h6>
-                                    <small class="text-muted">{{this.email}}</small>
+                                    <small>{{this.email}}</small>
                                 </div>
                             </div>
                         </td>
+                        <td><span class="badge-role role-{{this.role}}">{{formatRole this.role}}</span></td>
                         <td>
-                            <span class="badge-role role-{{this.role}}">
-                                {{formatRole this.role}}
-                            </span>
-                        </td>
-                        <td>
-                            <div><i class="fas fa-phone me-1 text-muted"></i> {{this.phoneNumber}}</div>
-                            {{#if this.institution}}
-                            <small class="text-muted"><i class="fas fa-building me-1"></i> {{this.institution}}</small>
-                            {{/if}}
+                            <div style="font-size:.875rem;"><i class="fas fa-phone me-1" style="color:var(--text-3);"></i>{{this.phoneNumber}}</div>
+                            {{#if this.institution}}<small style="color:var(--text-3);"><i class="fas fa-building me-1"></i>{{this.institution}}</small>{{/if}}
                         </td>
                         <td>
                             {{#if this.badgeNumber}}
-                                <span class="fw-bold">{{this.badgeNumber}}</span>
+                                <span style="font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;color:var(--text-1);">{{this.badgeNumber}}</span>
                             {{else}}
-                                <span class="text-muted">N/A</span>
+                                <span style="color:var(--text-3);">—</span>
                             {{/if}}
                         </td>
                         <td>
@@ -999,39 +600,33 @@
                         </td>
                         <td>
                             {{#if this.lastLogin}}
-                                <div>{{formatDate this.lastLogin "MMM DD, YYYY"}}</div>
-                                <small class="text-muted">{{formatDate this.lastLogin "HH:mm"}}</small>
+                                <div style="font-size:.875rem;">{{formatDate this.lastLogin "MMM DD, YYYY"}}</div>
+                                <small style="color:var(--text-3);">{{formatDate this.lastLogin "HH:mm"}}</small>
                             {{else}}
-                                <span class="text-muted">Never</span>
+                                <span style="color:var(--text-3);">Never</span>
                             {{/if}}
                         </td>
                         <td>
-                            <div>{{formatDate this.createdAt "MMM DD, YYYY"}}</div>
-                            <small class="text-muted">{{formatDate this.createdAt "HH:mm"}}</small>
+                            <div style="font-size:.875rem;">{{formatDate this.createdAt "MMM DD, YYYY"}}</div>
+                            <small style="color:var(--text-3);">{{formatDate this.createdAt "HH:mm"}}</small>
                         </td>
                         <td>
                             <div class="action-btns">
-                                <button class="action-btn view-btn" onclick="viewUser('{{this._id}}')" title="View Details">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="action-btn edit-btn" onclick="editUser('{{this._id}}')" title="Edit User">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="action-btn reset-btn" onclick="resetPassword('{{this._id}}')" title="Reset Password">
-                                    <i class="fas fa-key"></i>
-                                </button>
-                                <button class="action-btn delete-btn" onclick="deleteUser('{{this._id}}')" title="Delete User">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                <button class="action-btn view-btn"  onclick="viewUser('{{this._id}}')"  title="View Details"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn edit-btn"  onclick="editUser('{{this._id}}')"  title="Edit User"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn reset-btn" onclick="resetPassword('{{this._id}}')" title="Reset Password"><i class="fas fa-key"></i></button>
+                                <button class="action-btn delete-btn" onclick="deleteUser('{{this._id}}')" title="Delete User"><i class="fas fa-trash"></i></button>
                             </div>
                         </td>
                     </tr>
                     {{else}}
                     <tr>
-                        <td colspan="8" class="text-center py-5">
-                            <i class="fas fa-users fa-4x mb-3" style="color: #cbd5e0;"></i>
-                            <h5 style="color: #94a3b8;">No users found</h5>
-                            <p class="text-muted">Click "Add New User" to create your first user</p>
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <i class="fas fa-users"></i>
+                                <h5 style="font-size:1rem;color:var(--text-2);">No users found</h5>
+                                <p style="font-size:.875rem;">Click "Add New User" to get started</p>
+                            </div>
                         </td>
                     </tr>
                     {{/each}}
@@ -1040,107 +635,69 @@
         </div>
     </div>
 
-    <!-- Add User Modal -->
+    <!-- ── Add User Modal ── -->
     <div class="modal fade" id="addUserModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-user-plus me-2"></i>
-                        Add New User
-                    </h5>
+                    <h5 class="modal-title"><i class="fas fa-user-plus"></i>Add New User</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="addUserForm" method="POST" action="/admin/users/add">
                     <div class="modal-body">
-                        <div class="row g-4">
+                        <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label">
-                                    <i class="fas fa-user me-2" style="color: #667eea;"></i>
-                                    First Name <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" class="form-control" name="firstName" required>
+                                <label class="form-label"><i class="fas fa-user"></i>First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="firstName" placeholder="e.g. John" required>
                             </div>
-                            
                             <div class="col-md-6">
-                                <label class="form-label">
-                                    <i class="fas fa-user me-2" style="color: #667eea;"></i>
-                                    Last Name <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" class="form-control" name="lastName" required>
+                                <label class="form-label"><i class="fas fa-user"></i>Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="lastName" placeholder="e.g. Doe" required>
                             </div>
-                            
                             <div class="col-md-6">
-                                <label class="form-label">
-                                    <i class="fas fa-envelope me-2" style="color: #667eea;"></i>
-                                    Email <span class="text-danger">*</span>
-                                </label>
-                                <input type="email" class="form-control" name="email" required>
+                                <label class="form-label"><i class="fas fa-envelope"></i>Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" name="email" placeholder="john@campus.ac.ke" required>
                             </div>
-                            
                             <div class="col-md-6">
-                                <label class="form-label">
-                                    <i class="fas fa-phone me-2" style="color: #667eea;"></i>
-                                    Phone Number
-                                </label>
-                                <input type="tel" class="form-control" name="phoneNumber">
+                                <label class="form-label"><i class="fas fa-phone"></i>Phone Number</label>
+                                <input type="tel" class="form-control" name="phoneNumber" placeholder="+254 7XX XXX XXX">
                             </div>
-                            
                             <div class="col-md-6">
-                                <label class="form-label">
-                                    <i class="fas fa-tag me-2" style="color: #667eea;"></i>
-                                    Role <span class="text-danger">*</span>
-                                </label>
+                                <label class="form-label"><i class="fas fa-tag"></i>Role <span class="text-danger">*</span></label>
                                 <select class="form-select" name="role" required>
-                                    <option value="">Select role...</option>
+                                    <option value="">Select role…</option>
                                     <option value="admin">Administrator</option>
                                     <option value="supervisor">Supervisor</option>
                                     <option value="guard">Security Guard</option>
                                     <option value="student">Student</option>
                                 </select>
                             </div>
-                            
                             <div class="col-md-6">
-                                <label class="form-label">
-                                    <i class="fas fa-id-card me-2" style="color: #667eea;"></i>
-                                    Badge Number
-                                </label>
-                                <input type="text" class="form-control" name="badgeNumber" 
-                                       placeholder="GC-{{year}}-{{inc lastBadge}}">
-                                <small class="text-muted">Required for guards/supervisors</small>
+                                <label class="form-label"><i class="fas fa-id-card"></i>Badge Number</label>
+                                <input type="text" class="form-control" name="badgeNumber" placeholder="GC-{{year}}-XXX">
+                                <div class="form-text">Required for guards &amp; supervisors</div>
                             </div>
-                            
                             <div class="col-12">
-                                <label class="form-label">
-                                    <i class="fas fa-building me-2" style="color: #667eea;"></i>
-                                    Institution
-                                </label>
-                                <input type="text" class="form-control" name="institution" 
-                                       placeholder="University/Organization">
+                                <label class="form-label"><i class="fas fa-building"></i>Institution</label>
+                                <input type="text" class="form-control" name="institution" placeholder="University / Organization name">
                             </div>
-                            
                             <div class="col-12">
-                                <label class="form-label">
-                                    <i class="fas fa-lock me-2" style="color: #667eea;"></i>
-                                    Temporary Password
-                                </label>
+                                <label class="form-label"><i class="fas fa-lock"></i>Temporary Password</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="tempPassword" 
-                                           name="tempPassword" value="{{generatePassword}}" readonly>
-                                    <button class="btn btn-outline-secondary" type="button" onclick="generateNewPassword()">
+                                    <input type="text" class="form-control" id="tempPassword" name="tempPassword" value="{{generatePassword}}" readonly style="font-family:'Courier New',monospace;letter-spacing:.05em;">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="generateNewPassword()" title="Regenerate">
                                         <i class="fas fa-sync-alt"></i>
                                     </button>
-                                    <button class="btn btn-outline-secondary" type="button" onclick="copyPassword()">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="copyPassword()" title="Copy">
                                         <i class="fas fa-copy"></i>
                                     </button>
                                 </div>
-                                <small class="text-muted">User can change this after first login</small>
+                                <div class="form-text">User can change this after first login</div>
                             </div>
-                            
                             <div class="col-12">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="sendEmail" id="sendEmail" checked>
-                                    <label class="form-check-label" for="sendEmail">
+                                    <label class="form-check-label" for="sendEmail" style="font-size:.875rem;font-weight:500;color:var(--text-2);">
                                         Send welcome email with login credentials
                                     </label>
                                 </div>
@@ -1148,337 +705,215 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn-outline" data-bs-dismiss="modal">
-                            <i class="fas fa-times me-2"></i>Cancel
-                        </button>
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-save me-2"></i>Add User
-                        </button>
+                        <button type="button" class="btn-outline-brand" data-bs-dismiss="modal"><i class="fas fa-times"></i>Cancel</button>
+                        <button type="submit" class="btn-brand"><i class="fas fa-save"></i>Add User</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- View User Modal -->
+    <!-- ── View User Modal ── -->
     <div class="modal fade" id="viewUserModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-user me-2"></i>
-                        User Details
-                    </h5>
+                    <h5 class="modal-title"><i class="fas fa-user"></i>User Details</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body" id="userDetails">
-                    <!-- Dynamic content loaded via JS -->
+                    <div class="text-center py-4">
+                        <div style="width:36px;height:36px;border:3px solid var(--brand-100);border-top-color:var(--brand-500);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto;"></div>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-outline" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn-primary" onclick="editUser(currentUserId)">
-                        <i class="fas fa-edit me-2"></i>Edit User
-                    </button>
+                    <button type="button" class="btn-outline-brand" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-brand" onclick="editUser(currentUserId)"><i class="fas fa-edit"></i>Edit User</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Reset Password Confirmation Modal -->
+    <!-- ── Reset Password Modal ── -->
     <div class="modal fade" id="resetPasswordModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-key me-2"></i>
-                        Reset Password
-                    </h5>
+                    <h5 class="modal-title"><i class="fas fa-key"></i>Reset Password</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to reset the password for <strong id="resetUserName"></strong>?</p>
-                    <p>A new temporary password will be generated and sent to their email.</p>
-                    
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>
-                        New password: <strong id="newPassword"></strong>
+                    <p style="font-size:.9rem;color:var(--text-2);">Reset password for <strong id="resetUserName" style="color:var(--text-1);"></strong>? A new temporary password will be sent to their email.</p>
+                    <div class="alert-info p-3 rounded mt-3" style="display:flex;align-items:center;gap:.75rem;">
+                        <i class="fas fa-info-circle" style="color:var(--brand-500);flex-shrink:0;"></i>
+                        <span style="font-size:.875rem;">New password: <strong id="newPassword" style="font-family:'Courier New',monospace;letter-spacing:.05em;"></strong></span>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-outline" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn-primary" onclick="confirmResetPassword()">
-                        <i class="fas fa-key me-2"></i>Reset Password
-                    </button>
+                    <button type="button" class="btn-outline-brand" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-brand" onclick="confirmResetPassword()"><i class="fas fa-key"></i>Reset Password</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    
+
     <script>
-        // Initialize DataTable
+        let currentUserId = null;
+        let newTempPassword = '';
+        let dtTable;
+
         $(document).ready(function() {
-            const table = $('#usersTable').DataTable({
+            dtTable = $('#usersTable').DataTable({
                 pageLength: 10,
                 order: [[6, 'desc']],
                 language: {
-                    search: '<i class="fas fa-search"></i>',
-                    searchPlaceholder: 'Search users...',
-                    lengthMenu: 'Show _MENU_ users'
+                    searchPlaceholder: 'Search users…',
+                    lengthMenu: 'Show _MENU_ users',
+                    info: 'Showing _START_ to _END_ of _TOTAL_ users',
+                    emptyTable: '<div class="empty-state"><i class="fas fa-users"></i><p>No users found</p></div>'
                 },
-                columnDefs: [
-                    { orderable: false, targets: 7 } // Actions column
-                ]
-            });
-
-            // Initialize Select2 for role filter
-            $('#roleFilter').select2({
-                minimumResultsForSearch: Infinity,
-                width: '100%'
+                columnDefs: [{ orderable: false, targets: 7 }]
             });
         });
 
-        // Current user ID for modals
-        let currentUserId = null;
-        let newTempPassword = '';
-
-        // View User
         function viewUser(id) {
             currentUserId = id;
+            document.getElementById('userDetails').innerHTML = '<div class="text-center py-4"><div style="width:36px;height:36px;border:3px solid var(--brand-100);border-top-color:var(--brand-500);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto;"></div></div>';
+            new bootstrap.Modal(document.getElementById('viewUserModal')).show();
+
             fetch(`/api/users/${id}`)
-                .then(response => response.json())
-                .then(data => {
-                    const modalBody = document.getElementById('userDetails');
-                    modalBody.innerHTML = `
-                        <div class="text-center mb-4">
-                            <div class="user-avatar-md" style="width: 80px; height: 80px; margin: 0 auto; font-size: 2rem;">
-                                ${data.initials}
-                            </div>
-                            <h4 class="mt-3">${data.name}</h4>
-                            <span class="badge-role role-${data.role}">${formatRole(data.role)}</span>
+                .then(r => r.json())
+                .then(d => {
+                    document.getElementById('userDetails').innerHTML = `
+                        <div class="user-hero">
+                            <div class="user-hero-avatar">${d.initials}</div>
+                            <h4>${d.name}</h4>
+                            <span class="badge-role role-${d.role}">${formatRole(d.role)}</span>
                         </div>
-                        
-                        <div class="row">
+                        <div class="row g-3">
                             <div class="col-md-6">
-                                <div class="user-detail-label">Email</div>
-                                <div class="user-detail-value">
-                                    <i class="fas fa-envelope me-2"></i>${data.email}
-                                </div>
-                                
-                                <div class="user-detail-label">Phone</div>
-                                <div class="user-detail-value">
-                                    <i class="fas fa-phone me-2"></i>${data.phoneNumber || 'Not provided'}
-                                </div>
-                                
-                                <div class="user-detail-label">Badge Number</div>
-                                <div class="user-detail-value">
-                                    <i class="fas fa-id-card me-2"></i>${data.badgeNumber || 'N/A'}
-                                </div>
-                                
-                                <div class="user-detail-label">Institution</div>
-                                <div class="user-detail-value">
-                                    <i class="fas fa-building me-2"></i>${data.institution || 'Not provided'}
-                                </div>
+                                <div class="detail-group"><div class="detail-label">Email</div><div class="detail-value"><i class="fas fa-envelope"></i>${d.email}</div></div>
+                                <div class="detail-group"><div class="detail-label">Phone</div><div class="detail-value"><i class="fas fa-phone"></i>${d.phoneNumber || 'Not provided'}</div></div>
+                                <div class="detail-group"><div class="detail-label">Badge Number</div><div class="detail-value"><i class="fas fa-id-card"></i>${d.badgeNumber || '—'}</div></div>
+                                <div class="detail-group"><div class="detail-label">Institution</div><div class="detail-value"><i class="fas fa-building"></i>${d.institution || 'Not provided'}</div></div>
                             </div>
-                            
                             <div class="col-md-6">
-                                <div class="user-detail-label">Status</div>
-                                <div class="user-detail-value">
-                                    ${data.isActive ? 
-                                        '<span class="status-badge status-active">Active</span>' : 
-                                        '<span class="status-badge status-inactive">Inactive</span>'}
-                                </div>
-                                
-                                <div class="user-detail-label">Last Login</div>
-                                <div class="user-detail-value">
-                                    <i class="fas fa-clock me-2"></i>${data.lastLogin ? new Date(data.lastLogin).toLocaleString() : 'Never'}
-                                </div>
-                                
-                                <div class="user-detail-label">Joined</div>
-                                <div class="user-detail-value">
-                                    <i class="fas fa-calendar me-2"></i>${new Date(data.createdAt).toLocaleString()}
-                                </div>
-                                
-                                <div class="user-detail-label">Shift Preferences</div>
-                                <div class="user-detail-value">
-                                    ${data.shiftPreferences?.preferredShifts?.map(s => 
-                                        `<span class="badge bg-light text-dark me-1">${s}</span>`
-                                    ).join('') || 'None set'}
-                                </div>
+                                <div class="detail-group"><div class="detail-label">Status</div><div class="detail-value">${d.isActive ? '<span class="status-badge status-active">Active</span>' : '<span class="status-badge status-inactive">Inactive</span>'}</div></div>
+                                <div class="detail-group"><div class="detail-label">Last Login</div><div class="detail-value"><i class="fas fa-clock"></i>${d.lastLogin ? new Date(d.lastLogin).toLocaleString() : 'Never'}</div></div>
+                                <div class="detail-group"><div class="detail-label">Joined</div><div class="detail-value"><i class="fas fa-calendar"></i>${new Date(d.createdAt).toLocaleString()}</div></div>
+                                <div class="detail-group"><div class="detail-label">Shift Preferences</div><div class="detail-value" style="flex-wrap:wrap;gap:.3rem;">${d.shiftPreferences?.preferredShifts?.map(s => `<span class="badge-role role-guard">${s}</span>`).join('') || '—'}</div></div>
                             </div>
                         </div>
-                        
-                        ${data.emergencyContact?.name ? `
-                        <h6 class="mt-4"><i class="fas fa-phone-alt me-2"></i>Emergency Contact</h6>
-                        <div class="user-detail-value">
-                            <strong>${data.emergencyContact.name}</strong> (${data.emergencyContact.relationship})<br>
-                            ${data.emergencyContact.phone}
-                        </div>
-                        ` : ''}
-                        
-                        <h6 class="mt-4"><i class="fas fa-history me-2"></i>Recent Activity</h6>
-                        <div class="activity-timeline">
-                            ${data.recentActivity?.map(activity => `
-                                <div class="activity-item">
-                                    <div class="activity-time">${new Date(activity.timestamp).toLocaleString()}</div>
-                                    <div class="activity-action">${activity.action}</div>
-                                    <div class="activity-desc">${activity.description}</div>
-                                </div>
-                            `).join('') || '<p class="text-muted">No recent activity</p>'}
-                        </div>
-                    `;
-                    
-                    new bootstrap.Modal(document.getElementById('viewUserModal')).show();
+                        ${d.emergencyContact?.name ? `
+                        <div class="detail-group mt-2">
+                            <div class="detail-label"><i class="fas fa-phone-alt me-1"></i>Emergency Contact</div>
+                            <div class="detail-value" style="flex-direction:column;align-items:flex-start;gap:.1rem;">
+                                <strong>${d.emergencyContact.name}</strong>
+                                <span style="color:var(--text-3);font-size:.8rem;">${d.emergencyContact.relationship} · ${d.emergencyContact.phone}</span>
+                            </div>
+                        </div>` : ''}
+                        <div class="mt-3">
+                            <div class="detail-label mb-2"><i class="fas fa-history me-1"></i>Recent Activity</div>
+                            <div class="activity-timeline">
+                                ${d.recentActivity?.map(a => `
+                                    <div class="activity-item">
+                                        <div class="activity-time">${new Date(a.timestamp).toLocaleString()}</div>
+                                        <div class="activity-action">${a.action}</div>
+                                        <div class="activity-desc">${a.description}</div>
+                                    </div>`).join('') || '<p style="color:var(--text-3);font-size:.875rem;">No recent activity</p>'}
+                            </div>
+                        </div>`;
                 });
         }
 
-        // Edit User
-        function editUser(id) {
-            window.location.href = `/admin/users/edit/${id}`;
-        }
+        function editUser(id) { window.location.href = `/admin/users/edit/${id}`; }
 
-        // Delete User
         function deleteUser(id) {
-            if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
-                fetch(`/admin/users/${id}`, {
-                    method: 'DELETE'
-                }).then(response => {
-                    if (response.ok) {
-                        window.location.reload();
-                    } else {
-                        alert('Failed to delete user');
-                    }
-                });
+            if (confirm('Delete this user? This action cannot be undone.')) {
+                fetch(`/admin/users/${id}`, { method: 'DELETE' })
+                    .then(r => { if (r.ok) window.location.reload(); else alert('Failed to delete user'); });
             }
         }
 
-        // Reset Password
         function resetPassword(id) {
             currentUserId = id;
-            
-            // Get user name
-            fetch(`/api/users/${id}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('resetUserName').textContent = data.name;
-                    
-                    // Generate new password
-                    newTempPassword = generateRandomPassword();
-                    document.getElementById('newPassword').textContent = newTempPassword;
-                    
-                    new bootstrap.Modal(document.getElementById('resetPasswordModal')).show();
-                });
-        }
-
-        // Confirm Reset Password
-        function confirmResetPassword() {
-            fetch(`/admin/users/${currentUserId}/reset-password`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ newPassword: newTempPassword })
-            }).then(response => {
-                if (response.ok) {
-                    alert('Password reset successfully. User will receive an email with the new password.');
-                    bootstrap.Modal.getInstance(document.getElementById('resetPasswordModal')).hide();
-                } else {
-                    alert('Failed to reset password');
-                }
+            fetch(`/api/users/${id}`).then(r => r.json()).then(d => {
+                document.getElementById('resetUserName').textContent = d.name;
+                newTempPassword = generateRandomPassword();
+                document.getElementById('newPassword').textContent = newTempPassword;
+                new bootstrap.Modal(document.getElementById('resetPasswordModal')).show();
             });
         }
 
-        // Generate random password
+        function confirmResetPassword() {
+            fetch(`/admin/users/${currentUserId}/reset-password`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ newPassword: newTempPassword })
+            }).then(r => {
+                if (r.ok) {
+                    bootstrap.Modal.getInstance(document.getElementById('resetPasswordModal')).hide();
+                    alert('Password reset successfully.');
+                } else { alert('Failed to reset password'); }
+            });
+        }
+
         function generateRandomPassword() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%';
-            let password = '';
-            for (let i = 0; i < 12; i++) {
-                password += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return password;
+            const c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%';
+            return Array.from({ length: 12 }, () => c[Math.floor(Math.random() * c.length)]).join('');
         }
 
-        // Generate new password in form
-        function generateNewPassword() {
-            document.getElementById('tempPassword').value = generateRandomPassword();
-        }
+        function generateNewPassword() { document.getElementById('tempPassword').value = generateRandomPassword(); }
 
-        // Copy password to clipboard
         function copyPassword() {
-            const password = document.getElementById('tempPassword');
-            password.select();
-            document.execCommand('copy');
-            alert('Password copied to clipboard');
+            navigator.clipboard?.writeText(document.getElementById('tempPassword').value)
+                .then(() => alert('Password copied!'))
+                .catch(() => { document.getElementById('tempPassword').select(); document.execCommand('copy'); alert('Password copied!'); });
         }
 
-        // Export Users
         function exportUsers() {
-            const format = prompt('Export format (csv/json):', 'csv');
-            if (format) {
-                window.location.href = `/admin/users/export?format=${format}`;
-            }
+            const fmt = prompt('Export format (csv / json):', 'csv');
+            if (fmt) window.location.href = `/admin/users/export?format=${fmt}`;
         }
 
-        // Filter Functions
         function applyFilters() {
-            const role = document.getElementById('roleFilter').value;
-            const status = document.getElementById('statusFilter').value;
+            const role   = document.getElementById('roleFilter').value.toLowerCase();
+            const status = document.getElementById('statusFilter').value.toLowerCase();
             const search = document.getElementById('searchInput').value;
-            
-            const table = $('#usersTable').DataTable();
-            
-            // Custom filtering
-            $.fn.dataTable.ext.search.push(
-                function(settings, data, dataIndex) {
-                    const row = table.row(dataIndex).data();
-                    const rowRole = data[1].toLowerCase();
+
+            $.fn.dataTable.ext.search = [];
+            if (role || status) {
+                $.fn.dataTable.ext.search.push((settings, data) => {
+                    const rowRole   = data[1].toLowerCase();
                     const rowStatus = data[4].toLowerCase();
-                    
-                    if (role && !rowRole.includes(role)) return false;
+                    if (role   && !rowRole.includes(role))     return false;
                     if (status && !rowStatus.includes(status)) return false;
-                    
                     return true;
-                }
-            );
-            
-            table.search(search).draw();
+                });
+            }
+            dtTable.search(search).draw();
         }
 
         function resetFilters() {
-            document.getElementById('roleFilter').value = '';
+            document.getElementById('roleFilter').value   = '';
             document.getElementById('statusFilter').value = '';
-            document.getElementById('searchInput').value = '';
-            
-            // Trigger Select2 update
-            $('#roleFilter').trigger('change');
-            
-            const table = $('#usersTable').DataTable();
-            $.fn.dataTable.ext.search.pop();
-            table.search('').columns().search('').draw();
+            document.getElementById('searchInput').value  = '';
+            $.fn.dataTable.ext.search = [];
+            dtTable.search('').draw();
         }
 
-        // Helper Functions
-        function formatRole(role) {
-            return role.charAt(0).toUpperCase() + role.slice(1);
-        }
+        function formatRole(r) { return r ? r.charAt(0).toUpperCase() + r.slice(1) : r; }
 
-        // Auto-refresh every 60 seconds for online status
         setInterval(() => {
-            fetch('/api/users/online-status')
-                .then(response => response.json())
-                .then(data => {
-                    // Update online count in stats
-                    const onlineStat = document.querySelector('.stat-card:last-child .stat-value');
-                    if (onlineStat) {
-                        onlineStat.textContent = data.online;
-                    }
-                });
+            fetch('/api/users/online-status').then(r => r.json()).then(d => {
+                const el = document.querySelectorAll('.stat-card')[3]?.querySelector('.stat-value');
+                if (el) el.textContent = d.online;
+            }).catch(() => {});
         }, 60000);
     </script>
 </body>

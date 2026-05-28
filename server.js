@@ -291,455 +291,737 @@ function calculateAverageDuration(patrols) {
 
 // User helpers
 async function getUserById(id) {
-    return await prisma.user.findUnique({
-        where: { id },
-        select: {
-            id: true, 
-            firstName: true, 
-            lastName: true, 
-            name: true, 
-            email: true,
-            password: true, 
-            role: true, 
-            badgeNumber: true, 
-            phoneNumber: true,
-            institution: true, 
-            profileImage: true, 
-            isActive: true, 
-            lastLogin: true,
-            createdAt: true, 
-            updatedAt: true, 
-            timezone: true, 
-            notificationSettings: true,  // Changed from 'notifications'
-            privacySettings: true,       // Changed from 'privacy'
-            accessibilitySettings: true, // Changed from 'accessibility'
-            integrationSettings: true,   // Changed from 'integrations'
-            twoFactorEnabled: true,
-            loginAlerts: true, 
-            passwordLastChanged: true, 
-            emergencyContact: true,
-            shiftPreferences: true
-        }
-    });
+    try {
+        return await prisma.user.findUnique({
+            where: { id },
+            select: {
+                id: true, 
+                firstName: true, 
+                lastName: true, 
+                name: true, 
+                email: true,
+                password: true, 
+                role: true, 
+                badgeNumber: true, 
+                phoneNumber: true,
+                institution: true, 
+                profileImage: true, 
+                isActive: true, 
+                lastLogin: true,
+                createdAt: true, 
+                updatedAt: true, 
+                timezone: true, 
+                notificationSettings: true,
+                privacySettings: true,
+                accessibilitySettings: true,
+                integrationSettings: true,
+                twoFactorEnabled: true,
+                loginAlerts: true, 
+                passwordLastChanged: true, 
+                emergencyContact: true,
+                shiftPreferences: true
+            }
+        });
+    } catch (error) {
+        console.error("Get user by ID error:", error);
+        return null;
+    }
 }
 
 async function getUserByEmail(email) {
-    return await prisma.user.findUnique({
-        where: { email: email.toLowerCase() },
-        select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            name: true,
-            email: true,
-            password: true,
-            role: true,
-            badgeNumber: true,
-            phoneNumber: true,
-            institution: true,
-            profileImage: true,
-            isActive: true,
-            lastLogin: true,
-            createdAt: true,
-            notificationSettings: true,
-            privacySettings: true,
-            accessibilitySettings: true,
-            integrationSettings: true,
-            twoFactorEnabled: true,
-            loginAlerts: true
-        }
-    });
+    try {
+        return await prisma.user.findUnique({
+            where: { email: email.toLowerCase() },
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                name: true,
+                email: true,
+                password: true,
+                role: true,
+                badgeNumber: true,
+                phoneNumber: true,
+                institution: true,
+                profileImage: true,
+                isActive: true,
+                lastLogin: true,
+                createdAt: true,
+                notificationSettings: true,
+                privacySettings: true,
+                accessibilitySettings: true,
+                integrationSettings: true,
+                twoFactorEnabled: true,
+                loginAlerts: true
+            }
+        });
+    } catch (error) {
+        console.error("Get user by email error:", error);
+        return null;
+    }
 }
 
 async function createUser(data) {
-    if (!data.name && data.firstName && data.lastName) {
-        data.name = `${data.firstName} ${data.lastName}`.trim();
+    try {
+        if (!data.name && data.firstName && data.lastName) {
+            data.name = `${data.firstName} ${data.lastName}`.trim();
+        }
+        return await prisma.user.create({ data });
+    } catch (error) {
+        console.error("Create user error:", error);
+        throw error;
     }
-    return await prisma.user.create({ data });
 }
 
 async function updateUser(id, data) {
-    if ((data.firstName || data.lastName) && !data.name) {
-        const current = await prisma.user.findUnique({ where: { id } });
-        if (current) {
-            data.name = `${data.firstName || current.firstName} ${data.lastName || current.lastName}`.trim();
+    try {
+        if ((data.firstName || data.lastName) && !data.name) {
+            const current = await prisma.user.findUnique({ where: { id } });
+            if (current) {
+                data.name = `${data.firstName || current.firstName} ${data.lastName || current.lastName}`.trim();
+            }
         }
+        return await prisma.user.update({
+            where: { id },
+            data: { ...data, updatedAt: new Date() }
+        });
+    } catch (error) {
+        console.error("Update user error:", error);
+        throw error;
     }
-    return await prisma.user.update({
-        where: { id },
-        data: { ...data, updatedAt: new Date() }
-    });
 }
 
 async function deleteUser(id) {
-    return await prisma.user.update({
-        where: { id },
-        data: { isActive: false, updatedAt: new Date() }
-    });
+    try {
+        return await prisma.user.update({
+            where: { id },
+            data: { isActive: false, updatedAt: new Date() }
+        });
+    } catch (error) {
+        console.error("Delete user error:", error);
+        throw error;
+    }
 }
 
 async function countUsers(filter = {}) {
-    const where = {};
-    if (filter.role) where.role = filter.role;
-    if (filter.isActive !== undefined) where.isActive = filter.isActive;
-    if (filter.createdAt?.$gte) where.createdAt = { gte: filter.createdAt.$gte };
-    return await prisma.user.count({ where });
+    try {
+        const where = {};
+        if (filter.role) where.role = filter.role;
+        if (filter.isActive !== undefined) where.isActive = filter.isActive;
+        if (filter.createdAt?.$gte) where.createdAt = { gte: filter.createdAt.$gte };
+        return await prisma.user.count({ where });
+    } catch (error) {
+        console.error("Count users error:", error);
+        return 0;
+    }
 }
 
 // Incident helpers
 async function createIncident(data) {
-    return await prisma.incident.create({
-        data,
-        include: { reporter: { select: { id: true, name: true, email: true } } }
-    });
+    try {
+        return await prisma.incident.create({
+            data,
+            include: { reporter: { select: { id: true, name: true, email: true } } }
+        });
+    } catch (error) {
+        console.error("Create incident error:", error);
+        throw error;
+    }
 }
 
 async function getIncidentById(id) {
-    return await prisma.incident.findUnique({
-        where: { id },
-        include: {
-            reporter: { select: { id: true, name: true, email: true } },
-        }
-    });
+    try {
+        return await prisma.incident.findUnique({
+            where: { id },
+            include: {
+                reporter: { select: { id: true, name: true, email: true } },
+            }
+        });
+    } catch (error) {
+        console.error("Get incident by ID error:", error);
+        return null;
+    }
 }
 
 async function getIncidents(filter = {}) {
-    const where = {};
-    if (filter.reportedBy) where.reportedBy = filter.reportedBy;
-    if (filter.status) where.status = filter.status;
-    if (filter.severity) where.severity = filter.severity;
-    if (filter.createdAt) {
-        if (filter.createdAt.$gte) where.createdAt = { gte: filter.createdAt.$gte };
-        if (filter.createdAt.$lte) where.createdAt = { ...where.createdAt, lte: filter.createdAt.$lte };
+    try {
+        const where = {};
+        if (filter.reportedBy) where.reportedBy = filter.reportedBy;
+        
+        // Handle status filter - support array for multiple statuses
+        if (filter.status) {
+            if (Array.isArray(filter.status)) {
+                where.status = { in: filter.status };
+            } else if (filter.status.$in) {
+                where.status = { in: filter.status.$in };
+            } else if (typeof filter.status === 'object' && filter.status.in) {
+                where.status = { in: filter.status.in };
+            } else {
+                where.status = filter.status;
+            }
+        }
+        
+        if (filter.severity) where.severity = filter.severity;
+        
+        if (filter.createdAt) {
+            if (filter.createdAt.$gte) where.createdAt = { gte: filter.createdAt.$gte };
+            if (filter.createdAt.$lte) where.createdAt = { ...where.createdAt, lte: filter.createdAt.$lte };
+        }
+        
+        return await prisma.incident.findMany({
+            where,
+            include: {
+                reporter: { select: { id: true, name: true, email: true } },
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+    } catch (error) {
+        console.error("Get incidents error:", error);
+        return [];
     }
-    
-    return await prisma.incident.findMany({
-        where,
-        include: {
-            reporter: { select: { id: true, name: true, email: true } },
-        },
-        orderBy: { createdAt: 'desc' }
-    });
 }
 
 async function updateIncident(id, data) {
-    if (data.status) {
-        const current = await prisma.incident.findUnique({ where: { id } });
-        if (current) {
-            const timeline = current.timeline || [];
-            timeline.push({
-                status: data.status,
-                timestamp: new Date(),
-                comment: data.timelineComment || `Status updated to ${data.status}`,
-                updatedBy: data.updatedBy
-            });
-            data.timeline = timeline;
-            
-            if (['resolved', 'closed'].includes(data.status)) {
-                data.responseTime = {
-                    ...(current.responseTime || {}),
-                    resolved: new Date()
-                };
+    try {
+        if (data.status) {
+            const current = await prisma.incident.findUnique({ where: { id } });
+            if (current) {
+                const timeline = current.timeline || [];
+                timeline.push({
+                    status: data.status,
+                    timestamp: new Date(),
+                    comment: data.timelineComment || `Status updated to ${data.status}`,
+                    updatedBy: data.updatedBy
+                });
+                data.timeline = timeline;
+                
+                if (['resolved', 'closed'].includes(data.status)) {
+                    data.responseTime = {
+                        ...(current.responseTime || {}),
+                        resolved: new Date()
+                    };
+                }
             }
         }
+        
+        return await prisma.incident.update({
+            where: { id },
+            data,
+            include: { reporter: { select: { id: true, name: true, email: true } } }
+        });
+    } catch (error) {
+        console.error("Update incident error:", error);
+        throw error;
     }
-    
-    return await prisma.incident.update({
-        where: { id },
-        data,
-        include: { reporter: { select: { id: true, name: true, email: true } } }
-    });
 }
 
 async function countIncidents(filter = {}) {
-    const where = {};
-    if (filter.status) where.status = filter.status;
-    if (filter.reportedBy) where.reportedBy = filter.reportedBy;
-    if (filter.createdAt?.$gte) where.createdAt = { gte: filter.createdAt.$gte };
-    if (filter.createdAt?.$lte) where.createdAt = { ...where.createdAt, lte: filter.createdAt.$lte };
-    return await prisma.incident.count({ where });
+    try {
+        const where = {};
+        
+        // Handle status filter - support array for multiple statuses
+        if (filter.status) {
+            if (Array.isArray(filter.status)) {
+                where.status = { in: filter.status };
+            } else if (filter.status.$in) {
+                where.status = { in: filter.status.$in };
+            } else if (typeof filter.status === 'object' && filter.status.in) {
+                where.status = { in: filter.status.in };
+            } else {
+                where.status = filter.status;
+            }
+        }
+        
+        if (filter.reportedBy) where.reportedBy = filter.reportedBy;
+        
+        if (filter.createdAt?.$gte) where.createdAt = { gte: filter.createdAt.$gte };
+        if (filter.createdAt?.$lte) where.createdAt = { ...where.createdAt, lte: filter.createdAt.$lte };
+        
+        return await prisma.incident.count({ where });
+    } catch (error) {
+        console.error("Count incidents error:", error);
+        return 0;
+    }
 }
 
 // Patrol helpers
 async function createPatrol(data) {
-    return await prisma.patrol.create({ data });
+    try {
+        return await prisma.patrol.create({ data });
+    } catch (error) {
+        console.error("Create patrol error:", error);
+        throw error;
+    }
 }
 
 async function getPatrolById(id) {
-    return await prisma.patrol.findUnique({
-        where: { id },
-        include: {
-            guardUser: { select: { id: true, name: true, firstName: true, lastName: true, badgeNumber: true } },
-            supervisorUser: { select: { id: true, name: true } }
-        }
-    });
+    try {
+        const patrol = await prisma.patrol.findUnique({
+            where: { id },
+            include: {
+                guardUser: { 
+                    select: { 
+                        id: true, 
+                        name: true, 
+                        firstName: true, 
+                        lastName: true, 
+                        badgeNumber: true 
+                    } 
+                },
+                supervisorUser: { 
+                    select: { 
+                        id: true, 
+                        name: true 
+                    } 
+                }
+            }
+        });
+        return patrol;
+    } catch (error) {
+        console.error("Get patrol by ID error:", error);
+        return null;
+    }
 }
 
 async function getPatrols(filter = {}) {
-    const where = {};
-    if (filter.guard) where.guard = filter.guard;
-    if (filter.status) where.status = filter.status;
-    if (filter.startTime) {
-        if (filter.startTime.$gte) where.startTime = { gte: filter.startTime.$gte };
-        if (filter.startTime.$lte) where.startTime = { ...where.startTime, lte: filter.startTime.$lte };
+    try {
+        const where = {};
+        if (filter.guard) where.guard = filter.guard;
+        if (filter.status) where.status = filter.status;
+        if (filter.startTime) {
+            if (filter.startTime.$gte) where.startTime = { gte: filter.startTime.$gte };
+            if (filter.startTime.$lte) where.startTime = { ...where.startTime, lte: filter.startTime.$lte };
+        }
+        
+        const patrols = await prisma.patrol.findMany({
+            where,
+            include: {
+                guardUser: { 
+                    select: { 
+                        id: true, 
+                        name: true, 
+                        firstName: true, 
+                        lastName: true, 
+                        badgeNumber: true 
+                    } 
+                },
+                supervisorUser: { 
+                    select: { 
+                        id: true, 
+                        name: true 
+                    } 
+                }
+            },
+            orderBy: [
+                { startTime: 'desc' }
+            ]
+        });
+        return patrols;
+    } catch (error) {
+        console.error("Get patrols error:", error);
+        return [];
     }
-    
-    return await prisma.patrol.findMany({
-        where,
-        include: {
-            guardUser: { select: { id: true, name: true, firstName: true, lastName: true, badgeNumber: true } },
-            supervisorUser: { select: { id: true, name: true } }
-        },
-        orderBy: { startTime: 'desc' }
-    });
 }
 
 async function updatePatrol(id, data) {
-    return await prisma.patrol.update({
-        where: { id },
-        data: { ...data, updatedAt: new Date() }
-    });
+    try {
+        return await prisma.patrol.update({
+            where: { id },
+            data: { ...data, updatedAt: new Date() }
+        });
+    } catch (error) {
+        console.error("Update patrol error:", error);
+        throw error;
+    }
 }
 
 async function countPatrols(filter = {}) {
-    const where = {};
-    if (filter.guard) where.guard = filter.guard;
-    if (filter.status) where.status = filter.status;
-    if (filter.startTime?.$gte) where.startTime = { gte: filter.startTime.$gte };
-    return await prisma.patrol.count({ where });
+    try {
+        const where = {};
+        if (filter.guard) where.guard = filter.guard;
+        if (filter.status) where.status = filter.status;
+        if (filter.startTime?.$gte) where.startTime = { gte: filter.startTime.$gte };
+        return await prisma.patrol.count({ where });
+    } catch (error) {
+        console.error("Count patrols error:", error);
+        return 0;
+    }
 }
 
 // Shift helpers
 async function createShift(data) {
-    return await prisma.shift.create({ data });
+    try {
+        return await prisma.shift.create({ data });
+    } catch (error) {
+        console.error("Create shift error:", error);
+        throw error;
+    }
 }
 
 async function getShifts(filter = {}) {
-    const where = {};
-    if (filter.guard) where.guard = filter.guard;
-    if (filter.status) where.status = filter.status;
-    if (filter.date) {
-        if (filter.date.$gte) where.date = { gte: filter.date.$gte };
-        if (filter.date.$lte) where.date = { ...where.date, lte: filter.date.$lte };
+    try {
+        const where = {};
+        if (filter.guard) where.guard = filter.guard;
+        if (filter.status) where.status = filter.status;
+        if (filter.date) {
+            if (filter.date.$gte) where.date = { gte: filter.date.$gte };
+            if (filter.date.$lte) where.date = { ...where.date, lte: filter.date.$lte };
+        }
+        if (filter.zone) where.zone = filter.zone;
+        
+        return await prisma.shift.findMany({
+            where,
+            include: {
+                guardUser: { select: { id: true, name: true, firstName: true, lastName: true, badgeNumber: true } },
+                supervisorUser: { select: { id: true, name: true } }
+            },
+            orderBy: [
+                { date: 'asc' },
+                { startTime: 'asc' }
+            ]
+        });
+    } catch (error) {
+        console.error("Get shifts error:", error);
+        return [];
     }
-    if (filter.zone) where.zone = filter.zone;
-    
-    return await prisma.shift.findMany({
-        where,
-        include: {
-            guardUser: { select: { id: true, name: true, firstName: true, lastName: true, badgeNumber: true } },
-            supervisorUser: { select: { id: true, name: true } }
-        },
-        orderBy: { date: 'asc', startTime: 'asc' }
-    });
 }
 
 async function updateShift(id, data) {
-    return await prisma.shift.update({
-        where: { id },
-        data: { ...data, updatedAt: new Date() }
-    });
+    try {
+        return await prisma.shift.update({
+            where: { id },
+            data: { ...data, updatedAt: new Date() }
+        });
+    } catch (error) {
+        console.error("Update shift error:", error);
+        throw error;
+    }
 }
 
 async function countShifts(filter = {}) {
-    const where = {};
-    if (filter.guard) where.guard = filter.guard;
-    if (filter.status) where.status = filter.status;
-    if (filter.date?.$gte) where.date = { gte: filter.date.$gte };
-    return await prisma.shift.count({ where });
+    try {
+        const where = {};
+        if (filter.guard) where.guard = filter.guard;
+        if (filter.status) where.status = filter.status;
+        if (filter.date?.$gte) where.date = { gte: filter.date.$gte };
+        return await prisma.shift.count({ where });
+    } catch (error) {
+        console.error("Count shifts error:", error);
+        return 0;
+    }
 }
 
 // Attendance helpers
 async function createAttendance(data) {
-    if (data.checkIn?.time && data.checkOut?.time) {
-        const hours = (new Date(data.checkOut.time) - new Date(data.checkIn.time)) / (1000 * 60 * 60);
-        data.workingHours = Math.round(hours * 10) / 10;
+    try {
+        if (data.checkIn?.time && data.checkOut?.time) {
+            const hours = (new Date(data.checkOut.time) - new Date(data.checkIn.time)) / (1000 * 60 * 60);
+            data.workingHours = Math.round(hours * 10) / 10;
+        }
+        return await prisma.attendance.create({ data });
+    } catch (error) {
+        console.error("Create attendance error:", error);
+        throw error;
     }
-    return await prisma.attendance.create({ data });
 }
 
 async function getAttendances(filter = {}) {
-    const where = {};
-    if (filter.guard) where.guard = filter.guard;
-    if (filter.status) where.status = filter.status;
-    if (filter.date) {
-        if (filter.date.$gte) where.date = { gte: filter.date.$gte };
-        if (filter.date.$lte) where.date = { ...where.date, lte: filter.date.$lte };
+    try {
+        const where = {};
+        if (filter.guard) where.guard = filter.guard;
+        if (filter.status) where.status = filter.status;
+        if (filter.date) {
+            if (filter.date.$gte) where.date = { gte: filter.date.$gte };
+            if (filter.date.$lte) where.date = { ...where.date, lte: filter.date.$lte };
+        }
+        
+        return await prisma.attendance.findMany({
+            where,
+            include: { guardUser: { select: { id: true, name: true, badgeNumber: true } } },
+            orderBy: { date: 'desc' }
+        });
+    } catch (error) {
+        console.error("Get attendances error:", error);
+        return [];
     }
-    
-    return await prisma.attendance.findMany({
-        where,
-        include: { guardUser: { select: { id: true, name: true, badgeNumber: true } } },
-        orderBy: { date: 'desc' }
-    });
 }
 
 async function countAttendance(filter = {}) {
-    const where = {};
-    if (filter.guard) where.guard = filter.guard;
-    if (filter.status) where.status = filter.status;
-    if (filter.date?.$gte) where.date = { gte: filter.date.$gte };
-    return await prisma.attendance.count({ where });
+    try {
+        const where = {};
+        if (filter.guard) where.guard = filter.guard;
+        if (filter.status) where.status = filter.status;
+        if (filter.date?.$gte) where.date = { gte: filter.date.$gte };
+        return await prisma.attendance.count({ where });
+    } catch (error) {
+        console.error("Count attendance error:", error);
+        return 0;
+    }
 }
 
 // Notification helpers
 async function createNotification(data) {
-    return await prisma.notification.create({ data });
+    try {
+        return await prisma.notification.create({ data });
+    } catch (error) {
+        console.error("Create notification error:", error);
+        throw error;
+    }
 }
 
 async function getNotifications(filter = {}) {
-    const where = {};
-    if (filter.recipient) where.recipient = filter.recipient;
-    if (filter.read !== undefined) where.read = filter.read;
-    
-    return await prisma.notification.findMany({
-        where,
-        orderBy: { createdAt: 'desc' }
-    });
+    try {
+        const where = {};
+        if (filter.recipient) where.recipient = filter.recipient;
+        if (filter.read !== undefined) where.read = filter.read;
+        
+        return await prisma.notification.findMany({
+            where,
+            orderBy: { createdAt: 'desc' }
+        });
+    } catch (error) {
+        console.error("Get notifications error:", error);
+        return [];
+    }
 }
 
 async function countNotifications(filter = {}) {
-    const where = {};
-    if (filter.recipient) where.recipient = filter.recipient;
-    if (filter.read !== undefined) where.read = filter.read;
-    return await prisma.notification.count({ where });
+    try {
+        const where = {};
+        if (filter.recipient) where.recipient = filter.recipient;
+        if (filter.read !== undefined) where.read = filter.read;
+        return await prisma.notification.count({ where });
+    } catch (error) {
+        console.error("Count notifications error:", error);
+        return 0;
+    }
 }
 
 async function markNotificationRead(id) {
-    return await prisma.notification.update({
-        where: { id },
-        data: { read: true, readAt: new Date() }
-    });
+    try {
+        return await prisma.notification.update({
+            where: { id },
+            data: { read: true, readAt: new Date() }
+        });
+    } catch (error) {
+        console.error("Mark notification read error:", error);
+        throw error;
+    }
 }
 
 // Checkpoint helpers
 async function createCheckpoint(data) {
-    if (data.code) data.code = data.code.toUpperCase();
-    if (data.qrCode) data.qrCode = data.qrCode.toUpperCase();
-    if (data.nfcTag) data.nfcTag = data.nfcTag.toUpperCase();
-    return await prisma.checkpoint.create({ data });
+    try {
+        if (data.code) data.code = data.code.toUpperCase();
+        if (data.qrCode) data.qrCode = data.qrCode.toUpperCase();
+        if (data.nfcTag) data.nfcTag = data.nfcTag.toUpperCase();
+        return await prisma.checkpoint.create({ data });
+    } catch (error) {
+        console.error("Create checkpoint error:", error);
+        throw error;
+    }
 }
 
 async function getCheckpointByCode(code) {
-    return await prisma.checkpoint.findUnique({
-        where: { code: code.toUpperCase() }
-    });
+    try {
+        return await prisma.checkpoint.findUnique({
+            where: { code: code.toUpperCase() }
+        });
+    } catch (error) {
+        console.error("Get checkpoint by code error:", error);
+        return null;
+    }
 }
 
 async function getCheckpoints(filter = {}) {
-    const where = {};
-    if (filter.zone) where.zone = filter.zone;
-    if (filter.isActive !== undefined) where.isActive = filter.isActive;
-    
-    return await prisma.checkpoint.findMany({
-        where,
-        orderBy: { name: 'asc' }
-    });
+    try {
+        const where = {};
+        if (filter.zone) where.zone = filter.zone;
+        if (filter.isActive !== undefined) where.isActive = filter.isActive;
+        
+        return await prisma.checkpoint.findMany({
+            where,
+            orderBy: { name: 'asc' }
+        });
+    } catch (error) {
+        console.error("Get checkpoints error:", error);
+        return [];
+    }
 }
 
 // Audit Log helpers
 async function createAuditLog(data) {
-    return await prisma.auditLog.create({ data });
+    try {
+        return await prisma.auditLog.create({ data });
+    } catch (error) {
+        console.error("Create audit log error:", error);
+        throw error;
+    }
 }
 
 async function getAuditLogs(filter = {}) {
-    const where = {};
-    if (filter.user) where.user = filter.user;
-    if (filter.category) where.category = filter.category;
-    if (filter.status) where.status = filter.status;
-    if (filter.createdAt) {
-        if (filter.createdAt.$gte) where.createdAt = { gte: filter.createdAt.$gte };
-        if (filter.createdAt.$lte) where.createdAt = { ...where.createdAt, lte: filter.createdAt.$lte };
+    try {
+        const where = {};
+        if (filter.user) where.user = filter.user;
+        if (filter.category) where.category = filter.category;
+        if (filter.status) where.status = filter.status;
+        if (filter.createdAt) {
+            if (filter.createdAt.$gte) where.createdAt = { gte: filter.createdAt.$gte };
+            if (filter.createdAt.$lte) where.createdAt = { ...where.createdAt, lte: filter.createdAt.$lte };
+        }
+        
+        return await prisma.auditLog.findMany({
+            where,
+            include: { userRecord: { select: { id: true, name: true, email: true } } },
+            orderBy: { createdAt: 'desc' }
+        });
+    } catch (error) {
+        console.error("Get audit logs error:", error);
+        return [];
     }
-    
-    return await prisma.auditLog.findMany({
-        where,
-        include: { userRecord: { select: { id: true, name: true, email: true } } },
-        orderBy: { createdAt: 'desc' }
-    });
 }
 
 async function countAuditLogs(filter = {}) {
-    const where = {};
-    if (filter.user) where.user = filter.user;
-    if (filter.category) where.category = filter.category;
-    if (filter.status) where.status = filter.status;
-    if (filter.createdAt?.$gte) where.createdAt = { gte: filter.createdAt.$gte };
-    return await prisma.auditLog.count({ where });
+    try {
+        const where = {};
+        if (filter.user) where.user = filter.user;
+        if (filter.category) where.category = filter.category;
+        if (filter.status) where.status = filter.status;
+        if (filter.createdAt?.$gte) where.createdAt = { gte: filter.createdAt.$gte };
+        return await prisma.auditLog.count({ where });
+    } catch (error) {
+        console.error("Count audit logs error:", error);
+        return 0;
+    }
 }
 
 // API Key helpers
 async function createApiKey(data) {
-    return await prisma.apiKey.create({ data });
+    try {
+        return await prisma.apiKey.create({ data });
+    } catch (error) {
+        console.error("Create API key error:", error);
+        throw error;
+    }
 }
 
 async function getApiKeys(userId) {
-    return await prisma.apiKey.findMany({
-        where: { user: userId },
-        orderBy: { createdAt: 'desc' }
-    });
+    try {
+        return await prisma.apiKey.findMany({
+            where: { user: userId },
+            orderBy: { createdAt: 'desc' }
+        });
+    } catch (error) {
+        console.error("Get API keys error:", error);
+        return [];
+    }
 }
 
 async function deleteApiKey(id, userId) {
-    return await prisma.apiKey.deleteMany({
-        where: { id, user: userId }
-    });
+    try {
+        return await prisma.apiKey.deleteMany({
+            where: { id, user: userId }
+        });
+    } catch (error) {
+        console.error("Delete API key error:", error);
+        throw error;
+    }
 }
 
 // Webhook helpers
 async function createWebhook(data) {
-    return await prisma.webhook.create({ data });
+    try {
+        return await prisma.webhook.create({ data });
+    } catch (error) {
+        console.error("Create webhook error:", error);
+        throw error;
+    }
 }
 
 async function getWebhooks(userId) {
-    return await prisma.webhook.findMany({
-        where: { user: userId },
-        orderBy: { createdAt: 'desc' }
-    });
+    try {
+        return await prisma.webhook.findMany({
+            where: { user: userId },
+            orderBy: { createdAt: 'desc' }
+        });
+    } catch (error) {
+        console.error("Get webhooks error:", error);
+        return [];
+    }
 }
 
 async function deleteWebhook(id, userId) {
-    return await prisma.webhook.deleteMany({
-        where: { id, user: userId }
-    });
+    try {
+        return await prisma.webhook.deleteMany({
+            where: { id, user: userId }
+        });
+    } catch (error) {
+        console.error("Delete webhook error:", error);
+        throw error;
+    }
 }
 
 // Report helper 
 async function createReport(data) {
-    return await prisma.report.create({ data });
+    try {
+        return await prisma.report.create({ data });
+    } catch (error) {
+        console.error("Create report error:", error);
+        throw error;
+    }
 }
 
 // Backup helpers
 async function createBackup(data) {
-    return await prisma.backup.create({ data });
+    try {
+        return await prisma.backup.create({ data });
+    } catch (error) {
+        console.error("Create backup error:", error);
+        throw error;
+    }
 }
 
 async function getBackups(userId) {
-    return await prisma.backup.findMany({
-        where: { user: userId },
-        orderBy: { createdAt: 'desc' }
-    });
+    try {
+        return await prisma.backup.findMany({
+            where: { user: userId },
+            orderBy: { createdAt: 'desc' }
+        });
+    } catch (error) {
+        console.error("Get backups error:", error);
+        return [];
+    }
 }
 
 // Support Ticket helpers
 async function createSupportTicket(data) {
-    return await prisma.supportTicket.create({ data });
+    try {
+        return await prisma.supportTicket.create({ data });
+    } catch (error) {
+        console.error("Create support ticket error:", error);
+        throw error;
+    }
 }
 
 async function getSupportTickets(filter = {}) {
-    const where = {};
-    if (filter.createdBy) where.createdBy = filter.createdBy;
-    if (filter.assignedTo) where.assignedTo = filter.assignedTo;
-    if (filter.status) where.status = filter.status;
-    
-    return await prisma.supportTicket.findMany({
-        where,
-        include: {
-            creator: { select: { id: true, name: true, email: true } },
-            assignee: { select: { id: true, name: true, email: true } }
-        },
-        orderBy: { createdAt: 'desc' }
-    });
+    try {
+        const where = {};
+        if (filter.createdBy) where.createdBy = filter.createdBy;
+        if (filter.assignedTo) where.assignedTo = filter.assignedTo;
+        if (filter.status) where.status = filter.status;
+        
+        return await prisma.supportTicket.findMany({
+            where,
+            include: {
+                creator: { select: { id: true, name: true, email: true } },
+                assignee: { select: { id: true, name: true, email: true } }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+    } catch (error) {
+        console.error("Get support tickets error:", error);
+        return [];
+    }
 }
 
 // Session helpers
@@ -791,94 +1073,114 @@ async function getConnectedDevices(userId, currentSessionId) {
 
 // Timeline and analytics helpers
 async function getTimelineData(Model, start, end, dateField = 'createdAt') {
-    const data = [];
-    const current = new Date(start);
-    while (current <= end) {
-        const next = new Date(current);
-        next.setDate(next.getDate() + 1);
-        
-        let count = 0;
-        if (Model === prisma.incident) {
-            count = await prisma.incident.count({
-                where: {
-                    [dateField]: { gte: current, lt: next }
-                }
-            });
-        } else if (Model === prisma.patrol) {
-            count = await prisma.patrol.count({
-                where: {
-                    [dateField]: { gte: current, lt: next }
-                }
-            });
-        } else if (Model === prisma.user) {
-            count = await prisma.user.count({
-                where: {
-                    [dateField]: { gte: current, lt: next }
-                }
-            });
+    try {
+        const data = [];
+        const current = new Date(start);
+        while (current <= end) {
+            const next = new Date(current);
+            next.setDate(next.getDate() + 1);
+            
+            let count = 0;
+            if (Model === prisma.incident) {
+                count = await prisma.incident.count({
+                    where: {
+                        [dateField]: { gte: current, lt: next }
+                    }
+                });
+            } else if (Model === prisma.patrol) {
+                count = await prisma.patrol.count({
+                    where: {
+                        [dateField]: { gte: current, lt: next }
+                    }
+                });
+            } else if (Model === prisma.user) {
+                count = await prisma.user.count({
+                    where: {
+                        [dateField]: { gte: current, lt: next }
+                    }
+                });
+            }
+            
+            data.push({ date: current.toISOString().split("T")[0], count });
+            current.setDate(current.getDate() + 1);
         }
-        
-        data.push({ date: current.toISOString().split("T")[0], count });
-        current.setDate(current.getDate() + 1);
+        return data;
+    } catch (error) {
+        console.error("Get timeline data error:", error);
+        return [];
     }
-    return data;
 }
 
 async function getDailyAttendance(start, end) {
-    const data = [];
-    const current = new Date(start);
-    while (current <= end) {
-        const next = new Date(current);
-        next.setDate(next.getDate() + 1);
-        
-        const records = await prisma.attendance.findMany({
-            where: { date: { gte: current, lt: next } }
-        });
-        
-        data.push({
-            date: current.toISOString().split("T")[0],
-            present: records.filter((a) => a.status === "present").length,
-            late: records.filter((a) => a.status === "late").length,
-            absent: records.filter((a) => a.status === "absent").length,
-            total: records.length,
-        });
-        current.setDate(current.getDate() + 1);
+    try {
+        const data = [];
+        const current = new Date(start);
+        while (current <= end) {
+            const next = new Date(current);
+            next.setDate(next.getDate() + 1);
+            
+            const records = await prisma.attendance.findMany({
+                where: { date: { gte: current, lt: next } }
+            });
+            
+            data.push({
+                date: current.toISOString().split("T")[0],
+                present: records.filter((a) => a.status === "present").length,
+                late: records.filter((a) => a.status === "late").length,
+                absent: records.filter((a) => a.status === "absent").length,
+                total: records.length,
+            });
+            current.setDate(current.getDate() + 1);
+        }
+        return data;
+    } catch (error) {
+        console.error("Get daily attendance error:", error);
+        return [];
     }
-    return data;
 }
 
 async function getShiftsByZone(shifts) {
-    const zones = {};
-    shifts.forEach((s) => { 
-        if (s.zone) zones[s.zone] = (zones[s.zone] || 0) + 1; 
-    });
-    return Object.entries(zones).map(([zone, count]) => ({ zone: formatZone(zone), count }));
+    try {
+        const zones = {};
+        shifts.forEach((s) => { 
+            if (s.zone) zones[s.zone] = (zones[s.zone] || 0) + 1; 
+        });
+        return Object.entries(zones).map(([zone, count]) => ({ zone: formatZone(zone), count }));
+    } catch (error) {
+        console.error("Get shifts by zone error:", error);
+        return [];
+    }
 }
 
 async function getGuardCompliance(patrols) {
-    const guardStats = {};
-    patrols.forEach((patrol) => {
-        if (!patrol.guard) return;
-        const id = patrol.guard;
-        if (!guardStats[id]) guardStats[id] = { name: "Unknown", completed: 0, total: 0 };
-        if (patrol.checkpoints && Array.isArray(patrol.checkpoints)) {
-            guardStats[id].total += patrol.checkpoints.length;
-            guardStats[id].completed += patrol.checkpoints.filter((c) => c.status === "completed").length;
-        }
-    });
-    
-    for (const id in guardStats) {
-        const guard = await prisma.user.findUnique({
-            where: { id },
-            select: { name: true }
+    try {
+        const guardStats = {};
+        patrols.forEach((patrol) => {
+            if (!patrol.guard) return;
+            const id = patrol.guard;
+            if (!guardStats[id]) guardStats[id] = { name: "Unknown", completed: 0, total: 0 };
+            if (patrol.checkpoints && Array.isArray(patrol.checkpoints)) {
+                guardStats[id].total += patrol.checkpoints.length;
+                guardStats[id].completed += patrol.checkpoints.filter((c) => c.status === "completed").length;
+            }
         });
-        if (guard) guardStats[id].name = guard.name;
+        
+        for (const id in guardStats) {
+            const guard = await prisma.user.findUnique({
+                where: { id },
+                select: { name: true }
+            });
+            if (guard) guardStats[id].name = guard.name;
+        }
+        
+        return Object.values(guardStats)
+            .map((g) => ({ ...g, rate: g.total > 0 ? Math.round((g.completed / g.total) * 100) : 0 }))
+            .sort((a, b) => b.rate - a.rate)
+            .slice(0, 10);
+    } catch (error) {
+        console.error("Get guard compliance error:", error);
+        return [];
     }
-    
-    return Object.values(guardStats)
-        .map((g) => ({ ...g, rate: g.total > 0 ? Math.round((g.completed / g.total) * 100) : 0 }))
-        .sort((a, b) => b.rate - a.rate)
-        .slice(0, 10);
 }
 
 // System helpers
@@ -889,7 +1191,9 @@ async function getDatabaseSize() {
         `;
         const sizeInMB = (result[0].size / (1024 * 1024)).toFixed(2);
         return `${sizeInMB} MB`;
-    } catch (_) { return "Unknown"; }
+    } catch (_) { 
+        return "Unknown"; 
+    }
 }
 
 async function getLastBackupTime() {
@@ -899,7 +1203,9 @@ async function getLastBackupTime() {
             orderBy: { createdAt: 'desc' }
         });
         return last ? last.createdAt : null;
-    } catch (_) { return null; }
+    } catch (_) { 
+        return null; 
+    }
 }
 
 async function getCollectionCounts() {
@@ -917,14 +1223,25 @@ async function getCollectionCounts() {
 
 async function measureResponseTime() {
     const start = Date.now();
-    try { await prisma.user.findFirst(); return (Date.now() - start) + "ms"; }
-    catch (_) { return "Error"; }
+    try { 
+        await prisma.user.findFirst(); 
+        return (Date.now() - start) + "ms"; 
+    } catch (_) { 
+        return "Error"; 
+    }
 }
 
-function getRequestsPerMinute() { return Math.floor(Math.random() * 50) + 10; }
+function getRequestsPerMinute() { 
+    return Math.floor(Math.random() * 50) + 10; 
+}
 
-async function testEmailConnection() { return { success: true }; }
-async function sendTestEmail() { return { success: true }; }
+async function testEmailConnection() { 
+    return { success: true }; 
+}
+
+async function sendTestEmail() { 
+    return { success: true }; 
+}
 
 async function calculateAverageResponseTime() {
     try {
@@ -941,8 +1258,11 @@ async function calculateAverageResponseTime() {
             }
         });
         return count > 0 ? parseFloat((total / count).toFixed(1)) : 2.5;
-    } catch (_) { return 2.5; }
+    } catch (_) { 
+        return 2.5; 
+    }
 }
+
 
 // ================== MIDDLEWARE ==================
 
@@ -1268,39 +1588,119 @@ app.get("/incidents", isAuthenticated, async (req, res) => {
         const filter = req.session.userRole === "student" ? { reportedBy: req.session.userId } : {};
         const incidents = await getIncidents(filter);
         
+        // Calculate stats for the template
+        const totalIncidents = incidents.length;
+        const openIncidents = incidents.filter(i => ["reported", "acknowledged", "investigating", "in_progress"].includes(i.status)).length;
+        const resolvedToday = incidents.filter(i => {
+            const today = new Date().toDateString();
+            return ["resolved", "closed"].includes(i.status) && new Date(i.updatedAt).toDateString() === today;
+        }).length;
+        
+        // Calculate average response time
+        let totalResponseTime = 0;
+        let responseCount = 0;
+        incidents.forEach(i => {
+            if (i.responseTime?.acknowledged && i.createdAt) {
+                totalResponseTime += (new Date(i.responseTime.acknowledged) - new Date(i.createdAt)) / 60000;
+                responseCount++;
+            }
+        });
+        const avgResponseTime = responseCount > 0 ? Math.round(totalResponseTime / responseCount) : 0;
+        
+        // Calculate type stats for quick stats display
+        const typeStats = {
+            theft: incidents.filter(i => i.type === "theft").length,
+            vandalism: incidents.filter(i => i.type === "vandalism").length,
+            unauthorized: incidents.filter(i => i.type === "unauthorized_access").length,
+            medical: incidents.filter(i => i.type === "medical_emergency").length,
+            fire: incidents.filter(i => i.type === "fire").length,
+            other: incidents.filter(i => ["other", "suspicious_activity", "accident", "assault", "harassment", "noise_complaint", "property_damage"].includes(i.type)).length
+        };
+        
+        // Format incidents for the template
+        const formattedIncidents = incidents.map(incident => ({
+            _id: incident.id,
+            id: incident.id,
+            title: incident.title || "Untitled",
+            description: incident.description || "",
+            type: incident.type || "other",
+            severity: incident.severity || "medium",
+            status: incident.status || "reported",
+            location: {
+                name: incident.location?.name || "Unknown",
+                building: incident.location?.building || "",
+                room: incident.location?.room || "",
+                coordinates: incident.location?.coordinates || null
+            },
+            reportedBy: {
+                name: incident.reporter?.name || "Anonymous",
+                email: incident.reporter?.email || "",
+                role: incident.reporter?.role || "unknown"
+            },
+            createdAt: incident.createdAt,
+            updatedAt: incident.updatedAt,
+            timeline: incident.timeline || [],
+            responseTime: incident.responseTime || null
+        }));
+        
+        // Basic stats for the old template format
         const stats = {
-            total: incidents.length,
+            total: totalIncidents,
             critical: incidents.filter((i) => i.severity === "critical").length,
             high: incidents.filter((i) => i.severity === "high").length,
             medium: incidents.filter((i) => i.severity === "medium").length,
             low: incidents.filter((i) => i.severity === "low").length,
-            open: incidents.filter((i) => ["reported", "acknowledged", "investigating", "in_progress"].includes(i.status)).length,
+            open: openIncidents,
             resolved: incidents.filter((i) => ["resolved", "closed"].includes(i.status)).length,
         };
         
         res.render("incident", { 
             title: "Incidents - Campus Guard Connect", 
-            incidents, 
-            stats, 
-            viewType: "list", 
-            user: res.locals.currentUser, 
-            layout: false 
+            layout: false,
+            user: res.locals.currentUser,
+            notificationCount: res.locals.notificationCount || 0,
+            incidents: formattedIncidents,
+            stats: stats,
+            totalIncidents: totalIncidents,
+            openIncidents: openIncidents,
+            resolvedToday: resolvedToday,
+            avgResponseTime: avgResponseTime,
+            typeStats: typeStats,
+            viewType: "list"
         });
     } catch (err) {
         console.error("❌ Error loading incidents:", err);
-        res.status(500).render("incident", { title: "Error", message: "Error loading incidents", viewType: "error", error: {}, layout: false });
+        res.status(500).render("incident", { 
+            title: "Error", 
+            message: "Error loading incidents", 
+            viewType: "error", 
+            error: process.env.NODE_ENV === "development" ? err : {}, 
+            layout: false 
+        });
     }
 });
 
 app.get("/incidents/report", isAuthenticated, (req, res) => {
-    res.render("incident", { title: "Report Incident - Campus Guard Connect", viewType: "report", user: res.locals.currentUser, layout: false, error_msg: null });
+    res.render("incident", { 
+        title: "Report Incident - Campus Guard Connect", 
+        viewType: "report", 
+        user: res.locals.currentUser, 
+        layout: false, 
+        error_msg: null 
+    });
 });
 
 app.post("/incidents/report", isAuthenticated, async (req, res) => {
     try {
         const { title, description, type, severity, location, building, floor, room } = req.body;
         if (!title || !description || !type || !location) {
-            return res.render("incident", { title: "Report Incident - Campus Guard Connect", viewType: "report", user: res.locals.currentUser, layout: false, error_msg: "Please fill in all required fields" });
+            return res.render("incident", { 
+                title: "Report Incident - Campus Guard Connect", 
+                viewType: "report", 
+                user: res.locals.currentUser, 
+                layout: false, 
+                error_msg: "Please fill in all required fields" 
+            });
         }
         
         const incident = await createIncident({
@@ -1346,23 +1746,71 @@ app.post("/incidents/report", isAuthenticated, async (req, res) => {
         res.redirect("/incidents");
     } catch (err) {
         console.error("❌ Error reporting incident:", err);
-        res.render("incident", { title: "Report Incident - Campus Guard Connect", viewType: "report", user: res.locals.currentUser, layout: false, error_msg: "Failed to report incident. Please try again." });
+        res.render("incident", { 
+            title: "Report Incident - Campus Guard Connect", 
+            viewType: "report", 
+            user: res.locals.currentUser, 
+            layout: false, 
+            error_msg: "Failed to report incident. Please try again." 
+        });
     }
 });
 
 app.get("/incidents/:id", isAuthenticated, async (req, res) => {
     try {
         const incident = await getIncidentById(req.params.id);
-        if (!incident) return res.status(404).render("incident", { title: "Not Found", message: "Incident not found", viewType: "error", error: {}, layout: false });
+        if (!incident) return res.status(404).render("incident", { 
+            title: "Not Found", 
+            message: "Incident not found", 
+            viewType: "error", 
+            error: {}, 
+            layout: false 
+        });
         
         if (req.session.userRole === "student" && incident.reportedBy !== req.session.userId) {
-            return res.status(403).render("incident", { title: "Access Denied", message: "You don't have permission to view this incident", viewType: "error", error: {}, layout: false });
+            return res.status(403).render("incident", { 
+                title: "Access Denied", 
+                message: "You don't have permission to view this incident", 
+                viewType: "error", 
+                error: {}, 
+                layout: false 
+            });
         }
         
-        res.render("incident", { title: `Incident: ${incident.title} - Campus Guard Connect`, incident, viewType: "view", user: res.locals.currentUser, layout: false });
+        // Format incident for view
+        const formattedIncident = {
+            _id: incident.id,
+            id: incident.id,
+            title: incident.title,
+            description: incident.description,
+            type: incident.type,
+            severity: incident.severity,
+            status: incident.status,
+            location: incident.location,
+            reportedBy: incident.reporter || { name: "Anonymous" },
+            assignedTo: incident.assignedTo || [],
+            timeline: incident.timeline || [],
+            createdAt: incident.createdAt,
+            updatedAt: incident.updatedAt,
+            responseTime: incident.responseTime
+        };
+        
+        res.render("incident", { 
+            title: `Incident: ${incident.title} - Campus Guard Connect`, 
+            incident: formattedIncident, 
+            viewType: "view", 
+            user: res.locals.currentUser, 
+            layout: false 
+        });
     } catch (err) {
         console.error("❌ Error loading incident:", err);
-        res.status(500).render("incident", { title: "Error", message: "Error loading incident", viewType: "error", error: {}, layout: false });
+        res.status(500).render("incident", { 
+            title: "Error", 
+            message: "Error loading incident", 
+            viewType: "error", 
+            error: {}, 
+            layout: false 
+        });
     }
 });
 
@@ -1393,6 +1841,40 @@ app.post("/incidents/:id/status", isAuthenticated, async (req, res) => {
     } catch (err) {
         console.error("❌ Error updating incident:", err);
         res.status(500).json({ error: "Failed to update incident" });
+    }
+});
+
+// API endpoint for viewing incident details (used by the modal)
+app.get("/api/incidents/:id", isAuthenticated, async (req, res) => {
+    try {
+        const incident = await prisma.incident.findUnique({
+            where: { id: req.params.id },
+            include: {
+                reporter: { select: { id: true, name: true, email: true, role: true } }
+            }
+        });
+        
+        if (!incident) {
+            return res.status(404).json({ error: "Incident not found" });
+        }
+        
+        res.json({
+            id: incident.id,
+            title: incident.title,
+            description: incident.description,
+            type: incident.type,
+            severity: incident.severity,
+            status: incident.status,
+            location: incident.location,
+            reportedBy: incident.reporter || { name: "Anonymous" },
+            createdAt: incident.createdAt,
+            updatedAt: incident.updatedAt,
+            timeline: incident.timeline || [],
+            responseTime: incident.responseTime
+        });
+    } catch (err) {
+        console.error("Error fetching incident:", err);
+        res.status(500).json({ error: err.message });
     }
 });
 
@@ -3661,6 +4143,237 @@ app.get("/api/system/health", isAuthenticated, hasRole(["admin"]), async (req, r
     }
 });
 
+
+// ================== ROLES MANAGEMENT ROUTES ==================
+
+// View all roles and permissions
+app.get("/admin/roles", isAuthenticated, hasRole(["admin"]), async (req, res) => {
+    try {
+        const user = await getUserById(req.session.userId);
+        
+        if (!user) {
+            return res.redirect("/login");
+        }
+        
+        // Get all users with their roles
+        const users = await prisma.user.findMany({
+            where: { isActive: true },
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                name: true,
+                email: true,
+                role: true,
+                badgeNumber: true,
+                lastLogin: true,
+                createdAt: true
+            },
+            orderBy: [
+                { role: 'asc' },
+                { name: 'asc' }
+            ]
+        });
+        
+        // Get role statistics
+        const roleStats = {
+            admin: users.filter(u => u.role === 'admin').length,
+            supervisor: users.filter(u => u.role === 'supervisor').length,
+            guard: users.filter(u => u.role === 'guard').length,
+            student: users.filter(u => u.role === 'student').length,
+            total: users.length
+        };
+        
+        // Format users for template
+        const formattedUsers = users.map(u => ({
+            id: u.id,
+            firstName: u.firstName,
+            lastName: u.lastName,
+            name: u.name,
+            email: u.email,
+            role: u.role,
+            badgeNumber: u.badgeNumber || 'N/A',
+            lastLogin: u.lastLogin,
+            createdAt: u.createdAt,
+            initials: getInitials(u.name || `${u.firstName} ${u.lastName}`),
+            fullName: u.name || `${u.firstName} ${u.lastName}`
+        }));
+        
+        res.render("roles", {
+            title: "Role Management - Campus Guard Connect",
+            layout: false,
+            user: { 
+                _id: user.id, 
+                name: user.name, 
+                role: user.role, 
+                initials: getInitials(user.name),
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email
+            },
+            notificationCount: res.locals.notificationCount || 0,
+            users: formattedUsers,
+            roleStats: roleStats
+        });
+    } catch (err) {
+        console.error("❌ Roles page error:", err);
+        res.status(500).render("error", { 
+            title: "Error", 
+            message: "Error loading roles page: " + err.message, 
+            error: process.env.NODE_ENV === "development" ? err : {} 
+        });
+    }
+});
+
+// Update user role (API endpoint)
+app.put("/admin/roles/:userId", isAuthenticated, hasRole(["admin"]), async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { role } = req.body;
+        
+        // Validate role
+        const validRoles = ["admin", "supervisor", "guard", "student"];
+        if (!validRoles.includes(role)) {
+            return res.status(400).json({ error: "Invalid role" });
+        }
+        
+        // Get the user to update
+        const targetUser = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { id: true, name: true, email: true, role: true }
+        });
+        
+        if (!targetUser) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        
+        // Prevent admin from changing their own role
+        if (userId === req.session.userId) {
+            return res.status(400).json({ error: "You cannot change your own role" });
+        }
+        
+        // Update the role
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: { 
+                role: role,
+                updatedAt: new Date()
+            },
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                name: true,
+                email: true,
+                role: true
+            }
+        });
+        
+        // Create audit log
+        await createAuditLog({
+            user: req.session.userId,
+            action: "UPDATE_ROLE",
+            category: "user",
+            description: `Changed user role from ${targetUser.role} to ${role} for ${targetUser.name || targetUser.email}`,
+            targetId: userId,
+            targetModel: "User",
+            changes: { oldRole: targetUser.role, newRole: role },
+            ipAddress: req.ip,
+            userAgent: req.get("User-Agent") || "Unknown",
+            status: "success"
+        });
+        
+        // Send notification to the user
+        await createNotification({
+            recipient: userId,
+            type: "info",
+            title: "Role Updated",
+            message: `Your role has been changed from ${targetUser.role} to ${role}`,
+            priority: "medium"
+        });
+        
+        res.json({ 
+            success: true, 
+            message: `Role updated to ${role} for ${updatedUser.name || updatedUser.email}`,
+            user: updatedUser
+        });
+    } catch (err) {
+        console.error("❌ Update role error:", err);
+        res.status(500).json({ error: "Failed to update role: " + err.message });
+    }
+});
+
+// Bulk update roles (API endpoint)
+app.post("/admin/roles/bulk", isAuthenticated, hasRole(["admin"]), async (req, res) => {
+    try {
+        const { userIds, role } = req.body;
+        
+        if (!userIds || !userIds.length) {
+            return res.status(400).json({ error: "No users selected" });
+        }
+        
+        const validRoles = ["admin", "supervisor", "guard", "student"];
+        if (!validRoles.includes(role)) {
+            return res.status(400).json({ error: "Invalid role" });
+        }
+        
+        // Filter out current admin
+        const filteredIds = userIds.filter(id => id !== req.session.userId);
+        
+        if (!filteredIds.length) {
+            return res.status(400).json({ error: "Cannot change your own role" });
+        }
+        
+        // Get users before update for audit
+        const users = await prisma.user.findMany({
+            where: { id: { in: filteredIds } },
+            select: { id: true, name: true, email: true, role: true }
+        });
+        
+        // Update roles
+        const result = await prisma.user.updateMany({
+            where: { id: { in: filteredIds } },
+            data: { 
+                role: role,
+                updatedAt: new Date()
+            }
+        });
+        
+        // Create audit log
+        await createAuditLog({
+            user: req.session.userId,
+            action: "BULK_UPDATE_ROLES",
+            category: "user",
+            description: `Bulk updated ${result.count} users to role: ${role}`,
+            changes: { userIds: filteredIds, newRole: role },
+            ipAddress: req.ip,
+            userAgent: req.get("User-Agent") || "Unknown",
+            status: "success"
+        });
+        
+        // Send notifications
+        for (const user of users) {
+            await createNotification({
+                recipient: user.id,
+                type: "info",
+                title: "Role Updated",
+                message: `Your role has been changed to ${role}`,
+                priority: "medium"
+            });
+        }
+        
+        res.json({ 
+            success: true, 
+            message: `Updated ${result.count} users to ${role} role`,
+            count: result.count
+        });
+    } catch (err) {
+        console.error("❌ Bulk update roles error:", err);
+        res.status(500).json({ error: "Failed to bulk update roles: " + err.message });
+    }
+});
+
+
 // ================== AUDIT LOGS ==================
 
 app.get("/admin/audit-logs", isAuthenticated, hasRole(["admin"]), async (req, res) => {
@@ -4035,6 +4748,8 @@ app.get("/api/admin/audit-logs/:id", isAuthenticated, hasRole(["admin"]), async 
         res.json(log);
     } catch (err) { res.status(500).json({ error: "Failed to fetch audit log" }); }
 });
+
+
 
 // ================== HELP & SUPPORT ==================
 

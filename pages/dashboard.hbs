@@ -5,1191 +5,670 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{#if user}}{{user.role}} Dashboard{{else}}Dashboard{{/if}} - Campus Guard Connect</title>
-    
-    <!-- Bootstrap 5 CSS -->
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Chart.js -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- FullCalendar -->
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
-    
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
-    <!-- Custom CSS -->
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --brand-50:  #f0f3ff;
+            --brand-100: #e0e7ff;
+            --brand-400: #7c8fe8;
+            --brand-500: #4f66e5;
+            --brand-600: #3b52d4;
+            --brand-700: #2c3fb5;
+            --success:   #12b76a;
+            --warning:   #f59e0b;
+            --danger:    #ef4444;
+            --bg:        #f4f6fb;
+            --surface:   #ffffff;
+            --border:    rgba(0,0,0,.07);
+            --text-1:    #0f172a;
+            --text-2:    #475569;
+            --text-3:    #94a3b8;
+            --sidebar-w: 270px;
+            --nav-h:     72px;
+            --radius-xl: 18px;
+            --radius-lg: 12px;
+            --radius-md: 8px;
+            --shadow-sm: 0 1px 4px rgba(0,0,0,.06);
+            --shadow-md: 0 4px 16px rgba(0,0,0,.08);
+            --shadow-lg: 0 12px 40px rgba(79,102,229,.18);
+            --ease-spring: cubic-bezier(.34,1.56,.64,1);
+            --ease-out:    cubic-bezier(.22,1,.36,1);
         }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: #f8fafc;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            background: var(--bg);
+            color: var(--text-1);
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Modern Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+        h1,h2,h3,h4,h5,h6 { font-family: 'Syne', sans-serif; letter-spacing: -.02em; }
+        a { text-decoration: none; color: inherit; }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--brand-100); border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--brand-400); }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pulse-dot {
+            0%,100% { box-shadow: 0 0 0 0 rgba(18,183,106,.5); }
+            50%      { box-shadow: 0 0 0 6px rgba(18,183,106,0); }
+        }
+        @keyframes badge-pop {
+            0%   { transform: scale(0); }
+            70%  { transform: scale(1.15); }
+            100% { transform: scale(1); }
         }
 
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #5a67d8 0%, #6b46a1 100%);
-        }
-
-        /* Navbar */
+        /* ── Navbar ── */
         .navbar {
-            background: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            height: 80px;
+            inset: 0 0 auto 0;
+            height: var(--nav-h);
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            z-index: 1030;
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: fadeIn .4s var(--ease-out) both;
         }
 
         .navbar-brand {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.2rem;
             font-weight: 800;
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--brand-500);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: .6rem;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
-        .navbar-brand i {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 2rem;
+        .brand-icon {
+            width: 36px; height: 36px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+            display: grid; place-items: center;
+            color: #fff; font-size: .9rem;
+            box-shadow: 0 4px 12px rgba(79,102,229,.35);
+            flex-shrink: 0;
         }
 
-        .nav-search {
-            position: relative;
-            width: 300px;
-        }
-
+        .nav-search { flex: 1; max-width: 320px; position: relative; }
         .nav-search i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
+            position: absolute; left: 13px; top: 50%;
             transform: translateY(-50%);
-            color: #94a3b8;
-            font-size: 0.9rem;
+            color: var(--text-3); font-size: .85rem; pointer-events: none;
         }
-
         .nav-search input {
-            width: 100%;
-            height: 45px;
-            padding: 0.5rem 1rem 0.5rem 2.5rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            background: #f8fafc;
+            width: 100%; height: 40px;
+            padding: 0 1rem 0 2.25rem;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--bg);
+            font-family: 'DM Sans', sans-serif; font-size: .875rem;
+            color: var(--text-1); transition: border-color .2s, box-shadow .2s;
         }
-
+        .nav-search input::placeholder { color: var(--text-3); }
         .nav-search input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-            outline: none;
-            background: white;
+            outline: none; border-color: var(--brand-400);
+            box-shadow: 0 0 0 4px rgba(79,102,229,.12); background: var(--surface);
         }
 
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
+        .nav-right { margin-left: auto; display: flex; align-items: center; gap: .75rem; }
+
+        .nav-icon-btn {
+            width: 40px; height: 40px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--surface);
+            display: grid; place-items: center;
+            color: var(--text-2); cursor: pointer; position: relative;
+            transition: border-color .2s, color .2s, transform .15s var(--ease-spring);
+        }
+        .nav-icon-btn:hover { border-color: var(--brand-400); color: var(--brand-500); transform: translateY(-1px); }
+        .nav-icon-btn .badge-count {
+            position: absolute; top: -6px; right: -6px;
+            background: var(--danger); color: #fff;
+            font-size: .65rem; font-weight: 700;
+            min-width: 18px; height: 18px; border-radius: 99px;
+            display: grid; place-items: center; padding: 0 4px;
+            border: 2px solid var(--surface);
+            animation: badge-pop .4s var(--ease-spring) both;
         }
 
-        .notification-badge {
-            position: relative;
-            cursor: pointer;
+        .user-chip {
+            display: flex; align-items: center; gap: .6rem;
+            padding: .3rem .5rem .3rem .3rem;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg); cursor: pointer;
+            transition: border-color .2s, background .2s;
         }
-
-        .notification-badge i {
-            font-size: 1.3rem;
-            color: #64748b;
-            transition: color 0.3s ease;
-        }
-
-        .notification-badge:hover i {
-            color: #667eea;
-        }
-
-        .badge-count {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
-            color: white;
-            font-size: 0.7rem;
-            font-weight: 600;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            cursor: pointer;
-            padding: 0.5rem 1rem;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            background: #f8fafc;
-        }
-
-        .user-profile:hover {
-            background: #eef2f6;
-        }
+        .user-chip:hover { border-color: var(--brand-400); background: var(--brand-50); }
 
         .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 1rem;
+            width: 34px; height: 34px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+            display: grid; place-items: center;
+            color: #fff; font-family: 'Syne', sans-serif;
+            font-size: .8rem; font-weight: 700; flex-shrink: 0;
         }
 
-        .user-info {
-            display: none;
-        }
-
+        .user-chip-info { display: none; }
         @media (min-width: 768px) {
-            .user-info {
-                display: block;
-            }
-            
-            .user-info h6 {
-                font-weight: 700;
-                color: #1e293b;
-                margin-bottom: 0.2rem;
-                font-size: 0.9rem;
-            }
-            
-            .user-info p {
-                color: #64748b;
-                font-size: 0.8rem;
-                margin-bottom: 0;
-                text-transform: capitalize;
-            }
+            .user-chip-info { display: block; }
+            .user-chip-info .name { font-family: 'Syne', sans-serif; font-size: .8rem; font-weight: 700; color: var(--text-1); line-height: 1.2; }
+            .user-chip-info .role { font-size: .72rem; color: var(--text-3); text-transform: capitalize; }
         }
 
-        /* Sidebar */
+        .dropdown-menu {
+            border: 1.5px solid var(--border) !important;
+            border-radius: var(--radius-lg) !important;
+            box-shadow: var(--shadow-md) !important;
+            padding: .4rem !important;
+            font-size: .875rem;
+            animation: fadeUp .2s var(--ease-out) both;
+        }
+        .dropdown-item {
+            border-radius: var(--radius-md);
+            padding: .55rem .85rem;
+            color: var(--text-2); font-weight: 500;
+            transition: background .15s, color .15s;
+        }
+        .dropdown-item:hover { background: var(--brand-50); color: var(--brand-600); }
+        .dropdown-item.text-danger:hover { background: #fff1f1; color: var(--danger); }
+        .dropdown-divider { border-color: var(--border); margin: .3rem 0; }
+
+        /* ── Sidebar ── */
         .sidebar {
             position: fixed;
-            top: 80px;
-            left: 0;
-            bottom: 0;
-            width: 280px;
-            background: white;
-            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
-            z-index: 999;
-            overflow-y: auto;
-            transition: all 0.3s ease;
+            top: var(--nav-h); left: 0; bottom: 0;
+            width: var(--sidebar-w);
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            overflow-y: auto; z-index: 1020;
+            transition: transform .3s var(--ease-out);
+            padding: 1.25rem .875rem 2rem;
+            animation: fadeIn .5s var(--ease-out) both;
+        }
+        .sidebar-overlay {
+            display: none; position: fixed;
+            inset: var(--nav-h) 0 0 0;
+            background: rgba(0,0,0,.3); z-index: 1015;
+            backdrop-filter: blur(2px);
+        }
+        @media (max-width: 991px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.show { transform: translateX(0); }
+            .sidebar.show ~ .sidebar-overlay { display: block; }
         }
 
-        .sidebar-menu {
-            padding: 2rem 1rem;
-            list-style: none;
-        }
-
-        .menu-section {
-            margin-bottom: 2rem;
-        }
-
+        .menu-section { margin-bottom: 1.75rem; }
         .menu-section-title {
-            padding: 0 1rem;
-            margin-bottom: 1rem;
-            color: #94a3b8;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .68rem; font-weight: 600;
+            letter-spacing: .08em; text-transform: uppercase;
+            color: var(--text-3); padding: 0 .625rem; margin-bottom: .5rem;
         }
-
-        .menu-item {
-            margin-bottom: 0.25rem;
-        }
-
         .menu-link {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            color: #64748b;
-            text-decoration: none;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            font-weight: 500;
+            display: flex; align-items: center; gap: .75rem;
+            padding: .6rem .75rem; border-radius: var(--radius-md);
+            color: var(--text-2); font-weight: 500; font-size: .875rem;
+            transition: background .2s, color .2s, transform .15s var(--ease-spring);
             position: relative;
         }
-
-        .menu-link i {
-            width: 24px;
-            margin-right: 1rem;
-            font-size: 1.2rem;
-            color: #94a3b8;
-            transition: all 0.3s ease;
-        }
-
-        .menu-link:hover {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            color: #667eea;
-        }
-
-        .menu-link:hover i {
-            color: #667eea;
-        }
-
+        .menu-link i { width: 20px; text-align: center; font-size: .95rem; color: var(--text-3); transition: color .2s; flex-shrink: 0; }
+        .menu-link:hover { background: var(--brand-50); color: var(--brand-600); transform: translateX(3px); }
+        .menu-link:hover i { color: var(--brand-500); }
         .menu-link.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+            color: #fff; box-shadow: var(--shadow-lg); font-weight: 600;
         }
-
-        .menu-link.active i {
-            color: white;
-        }
-
+        .menu-link.active i { color: rgba(255,255,255,.85); }
+        .menu-link.active:hover { transform: translateX(3px); }
         .badge-new {
-            position: absolute;
-            right: 1rem;
-            background: #f56565;
-            color: white;
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 0.25rem 0.5rem;
-            border-radius: 20px;
+            margin-left: auto; background: var(--danger); color: #fff;
+            font-size: .65rem; font-weight: 700;
+            padding: 2px 7px; border-radius: 99px;
+            animation: badge-pop .4s var(--ease-spring) both;
         }
+        .menu-link.active .badge-new { background: rgba(255,255,255,.3); }
 
-        /* Main Content */
+        /* ── Main Content ── */
         .main-content {
-            margin-left: 280px;
-            margin-top: 80px;
-            padding: 2rem;
-            min-height: calc(100vh - 80px);
-            transition: all 0.3s ease;
+            margin-left: var(--sidebar-w);
+            margin-top: var(--nav-h);
+            padding: 1.75rem;
+            min-height: calc(100vh - var(--nav-h));
+            transition: margin-left .3s var(--ease-out);
         }
+        @media (max-width: 991px) { .main-content { margin-left: 0; } }
 
-        /* Welcome Banner */
+        .main-content > * { animation: fadeUp .45s var(--ease-out) both; }
+        .main-content > *:nth-child(1) { animation-delay: .08s; }
+        .main-content > *:nth-child(2) { animation-delay: .16s; }
+        .main-content > *:nth-child(3) { animation-delay: .24s; }
+        .main-content > *:nth-child(4) { animation-delay: .32s; }
+
+        /* ── Welcome Banner ── */
         .welcome-banner {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            color: white;
-            position: relative;
-            overflow: hidden;
+            background: linear-gradient(130deg, var(--brand-600) 0%, #1e3a8a 100%);
+            border-radius: var(--radius-xl);
+            padding: 2rem 2.25rem; color: #fff;
+            position: relative; overflow: hidden; margin-bottom: 1.75rem;
         }
-
-        .welcome-banner::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
-            background-repeat: no-repeat;
-            background-position: bottom;
-            background-size: cover;
-            opacity: 0.2;
+        .welcome-banner::before, .welcome-banner::after {
+            content: ''; position: absolute; border-radius: 50%;
+            background: rgba(255,255,255,.06);
         }
+        .welcome-banner::before { width: 280px; height: 280px; top: -100px; right: -60px; }
+        .welcome-banner::after  { width: 180px; height: 180px; bottom: -80px; right: 120px; }
+        .welcome-content { position: relative; z-index: 1; }
+        .welcome-banner h2 { font-size: clamp(1.4rem,2.5vw,2rem); font-weight: 800; margin-bottom: .4rem; }
+        .welcome-banner p  { opacity: .85; font-size: .95rem; margin-bottom: 1.25rem; }
 
-        .welcome-content {
-            position: relative;
-            z-index: 1;
-        }
+        .quick-stats { display: flex; flex-wrap: wrap; gap: 1.25rem 2rem; }
+        .quick-stat-item { display: flex; align-items: center; gap: .5rem; font-size: .875rem; font-weight: 500; }
+        .quick-stat-item i { opacity: .8; font-size: 1rem; }
 
-        .welcome-banner h2 {
-            font-weight: 800;
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .welcome-banner p {
-            opacity: 0.9;
-            font-size: 1.1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .quick-stats {
-            display: flex;
-            gap: 2rem;
-            margin-top: 1rem;
-        }
-
-        .quick-stat-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .quick-stat-item i {
-            font-size: 1.5rem;
-            opacity: 0.9;
-        }
-
-        .quick-stat-item span {
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-
-        /* Stat Cards */
+        /* ── Stat Cards ── */
         .stat-card {
-            background: white;
-            border-radius: 20px;
-            padding: 1.5rem;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
-            transition: all 0.3s ease;
-            height: 100%;
-            border: 1px solid #e2e8f0;
-            position: relative;
-            overflow: hidden;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem; height: 100%;
+            position: relative; overflow: hidden;
+            transition: transform .2s var(--ease-spring), box-shadow .2s;
         }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transition: height 0.3s ease;
+        .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+        .stat-card::after {
+            content: ''; position: absolute;
+            bottom: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--brand-500), var(--brand-700));
+            transform: scaleX(0); transform-origin: left;
+            transition: transform .3s var(--ease-out);
         }
-
-        .stat-card:hover::before {
-            height: 100%;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
-        }
-
-        .stat-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-        }
+        .stat-card:hover::after { transform: scaleX(1); }
 
         .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 15px;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .stat-icon i {
-            font-size: 2rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .stat-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .badge-up {
-            background: #c6f6d5;
-            color: #22543d;
-        }
-
-        .badge-down {
-            background: #fed7d7;
-            color: #742a2a;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #1e293b;
-            margin-bottom: 0.25rem;
-        }
-
-        .stat-label {
-            color: #64748b;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        /* Cards */
-        .card {
-            border: none;
-            border-radius: 20px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
-            background: white;
-            border: 1px solid #e2e8f0;
-            overflow: hidden;
-            margin-bottom: 1.5rem;
-        }
-
-        .card-header {
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .card-header h5 {
-            font-weight: 700;
-            color: #1e293b;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .card-header i {
-            color: #667eea;
-        }
-
-        .card-header .btn-link {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-
-        .card-header .btn-link:hover {
-            color: #764ba2;
-            transform: translateX(5px);
-        }
-
-        .card-body {
-            padding: 1.5rem;
-        }
-
-        /* Map Container */
-        .map-container {
-            height: 300px;
-            border-radius: 15px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        #liveMap {
-            height: 100%;
-            width: 100%;
-        }
-
-        /* Guard List */
-        .guard-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .guard-item {
-            display: flex;
-            align-items: center;
-            padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
-        }
-
-        .guard-item:last-child {
-            border-bottom: none;
-        }
-
-        .guard-item:hover {
-            background: #f8fafc;
-        }
-
-        .guard-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            margin-right: 1rem;
-        }
-
-        .guard-info {
-            flex: 1;
-        }
-
-        .guard-info h6 {
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 0.25rem;
-        }
-
-        .guard-info p {
-            color: #64748b;
-            font-size: 0.85rem;
-            margin-bottom: 0;
-        }
-
-        .guard-status {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-left: 0.5rem;
-        }
-
-        .status-online {
-            background: #48bb78;
-            box-shadow: 0 0 0 2px rgba(72, 187, 120, 0.2);
-        }
-
-        .status-away {
-            background: #ecc94b;
-            box-shadow: 0 0 0 2px rgba(236, 201, 75, 0.2);
-        }
-
-        .status-offline {
-            background: #a0aec0;
-            box-shadow: 0 0 0 2px rgba(160, 174, 192, 0.2);
-        }
-
-        /* Incident List */
-        .incident-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .incident-item {
-            display: flex;
-            align-items: center;
-            padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
-        }
-
-        .incident-item:last-child {
-            border-bottom: none;
-        }
-
-        .incident-item:hover {
-            background: #f8fafc;
-        }
-
-        .incident-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
-            font-size: 1.3rem;
-        }
-
-        .incident-high {
-            background: rgba(245, 101, 101, 0.1);
-            color: #f56565;
-        }
-
-        .incident-medium {
-            background: rgba(236, 201, 75, 0.1);
-            color: #ecc94b;
-        }
-
-        .incident-low {
-            background: rgba(72, 187, 120, 0.1);
-            color: #48bb78;
-        }
-
-        .incident-info {
-            flex: 1;
-        }
-
-        .incident-info h6 {
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 0.25rem;
-        }
-
-        .incident-info p {
-            color: #64748b;
-            font-size: 0.85rem;
-            margin-bottom: 0;
-        }
-
-        .incident-time {
-            color: #94a3b8;
-            font-size: 0.8rem;
-        }
-
-        /* Schedule Calendar */
-        #scheduleCalendar {
-            height: 400px;
-        }
-
-        /* Progress Bars */
-        .progress-item {
+            width: 52px; height: 52px; border-radius: var(--radius-lg);
+            background: var(--brand-50); display: grid; place-items: center;
             margin-bottom: 1rem;
         }
+        .stat-icon i { font-size: 1.4rem; color: var(--brand-500); }
+        .stat-value { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--text-1); line-height: 1; margin-bottom: .3rem; }
+        .stat-label { font-size: .8rem; color: var(--text-3); font-weight: 500; text-transform: uppercase; letter-spacing: .04em; }
+        .stat-badge { font-size: .72rem; font-weight: 600; padding: .2rem .55rem; border-radius: 99px; }
+        .badge-up   { background: #dcfce7; color: #15803d; }
+        .badge-down { background: #fee2e2; color: #b91c1c; }
 
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-            color: #4a5568;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        .progress {
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 4px;
+        /* ── Cards ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border) !important;
+            border-radius: var(--radius-xl) !important;
+            box-shadow: var(--shadow-sm);
             overflow: hidden;
+            transition: box-shadow .2s;
         }
-
-        .progress-bar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 4px;
+        .card:hover { box-shadow: var(--shadow-md); }
+        .card-header {
+            background: var(--surface) !important;
+            border-bottom: 1px solid var(--border) !important;
+            padding: 1.1rem 1.5rem !important;
+            display: flex; align-items: center; justify-content: space-between;
         }
-
-        /* Quick Actions */
-        .quick-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
+        .card-header h5 { font-size: .95rem; font-weight: 700; color: var(--text-1); margin: 0; display: flex; align-items: center; gap: .5rem; }
+        .card-header h5 i { color: var(--brand-500); font-size: .9rem; }
+        .card-header .btn-link {
+            font-size: .8rem; font-weight: 600; color: var(--brand-500);
+            display: flex; align-items: center; gap: .3rem;
+            transition: color .15s, gap .2s;
         }
+        .card-header .btn-link:hover { color: var(--brand-700); gap: .6rem; }
+        .card-body { padding: 1.5rem !important; }
 
+        /* ── Map ── */
+        .map-container { height: 280px; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); }
+        #liveMap { height: 100%; width: 100%; }
+
+        /* ── Guard List ── */
+        .guard-list { list-style: none; padding: 0; margin: 0; }
+        .guard-item {
+            display: flex; align-items: center; gap: .875rem;
+            padding: .875rem .25rem; border-bottom: 1px solid var(--border);
+            transition: background .15s; border-radius: var(--radius-md);
+        }
+        .guard-item:last-child { border-bottom: none; }
+        .guard-item:hover { background: var(--bg); }
+        .guard-avatar {
+            width: 40px; height: 40px; border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+            display: grid; place-items: center;
+            color: #fff; font-family: 'Syne', sans-serif;
+            font-size: .8rem; font-weight: 700; flex-shrink: 0;
+        }
+        .guard-info { flex: 1; min-width: 0; }
+        .guard-info h6 { font-size: .875rem; font-weight: 600; margin-bottom: 2px; color: var(--text-1); }
+        .guard-info p  { font-size: .78rem; color: var(--text-3); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .guard-status { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+        .status-online  { background: var(--success); animation: pulse-dot 2.5s infinite; }
+        .status-away    { background: var(--warning); }
+        .status-offline { background: var(--text-3); }
+
+        /* ── Incident List ── */
+        .incident-list { list-style: none; padding: 0; margin: 0; }
+        .incident-item {
+            display: flex; align-items: center; gap: .875rem;
+            padding: .875rem .25rem; border-bottom: 1px solid var(--border);
+            transition: background .15s; border-radius: var(--radius-md);
+        }
+        .incident-item:last-child { border-bottom: none; }
+        .incident-item:hover { background: var(--bg); }
+        .incident-icon { width: 40px; height: 40px; border-radius: var(--radius-md); display: grid; place-items: center; font-size: 1rem; flex-shrink: 0; }
+        .incident-high   { background: #fef2f2; color: var(--danger); }
+        .incident-medium { background: #fffbeb; color: var(--warning); }
+        .incident-low    { background: #f0fdf4; color: var(--success); }
+        .incident-info { flex: 1; min-width: 0; }
+        .incident-info h6 { font-size: .875rem; font-weight: 600; margin-bottom: 2px; color: var(--text-1); }
+        .incident-info p  { font-size: .78rem; color: var(--text-3); margin: 0; }
+        .incident-time { font-size: .75rem; color: var(--text-3); white-space: nowrap; }
+
+        /* ── Progress ── */
+        .progress-item { margin-bottom: 1rem; }
+        .progress-item:last-child { margin-bottom: 0; }
+        .progress-label { display: flex; justify-content: space-between; font-size: .8rem; font-weight: 500; color: var(--text-2); margin-bottom: .4rem; }
+        .progress { height: 7px !important; background: var(--bg) !important; border-radius: 99px !important; overflow: hidden; }
+        .progress-bar { background: linear-gradient(90deg, var(--brand-400), var(--brand-700)) !important; border-radius: 99px !important; transition: width 1.2s var(--ease-out) !important; }
+
+        /* ── Quick Actions ── */
+        .quick-actions { display: grid; grid-template-columns: repeat(2,1fr); gap: .75rem; }
         .action-btn {
-            flex: 1;
-            min-width: 120px;
-            padding: 1rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 15px;
-            background: white;
-            color: #4a5568;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
+            display: flex; flex-direction: column; align-items: center; gap: .5rem;
+            padding: 1.1rem .75rem;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--surface);
+            color: var(--text-2); font-size: .78rem; font-weight: 600;
+            cursor: pointer; text-align: center;
+            transition: border-color .2s, background .2s, transform .2s var(--ease-spring), box-shadow .2s;
+        }
+        .action-btn i { font-size: 1.35rem; color: var(--brand-500); transition: transform .2s var(--ease-spring); }
+        .action-btn:hover { border-color: var(--brand-400); background: var(--brand-50); color: var(--brand-600); transform: translateY(-3px); box-shadow: 0 6px 20px rgba(79,102,229,.15); }
+        .action-btn:hover i { transform: scale(1.15) rotate(-5deg); }
+        .action-btn:active { transform: translateY(-1px); }
+
+        /* ── Weather ── */
+        .weather-temp { font-family: 'Syne', sans-serif; font-size: 2.5rem; font-weight: 800; color: var(--text-1); line-height: 1; }
+        .weather-meta { font-size: .8rem; color: var(--text-3); }
+        .weather-stat h6 { font-size: .875rem; font-weight: 700; margin-bottom: 2px; color: var(--text-1); }
+        .weather-stat small { font-size: .72rem; color: var(--text-3); }
+
+        /* ── Sidebar toggle (mobile) ── */
+        #sidebarToggle {
+            display: none; width: 38px; height: 38px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--surface);
+            align-items: center; justify-content: center;
+            cursor: pointer; color: var(--text-2);
+            transition: border-color .2s, color .2s; flex-shrink: 0;
+        }
+        #sidebarToggle:hover { border-color: var(--brand-400); color: var(--brand-500); }
+        @media (max-width: 991px) {
+            #sidebarToggle { display: flex; }
+            .nav-search { display: none !important; }
         }
 
-        .action-btn i {
-            font-size: 1.5rem;
-            color: #667eea;
-            transition: all 0.3s ease;
-        }
+        .empty-state { text-align: center; padding: 2rem 1rem; color: var(--text-3); font-size: .875rem; }
+        .empty-state i { font-size: 1.5rem; display: block; margin-bottom: .5rem; color: var(--success); }
 
-        .action-btn:hover {
-            border-color: #667eea;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.1);
+        .btn-primary {
+            background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+            border: none; font-family: 'DM Sans', sans-serif;
+            font-weight: 600; border-radius: var(--radius-md);
+            transition: transform .15s var(--ease-spring), box-shadow .15s;
         }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(79,102,229,.35); }
 
-        .action-btn:hover i {
-            transform: scale(1.1);
+        .btn-light {
+            font-family: 'DM Sans', sans-serif; font-weight: 600;
+            border-radius: var(--radius-md);
+            border: 2px solid rgba(255,255,255,.3);
+            background: rgba(255,255,255,.15); color: #fff;
+            backdrop-filter: blur(4px);
+            transition: background .2s, border-color .2s, transform .15s var(--ease-spring);
         }
+        .btn-light:hover { background: rgba(255,255,255,.25); border-color: rgba(255,255,255,.5); color: #fff; transform: translateY(-1px); }
 
-        /* Role-specific colors */
-        .admin .menu-link.active {
-            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
-        }
-
-        .supervisor .menu-link.active {
-            background: linear-gradient(135deg, #48bb78 0%, #2f855a 100%);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            
-            .sidebar.show {
-                transform: translateX(0);
-            }
-            
-            .main-content {
-                margin-left: 0;
-            }
-            
-            .nav-search {
-                display: none;
-            }
-            
-            .quick-stats {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .stat-card {
-                margin-bottom: 1rem;
-            }
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #e2e8f0;
-            border-top-color: #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Dark Mode Support (Optional) */
         @media (prefers-color-scheme: dark) {
-            body {
-                background: #0f172a;
-            }
-            
-            .navbar, .sidebar, .card, .stat-card {
-                background: #1e293b;
-                border-color: #334155;
-            }
-            
-            .card-header {
-                background: #1e293b;
-                border-color: #334155;
-            }
-            
-            .card-header h5, .stat-value, .guard-info h6, .incident-info h6 {
-                color: #f1f5f9;
-            }
-            
-            .stat-label, .guard-info p, .incident-info p, .incident-time {
-                color: #94a3b8;
-            }
-            
-            .guard-item:hover, .incident-item:hover {
-                background: #334155;
-            }
-            
-            .user-profile {
-                background: #334155;
-            }
-            
-            .user-info h6 {
-                color: #f1f5f9;
-            }
-            
-            .nav-search input {
-                background: #334155;
-                border-color: #475569;
-                color: #f1f5f9;
-            }
+            :root { --bg: #0d1117; --surface: #161b22; --border: rgba(255,255,255,.08); --text-1: #f0f6fc; --text-2: #8b949e; --text-3: #484f58; }
+            .stat-icon { background: rgba(79,102,229,.15); }
+            .action-btn { background: var(--surface); }
+            .action-btn:hover { background: rgba(79,102,229,.1); }
+            .nav-search input { background: var(--bg); color: var(--text-1); }
         }
     </style>
 </head>
 <body class="{{#if user}}{{user.role}}{{/if}}">
+
     <!-- Navbar -->
     <nav class="navbar">
-        <div class="container-fluid">
-            <button class="btn d-lg-none" id="sidebarToggle">
-                <i class="fas fa-bars" style="color: #667eea;"></i>
-            </button>
-            
-            <a class="navbar-brand" href="/dashboard">
-                <i class="fas fa-shield-alt"></i>
-                CampusGuard Connecteeeeeeeee
-            </a>
-            
-            <div class="nav-search d-none d-lg-block">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search guards, incidents, reports...">
+        <button id="sidebarToggle" aria-label="Toggle sidebar">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <a class="navbar-brand" href="/dashboard">
+            <span class="brand-icon"><i class="fas fa-shield-alt"></i></span>
+            CampusGuard Connect
+        </a>
+
+        <div class="nav-search d-none d-lg-block">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search guards, incidents, reports…">
+        </div>
+
+        <div class="nav-right">
+            <div class="nav-icon-btn" role="button" aria-label="Notifications">
+                <i class="far fa-bell"></i>
+                <span class="badge-count">{{notificationCount}}</span>
             </div>
-            
-            <div class="user-menu">
-                <div class="notification-badge">
-                    <i class="far fa-bell"></i>
-                    <span class="badge-count">{{notificationCount}}</span>
-                </div>
-                
-                <div class="dropdown">
-                    <div class="user-profile" data-bs-toggle="dropdown">
-                        <div class="user-avatar">
-                            {{#if user}}
-                                {{#if user.firstName}}
-                                    {{user.firstName.[0]}}{{user.lastName.[0]}}
-                                {{else}}
-                                    {{user.email.[0]}}
-                                {{/if}}
-                            {{else}}
-                                U
-                            {{/if}}
-                        </div>
-                        <div class="user-info">
-                            <h6>{{#if user}}{{user.firstName}} {{user.lastName}}{{else}}User{{/if}}</h6>
-                            <p>{{#if user}}{{user.role}}{{else}}Guest{{/if}}</p>
-                        </div>
+
+            <div class="dropdown">
+                <div class="user-chip" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="user-avatar">
+                        {{#if user}}{{#if user.firstName}}{{user.firstName.[0]}}{{user.lastName.[0]}}{{else}}{{user.email.[0]}}{{/if}}{{else}}U{{/if}}
                     </div>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
-                        <li><a class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i>Settings</a></li>
-                        <li><a class="dropdown-item" href="/help"><i class="fas fa-question-circle me-2"></i>Help</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                    </ul>
+                    <div class="user-chip-info">
+                        <div class="name">{{#if user}}{{user.firstName}} {{user.lastName}}{{else}}User{{/if}}</div>
+                        <div class="role">{{#if user}}{{user.role}}{{else}}Guest{{/if}}</div>
+                    </div>
+                    <i class="fas fa-chevron-down ms-1" style="font-size:.7rem;color:var(--text-3);"></i>
                 </div>
+                <ul class="dropdown-menu dropdown-menu-end mt-1">
+                    <li><a class="dropdown-item" href="/profile"><i class="fas fa-user fa-fw me-2"></i>Profile</a></li>
+                    <li><a class="dropdown-item" href="/settings"><i class="fas fa-cog fa-fw me-2"></i>Settings</a></li>
+                    <li><a class="dropdown-item" href="/help"><i class="fas fa-question-circle fa-fw me-2"></i>Help</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt fa-fw me-2"></i>Logout</a></li>
+                </ul>
             </div>
         </div>
     </nav>
-    
+
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        <ul class="sidebar-menu">
-            <!-- Main Menu -->
-            <li class="menu-section">
-                <div class="menu-section-title">Main</div>
-                <ul class="list-unstyled">
-                    <li class="menu-item">
-                        <a href="/dashboard" class="menu-link active">
-                            <i class="fas fa-tachometer-alt"></i>
-                            Dashboard
-                        </a>
-                    </li>
-                    
-                    {{#ifNotEquals user.role 'student'}}
-                    <li class="menu-item">
-                        <a href="/patrols" class="menu-link">
-                            <i class="fas fa-route"></i>
-                            Patrols
-                        </a>
-                    </li>
-                    {{/ifNotEquals}}
-                    
-                    <li class="menu-item">
-                        <a href="/incidents" class="menu-link">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            Incidents
-                            {{#if incidentCount}}
-                            <span class="badge-new">{{incidentCount}}</span>
-                            {{/if}}
-                        </a>
-                    </li>
-                    
-                    {{#ifEquals user.role 'admin'}}
-                    <li class="menu-item">
-                        <a href="/guards" class="menu-link">
-                            <i class="fas fa-users"></i>
-                            Guards
-                        </a>
-                    </li>
-                    {{/ifEquals}}
-                    
-                    {{#ifNotEquals user.role 'student'}}
-                    <li class="menu-item">
-                        <a href="/schedule" class="menu-link">
-                            <i class="fas fa-calendar-alt"></i>
-                            Schedule
-                        </a>
-                    </li>
-                    {{/ifNotEquals}}
-                    
-                    <li class="menu-item">
-                        <a href="/reports" class="menu-link">
-                            <i class="fas fa-chart-line"></i>
-                            Reports
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            
-            <!-- Management -->
-            {{#ifEquals user.role 'admin'}}
-            <li class="menu-section">
-                <div class="menu-section-title">Management</div>
-                <ul class="list-unstyled">
-                    <li class="menu-item">
-                        <a href="/users" class="menu-link">
-                            <i class="fas fa-user-cog"></i>
-                            Users
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="/roles" class="menu-link">
-                            <i class="fas fa-shield-alt"></i>
-                            Roles & Permissions
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="/audit-logs" class="menu-link">
-                            <i class="fas fa-history"></i>
-                            Audit Logs
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="/settings/system" class="menu-link">
-                            <i class="fas fa-cogs"></i>
-                            System Settings
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            {{/ifEquals}}
-            
-            {{#ifEquals user.role 'supervisor'}}
-            <li class="menu-section">
-                <div class="menu-section-title">Supervision</div>
-                <ul class="list-unstyled">
-                    <li class="menu-item">
-                        <a href="/team" class="menu-link">
-                            <i class="fas fa-user-friends"></i>
-                            My Team
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="/evaluations" class="menu-link">
-                            <i class="fas fa-star"></i>
-                            Evaluations
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="/training" class="menu-link">
-                            <i class="fas fa-graduation-cap"></i>
-                            Training
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            {{/ifEquals}}
-            
-            {{#ifEquals user.role 'guard'}}
-            <li class="menu-section">
-                <div class="menu-section-title">My Tasks</div>
-                <ul class="list-unstyled">
-                    <li class="menu-item">
-                        <a href="/my-patrols" class="menu-link">
-                            <i class="fas fa-walking"></i>
-                            My Patrols
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="/checkpoints" class="menu-link">
-                            <i class="fas fa-map-pin"></i>
-                            Checkpoints
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="/attendance" class="menu-link">
-                            <i class="fas fa-fingerprint"></i>
-                            Attendance
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            {{/ifEquals}}
-            
-            {{#ifEquals user.role 'student'}}
-            <li class="menu-section">
-                <div class="menu-section-title">Safety</div>
-                <ul class="list-unstyled">
-                    <li class="menu-item">
-                        <a href="/report-incident" class="menu-link">
-                            <i class="fas fa-plus-circle"></i>
-                            Report Incident
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="/safety-tips" class="menu-link">
-                            <i class="fas fa-info-circle"></i>
-                            Safety Tips
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="/emergency-contacts" class="menu-link">
-                            <i class="fas fa-phone-alt"></i>
-                            Emergency Contacts
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            {{/ifEquals}}
-            
-            <!-- Support -->
-            <li class="menu-section">
-                <div class="menu-section-title">Support</div>
-                <ul class="list-unstyled">
-                    <li class="menu-item">
-                        <a href="/help" class="menu-link">
-                            <i class="fas fa-question-circle"></i>
-                            Help Center
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="/support" class="menu-link">
-                            <i class="fas fa-headset"></i>
-                            24/7 Support
-                        </a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
+        <div class="menu-section">
+            <div class="menu-section-title">Main</div>
+            <ul class="list-unstyled mb-0">
+                <li><a href="/dashboard" class="menu-link active"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+                {{#ifNotEquals user.role 'student'}}
+                <li><a href="/patrols" class="menu-link"><i class="fas fa-route"></i>Patrols</a></li>
+                {{/ifNotEquals}}
+                <li>
+                    <a href="/incidents" class="menu-link">
+                        <i class="fas fa-exclamation-triangle"></i>Incidents
+                        {{#if incidentCount}}<span class="badge-new">{{incidentCount}}</span>{{/if}}
+                    </a>
+                </li>
+                {{#ifEquals user.role 'admin'}}
+                <li><a href="/guards" class="menu-link"><i class="fas fa-users"></i>Guards</a></li>
+                {{/ifEquals}}
+                {{#ifNotEquals user.role 'student'}}
+                <li><a href="/schedule" class="menu-link"><i class="fas fa-calendar-alt"></i>Schedule</a></li>
+                {{/ifNotEquals}}
+                <li><a href="/reports" class="menu-link"><i class="fas fa-chart-line"></i>Reports</a></li>
+            </ul>
+        </div>
+
+        {{#ifEquals user.role 'admin'}}
+        <div class="menu-section">
+            <div class="menu-section-title">Management</div>
+            <ul class="list-unstyled mb-0">
+                <li><a href="/users" class="menu-link"><i class="fas fa-user-cog"></i>Users</a></li>
+                <li><a href="/roles" class="menu-link"><i class="fas fa-shield-alt"></i>Roles &amp; Permissions</a></li>
+                <li><a href="/audit-logs" class="menu-link"><i class="fas fa-history"></i>Audit Logs</a></li>
+                <li><a href="/settings/system" class="menu-link"><i class="fas fa-cogs"></i>System Settings</a></li>
+            </ul>
+        </div>
+        {{/ifEquals}}
+
+        {{#ifEquals user.role 'supervisor'}}
+        <div class="menu-section">
+            <div class="menu-section-title">Supervision</div>
+            <ul class="list-unstyled mb-0">
+                <li><a href="/team" class="menu-link"><i class="fas fa-user-friends"></i>My Team</a></li>
+                <li><a href="/evaluations" class="menu-link"><i class="fas fa-star"></i>Evaluations</a></li>
+                <li><a href="/training" class="menu-link"><i class="fas fa-graduation-cap"></i>Training</a></li>
+            </ul>
+        </div>
+        {{/ifEquals}}
+
+        {{#ifEquals user.role 'guard'}}
+        <div class="menu-section">
+            <div class="menu-section-title">My Tasks</div>
+            <ul class="list-unstyled mb-0">
+                <li><a href="/my-patrols" class="menu-link"><i class="fas fa-walking"></i>My Patrols</a></li>
+                <li><a href="/checkpoints" class="menu-link"><i class="fas fa-map-pin"></i>Checkpoints</a></li>
+                <li><a href="/attendance" class="menu-link"><i class="fas fa-fingerprint"></i>Attendance</a></li>
+            </ul>
+        </div>
+        {{/ifEquals}}
+
+        {{#ifEquals user.role 'student'}}
+        <div class="menu-section">
+            <div class="menu-section-title">Safety</div>
+            <ul class="list-unstyled mb-0">
+                <li><a href="/report-incident" class="menu-link"><i class="fas fa-plus-circle"></i>Report Incident</a></li>
+                <li><a href="/safety-tips" class="menu-link"><i class="fas fa-info-circle"></i>Safety Tips</a></li>
+                <li><a href="/emergency-contacts" class="menu-link"><i class="fas fa-phone-alt"></i>Emergency Contacts</a></li>
+            </ul>
+        </div>
+        {{/ifEquals}}
+
+        <div class="menu-section">
+            <div class="menu-section-title">Support</div>
+            <ul class="list-unstyled mb-0">
+                <li><a href="/help" class="menu-link"><i class="fas fa-question-circle"></i>Help Center</a></li>
+                <li><a href="/support" class="menu-link"><i class="fas fa-headset"></i>24/7 Support</a></li>
+            </ul>
+        </div>
     </div>
-    
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <!-- Main Content -->
     <div class="main-content" id="mainContent">
+
         <!-- Welcome Banner -->
         <div class="welcome-banner">
             <div class="welcome-content">
-                <div class="row align-items-center">
+                <div class="row align-items-center gy-3">
                     <div class="col-lg-8">
-                        <h2>
-                            Welcome back, {{#if user}}{{user.firstName}}{{else}}User{{/if}}! 👋
-                        </h2>
+                        <h2>Welcome back, {{#if user}}{{user.firstName}}{{else}}User{{/if}}! 👋</h2>
                         <p>
-                            {{#ifEquals user.role 'admin'}}
-                            Here's your campus security overview. All systems are operational.
-                            {{/ifEquals}}
-                            
-                            {{#ifEquals user.role 'supervisor'}}
-                            Monitor your team's performance and ensure campus safety.
-                            {{/ifEquals}}
-                            
-                            {{#ifEquals user.role 'guard'}}
-                            Ready for your shift? Check your assigned patrols and checkpoints.
-                            {{/ifEquals}}
-                            
-                            {{#ifEquals user.role 'student'}}
-                            Stay safe on campus. Report any incidents immediately.
-                            {{/ifEquals}}
+                            {{#ifEquals user.role 'admin'}}Here's your campus security overview. All systems operational.{{/ifEquals}}
+                            {{#ifEquals user.role 'supervisor'}}Monitor your team's performance and ensure campus safety.{{/ifEquals}}
+                            {{#ifEquals user.role 'guard'}}Ready for your shift? Check your assigned patrols and checkpoints.{{/ifEquals}}
+                            {{#ifEquals user.role 'student'}}Stay safe on campus. Report any incidents immediately.{{/ifEquals}}
                         </p>
-                        
                         <div class="quick-stats">
-                            <div class="quick-stat-item">
-                                <i class="fas fa-calendar-check"></i>
-                                <span>{{currentDate}}</span>
-                            </div>
-                            <div class="quick-stat-item">
-                                <i class="fas fa-clock"></i>
-                                <span>{{currentTime}}</span>
-                            </div>
-                            <div class="quick-stat-item">
-                                <i class="fas fa-shield-alt"></i>
-                                <span>System Status: <span class="text-success">Active</span></span>
-                            </div>
+                            <div class="quick-stat-item"><i class="fas fa-calendar-check"></i><span>{{currentDate}}</span></div>
+                            <div class="quick-stat-item"><i class="fas fa-clock"></i><span id="liveClock">{{currentTime}}</span></div>
+                            <div class="quick-stat-item"><i class="fas fa-circle" style="color:#4ade80;font-size:.55rem;"></i><span>All Systems Active</span></div>
                         </div>
                     </div>
-                    
-                    <div class="col-lg-4 d-none d-lg-block text-end">
+                    <div class="col-lg-4 d-none d-lg-flex justify-content-end align-items-center gap-2">
                         {{#ifEquals user.role 'guard'}}
-                        <a href="/patrols/start" class="btn btn-light btn-lg">
-                            <i class="fas fa-play me-2"></i>Start Patrol
-                        </a>
+                        <a href="/patrols/start" class="btn btn-light"><i class="fas fa-play me-2"></i>Start Patrol</a>
                         {{/ifEquals}}
-                        
                         {{#ifEquals user.role 'student'}}
-                        <a href="/incidents/report" class="btn btn-light btn-lg">
-                            <i class="fas fa-exclamation-circle me-2"></i>Report Incident
-                        </a>
+                        <a href="/incidents/report" class="btn btn-light"><i class="fas fa-exclamation-circle me-2"></i>Report Incident</a>
                         {{/ifEquals}}
-                        
                         {{#ifEquals user.role 'admin'}}
-                        <a href="/reports/generate" class="btn btn-light btn-lg">
-                            <i class="fas fa-file-pdf me-2"></i>Generate Report
-                        </a>
+                        <a href="/reports/generate" class="btn btn-light"><i class="fas fa-file-pdf me-2"></i>Generate Report</a>
                         {{/ifEquals}}
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Stats Row -->
-        <div class="row g-4 mb-4">
+
+        <!-- Stat Cards -->
+        <div class="row g-3 mb-4">
             {{#ifEquals user.role 'admin'}}
-            <div class="col-xl-3 col-md-6">
+            <div class="col-xl-3 col-sm-6">
                 <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-user-shield"></i>
-                        </div>
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="stat-icon"><i class="fas fa-user-shield"></i></div>
                         <span class="stat-badge badge-up">+12%</span>
                     </div>
                     <div class="stat-value">48</div>
                     <div class="stat-label">Active Guards</div>
                 </div>
             </div>
-            
-            <div class="col-xl-3 col-md-6">
+            <div class="col-xl-3 col-sm-6">
                 <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-route"></i>
-                        </div>
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="stat-icon"><i class="fas fa-route"></i></div>
                         <span class="stat-badge badge-up">+8%</span>
                     </div>
                     <div class="stat-value">24</div>
                     <div class="stat-label">Active Patrols</div>
                 </div>
             </div>
-            
-            <div class="col-xl-3 col-md-6">
+            <div class="col-xl-3 col-sm-6">
                 <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
                         <span class="stat-badge badge-down">-5%</span>
                     </div>
                     <div class="stat-value">7</div>
                     <div class="stat-label">Open Incidents</div>
                 </div>
             </div>
-            
-            <div class="col-xl-3 col-md-6">
+            <div class="col-xl-3 col-sm-6">
                 <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="stat-icon"><i class="fas fa-bolt"></i></div>
                         <span class="stat-badge badge-up">+23%</span>
                     </div>
                     <div class="stat-value">2.4</div>
@@ -1197,567 +676,294 @@
                 </div>
             </div>
             {{/ifEquals}}
-            
+
             {{#ifEquals user.role 'supervisor'}}
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value">12</div>
-                    <div class="stat-label">Team Members</div>
-                </div>
-            </div>
-            
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value">94%</div>
-                    <div class="stat-label">Patrol Completion</div>
-                </div>
-            </div>
-            
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value">98%</div>
-                    <div class="stat-label">On-Time Attendance</div>
-                </div>
-            </div>
-            
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-star"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value">4.8</div>
-                    <div class="stat-label">Team Rating</div>
-                </div>
-            </div>
+            <div class="col-xl-3 col-sm-6"><div class="stat-card"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-value">12</div><div class="stat-label">Team Members</div></div></div>
+            <div class="col-xl-3 col-sm-6"><div class="stat-card"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-value">94%</div><div class="stat-label">Patrol Completion</div></div></div>
+            <div class="col-xl-3 col-sm-6"><div class="stat-card"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-value">98%</div><div class="stat-label">On-Time Attendance</div></div></div>
+            <div class="col-xl-3 col-sm-6"><div class="stat-card"><div class="stat-icon"><i class="fas fa-star"></i></div><div class="stat-value">4.8</div><div class="stat-label">Team Rating</div></div></div>
             {{/ifEquals}}
-            
+
             {{#ifEquals user.role 'guard'}}
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value">Today</div>
-                    <div class="stat-label">{{currentShift}}</div>
-                </div>
-            </div>
-            
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-route"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value">{{assignedPatrols}}</div>
-                    <div class="stat-label">Assigned Patrols</div>
-                </div>
-            </div>
-            
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-map-pin"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value">{{checkpointsCompleted}}</div>
-                    <div class="stat-label">Checkpoints Done</div>
-                </div>
-            </div>
-            
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value">{{hoursWorked}}h</div>
-                    <div class="stat-label">Hours Worked</div>
-                </div>
-            </div>
+            <div class="col-xl-3 col-sm-6"><div class="stat-card"><div class="stat-icon"><i class="fas fa-calendar-check"></i></div><div class="stat-value">Today</div><div class="stat-label">{{currentShift}}</div></div></div>
+            <div class="col-xl-3 col-sm-6"><div class="stat-card"><div class="stat-icon"><i class="fas fa-route"></i></div><div class="stat-value">{{assignedPatrols}}</div><div class="stat-label">Assigned Patrols</div></div></div>
+            <div class="col-xl-3 col-sm-6"><div class="stat-card"><div class="stat-icon"><i class="fas fa-map-pin"></i></div><div class="stat-value">{{checkpointsCompleted}}</div><div class="stat-label">Checkpoints Done</div></div></div>
+            <div class="col-xl-3 col-sm-6"><div class="stat-card"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-value">{{hoursWorked}}h</div><div class="stat-label">Hours Worked</div></div></div>
             {{/ifEquals}}
-            
+
             {{#ifEquals user.role 'student'}}
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value">Safe</div>
-                    <div class="stat-label">Campus Status</div>
-                </div>
-            </div>
-            
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-phone-alt"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value">24/7</div>
-                    <div class="stat-label">Emergency Line</div>
-                </div>
-            </div>
-            
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value">15</div>
-                    <div class="stat-label">Guards On Duty</div>
-                </div>
-            </div>
-            
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-video"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value">142</div>
-                    <div class="stat-label">Cameras Active</div>
-                </div>
-            </div>
+            <div class="col-xl-3 col-sm-6"><div class="stat-card"><div class="stat-icon"><i class="fas fa-shield-alt"></i></div><div class="stat-value" style="color:var(--success);">Safe</div><div class="stat-label">Campus Status</div></div></div>
+            <div class="col-xl-3 col-sm-6"><div class="stat-card"><div class="stat-icon"><i class="fas fa-phone-alt"></i></div><div class="stat-value">24/7</div><div class="stat-label">Emergency Line</div></div></div>
+            <div class="col-xl-3 col-sm-6"><div class="stat-card"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-value">15</div><div class="stat-label">Guards On Duty</div></div></div>
+            <div class="col-xl-3 col-sm-6"><div class="stat-card"><div class="stat-icon"><i class="fas fa-video"></i></div><div class="stat-value">142</div><div class="stat-label">Cameras Active</div></div></div>
             {{/ifEquals}}
         </div>
-        
-        <!-- Main Dashboard Content -->
-        <div class="row">
-            <!-- Left Column -->
+
+        <!-- Main Grid -->
+        <div class="row g-3">
+            <!-- Left -->
             <div class="col-lg-8">
-                <!-- Live Map Card -->
-                <div class="card">
+                <div class="card mb-3">
                     <div class="card-header">
-                        <h5>
-                            <i class="fas fa-map-marked-alt me-2"></i>
-                            Live Guard Tracking
-                        </h5>
-                        <a href="/map" class="btn-link">View Full Map <i class="fas fa-arrow-right ms-2"></i></a>
+                        <h5><i class="fas fa-map-marked-alt"></i>Live Guard Tracking</h5>
+                        <a href="/map" class="btn-link">View Full Map <i class="fas fa-arrow-right"></i></a>
                     </div>
                     <div class="card-body">
-                        <div class="map-container" id="liveMap">
-                            <!-- Map will be initialized here -->
-                        </div>
+                        <div class="map-container"><div id="liveMap"></div></div>
                     </div>
                 </div>
-                
-                <!-- Charts Row -->
-                <div class="row">
+
+                <div class="row g-3 mb-3">
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header">
-                                <h5>
-                                    <i class="fas fa-chart-line me-2"></i>
-                                    Incident Trends
-                                </h5>
+                                <h5><i class="fas fa-chart-line"></i>Incident Trends</h5>
                                 <a href="/reports/incidents" class="btn-link">Details</a>
                             </div>
-                            <div class="card-body">
-                                <canvas id="incidentChart" height="200"></canvas>
-                            </div>
+                            <div class="card-body"><canvas id="incidentChart" height="200"></canvas></div>
                         </div>
                     </div>
-                    
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header">
-                                <h5>
-                                    <i class="fas fa-clock me-2"></i>
-                                    Response Times
-                                </h5>
+                                <h5><i class="fas fa-bolt"></i>Response Times</h5>
                                 <a href="/reports/response" class="btn-link">Details</a>
                             </div>
-                            <div class="card-body">
-                                <canvas id="responseChart" height="200"></canvas>
-                            </div>
+                            <div class="card-body"><canvas id="responseChart" height="200"></canvas></div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Recent Incidents -->
+
                 <div class="card">
                     <div class="card-header">
-                        <h5>
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            Recent Incidents
-                        </h5>
-                        <a href="/incidents" class="btn-link">View All <i class="fas fa-arrow-right ms-2"></i></a>
+                        <h5><i class="fas fa-exclamation-triangle"></i>Recent Incidents</h5>
+                        <a href="/incidents" class="btn-link">View All <i class="fas fa-arrow-right"></i></a>
                     </div>
                     <div class="card-body">
                         <ul class="incident-list">
                             {{#each recentIncidents}}
                             <li class="incident-item">
-                                <div class="incident-icon incident-{{severity}}">
-                                    <i class="fas fa-exclamation"></i>
-                                </div>
+                                <div class="incident-icon incident-{{severity}}"><i class="fas fa-exclamation"></i></div>
                                 <div class="incident-info">
                                     <h6>{{title}}</h6>
-                                    <p>{{location}} • Reported by {{reporter}}</p>
+                                    <p>{{location}} · Reported by {{reporter}}</p>
                                 </div>
-                                <div class="incident-time">
-                                    {{time}}
-                                </div>
+                                <div class="incident-time">{{time}}</div>
                             </li>
                             {{else}}
-                            <li class="text-center py-4 text-muted">
-                                <i class="fas fa-check-circle me-2" style="color: #48bb78;"></i>
-                                No recent incidents. Campus is safe.
+                            <li class="empty-state">
+                                <i class="fas fa-check-circle"></i>No recent incidents. Campus is safe.
                             </li>
                             {{/each}}
                         </ul>
                     </div>
                 </div>
             </div>
-            
-            <!-- Right Column -->
+
+            <!-- Right -->
             <div class="col-lg-4">
-                <!-- Guards On Duty -->
-                <div class="card">
+                <div class="card mb-3">
                     <div class="card-header">
-                        <h5>
-                            <i class="fas fa-user-shield me-2"></i>
-                            Guards On Duty
-                        </h5>
+                        <h5><i class="fas fa-user-shield"></i>Guards On Duty</h5>
                         <a href="/guards" class="btn-link">View All</a>
                     </div>
                     <div class="card-body">
                         <ul class="guard-list">
                             {{#each activeGuards}}
                             <li class="guard-item">
-                                <div class="guard-avatar">
-                                    {{initials}}
-                                </div>
+                                <div class="guard-avatar">{{initials}}</div>
                                 <div class="guard-info">
                                     <h6>{{name}}</h6>
-                                    <p>{{location}} • {{time}} shift</p>
+                                    <p>{{location}} · {{time}} shift</p>
                                 </div>
                                 <div class="guard-status status-{{status}}"></div>
                             </li>
                             {{else}}
-                            <li class="text-center py-4 text-muted">
-                                No guards currently on duty
-                            </li>
+                            <li class="empty-state">No guards currently on duty</li>
                             {{/each}}
                         </ul>
                     </div>
                 </div>
-                
-                <!-- Schedule Preview -->
-                <div class="card">
-                    <div class="card-header">
-                        <h5>
-                            <i class="fas fa-calendar-alt me-2"></i>
-                            Today's Schedule
-                        </h5>
-                        <a href="/schedule" class="btn-link">Full Schedule</a>
-                    </div>
-                    <div class="card-body">
-                        <div id="schedulePreview">
-                            <!-- Schedule items -->
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Quick Actions -->
-                <div class="card">
-                    <div class="card-header">
-                        <h5>
-                            <i class="fas fa-bolt me-2"></i>
-                            Quick Actions
-                        </h5>
-                    </div>
+
+                <div class="card mb-3">
+                    <div class="card-header"><h5><i class="fas fa-bolt"></i>Quick Actions</h5></div>
                     <div class="card-body">
                         <div class="quick-actions">
                             {{#ifNotEquals user.role 'student'}}
-                            <a href="/incidents/report" class="action-btn">
-                                <i class="fas fa-plus-circle"></i>
-                                <span>Report Incident</span>
-                            </a>
+                            <a href="/incidents/report" class="action-btn"><i class="fas fa-plus-circle"></i><span>Report Incident</span></a>
                             {{/ifNotEquals}}
-                            
-                            <a href="/patrols" class="action-btn">
-                                <i class="fas fa-route"></i>
-                                <span>Start Patrol</span>
-                            </a>
-                            
+                            <a href="/patrols" class="action-btn"><i class="fas fa-route"></i><span>Start Patrol</span></a>
                             {{#ifEquals user.role 'admin'}}
-                            <a href="/guards/add" class="action-btn">
-                                <i class="fas fa-user-plus"></i>
-                                <span>Add Guard</span>
-                            </a>
+                            <a href="/guards/add" class="action-btn"><i class="fas fa-user-plus"></i><span>Add Guard</span></a>
                             {{/ifEquals}}
-                            
-                            <a href="/check-in" class="action-btn">
-                                <i class="fas fa-fingerprint"></i>
-                                <span>Check In</span>
-                            </a>
-                            
-                            <a href="/emergency" class="action-btn">
-                                <i class="fas fa-phone-alt"></i>
-                                <span>Emergency</span>
-                            </a>
+                            <a href="/check-in" class="action-btn"><i class="fas fa-fingerprint"></i><span>Check In</span></a>
+                            <a href="/emergency" class="action-btn"><i class="fas fa-phone-alt"></i><span>Emergency</span></a>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Coverage Progress -->
-                <div class="card">
-                    <div class="card-header">
-                        <h5>
-                            <i class="fas fa-chart-pie me-2"></i>
-                            Patrol Coverage
-                        </h5>
-                    </div>
+
+                <div class="card mb-3">
+                    <div class="card-header"><h5><i class="fas fa-chart-pie"></i>Patrol Coverage</h5></div>
                     <div class="card-body">
                         <div class="progress-item">
-                            <div class="progress-label">
-                                <span>Main Campus</span>
-                                <span>85%</span>
-                            </div>
-                            <div class="progress">
-                                <div class="progress-bar" style="width: 85%"></div>
-                            </div>
+                            <div class="progress-label"><span>Main Campus</span><span>85%</span></div>
+                            <div class="progress"><div class="progress-bar" style="width:0" data-width="85%"></div></div>
                         </div>
-                        
                         <div class="progress-item">
-                            <div class="progress-label">
-                                <span>Hostels</span>
-                                <span>92%</span>
-                            </div>
-                            <div class="progress">
-                                <div class="progress-bar" style="width: 92%"></div>
-                            </div>
+                            <div class="progress-label"><span>Hostels</span><span>92%</span></div>
+                            <div class="progress"><div class="progress-bar" style="width:0" data-width="92%"></div></div>
                         </div>
-                        
                         <div class="progress-item">
-                            <div class="progress-label">
-                                <span>Perimeter</span>
-                                <span>78%</span>
-                            </div>
-                            <div class="progress">
-                                <div class="progress-bar" style="width: 78%"></div>
-                            </div>
+                            <div class="progress-label"><span>Perimeter</span><span>78%</span></div>
+                            <div class="progress"><div class="progress-bar" style="width:0" data-width="78%"></div></div>
                         </div>
-                        
                         <div class="progress-item">
-                            <div class="progress-label">
-                                <span>Parking Lots</span>
-                                <span>63%</span>
-                            </div>
-                            <div class="progress">
-                                <div class="progress-bar" style="width: 63%"></div>
-                            </div>
+                            <div class="progress-label"><span>Parking Lots</span><span>63%</span></div>
+                            <div class="progress"><div class="progress-bar" style="width:0" data-width="63%"></div></div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Weather Card -->
+
                 <div class="card">
-                    <div class="card-header">
-                        <h5>
-                            <i class="fas fa-cloud-sun me-2"></i>
-                            Weather
-                        </h5>
-                    </div>
+                    <div class="card-header"><h5><i class="fas fa-cloud-sun"></i>Weather</h5></div>
                     <div class="card-body">
-                        <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
                             <div>
-                                <h3 class="mb-0">24°C</h3>
-                                <p class="text-muted mb-0">Partly Cloudy</p>
+                                <div class="weather-temp">24°C</div>
+                                <div class="weather-meta">Partly Cloudy · Nairobi</div>
                             </div>
-                            <i class="fas fa-cloud-sun fa-3x" style="color: #667eea;"></i>
+                            <i class="fas fa-cloud-sun fa-3x" style="color:var(--brand-400);opacity:.7;"></i>
                         </div>
-                        <hr>
-                        <div class="row text-center">
-                            <div class="col-4">
-                                <small>Humidity</small>
-                                <h6 class="mb-0">65%</h6>
-                            </div>
-                            <div class="col-4">
-                                <small>Wind</small>
-                                <h6 class="mb-0">12 km/h</h6>
-                            </div>
-                            <div class="col-4">
-                                <small>UV</small>
-                                <h6 class="mb-0">Moderate</h6>
-                            </div>
+                        <div class="row g-2 text-center">
+                            <div class="col-4 weather-stat"><small>Humidity</small><h6>65%</h6></div>
+                            <div class="col-4 weather-stat"><small>Wind</small><h6>12 km/h</h6></div>
+                            <div class="col-4 weather-stat"><small>UV Index</small><h6>Moderate</h6></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Scripts -->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-    
     <script>
-        // Sidebar Toggle
-        document.getElementById('sidebarToggle')?.addEventListener('click', function() {
-            document.getElementById('sidebar').classList.toggle('show');
+        // Sidebar
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        document.getElementById('sidebarToggle')?.addEventListener('click', () => sidebar.classList.toggle('show'));
+        overlay?.addEventListener('click', () => sidebar.classList.remove('show'));
+
+        // Live clock
+        function updateClock() {
+            const el = document.getElementById('liveClock');
+            if (el) el.textContent = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Animated progress bars
+        function animateProgressBars() {
+            document.querySelectorAll('.progress-bar[data-width]').forEach(bar => {
+                setTimeout(() => { bar.style.width = bar.dataset.width; }, 400);
+            });
+        }
+
+        // Staggered card reveal via IntersectionObserver
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) { e.target.style.opacity = '1'; e.target.style.transform = 'translateY(0)'; }
+            });
+        }, { threshold: .1 });
+
+        document.querySelectorAll('.stat-card, .card').forEach((el, i) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(16px)';
+            el.style.transition = `opacity .4s ease ${i * 0.05}s, transform .4s cubic-bezier(.22,1,.36,1) ${i * 0.05}s`;
+            observer.observe(el);
         });
-        
-        // Initialize Map
-        document.addEventListener('DOMContentLoaded', function() {
-            const mapElement = document.getElementById('liveMap');
-            if (mapElement) {
-                const map = L.map('liveMap').setView([-1.2864, 36.8172], 15); // Nairobi coordinates
-                
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors'
-                }).addTo(map);
-                
-                // Add guard markers (example)
-                const guards = [
-                    { lat: -1.2864, lng: 36.8172, name: 'Guard 1', status: 'online' },
-                    { lat: -1.2874, lng: 36.8182, name: 'Guard 2', status: 'online' },
-                    { lat: -1.2854, lng: 36.8162, name: 'Guard 3', status: 'away' }
-                ];
-                
-                guards.forEach(guard => {
-                    const marker = L.marker([guard.lat, guard.lng]).addTo(map);
-                    marker.bindPopup(`<b>${guard.name}</b><br>Status: ${guard.status}`);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Map
+            const mapEl = document.getElementById('liveMap');
+            if (mapEl) {
+                const map = L.map('liveMap', { zoomControl: true }).setView([-1.2864, 36.8172], 15);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+                const guardIcon = L.divIcon({
+                    className: '',
+                    html: '<div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#4f66e5,#2c3fb5);display:grid;place-items:center;color:#fff;font-size:12px;box-shadow:0 4px 12px rgba(79,102,229,.4);"><i class="fas fa-user-shield"></i></div>',
+                    iconSize: [28, 28], iconAnchor: [14, 14]
                 });
+                [{ lat: -1.2864, lng: 36.8172, name: 'Guard Alpha' },
+                 { lat: -1.2874, lng: 36.8182, name: 'Guard Bravo' },
+                 { lat: -1.2854, lng: 36.8162, name: 'Guard Charlie' }
+                ].forEach(g => L.marker([g.lat, g.lng], { icon: guardIcon }).addTo(map).bindPopup('<strong>' + g.name + '</strong><br><span style="color:#12b76a">● Online</span>'));
             }
+            animateProgressBars();
         });
-        
-        // Incident Chart
+
+        // Charts
+        Chart.defaults.font.family = "'DM Sans', sans-serif";
+        Chart.defaults.font.size = 12;
+        Chart.defaults.color = '#94a3b8';
+
         const incidentCtx = document.getElementById('incidentChart')?.getContext('2d');
         if (incidentCtx) {
             new Chart(incidentCtx, {
                 type: 'line',
                 data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
                     datasets: [{
-                        label: 'Incidents',
-                        data: [3, 5, 2, 6, 4, 2, 1],
-                        borderColor: '#667eea',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                        tension: 0.4,
-                        fill: true
+                        label: 'Incidents', data: [3,5,2,6,4,2,1],
+                        borderColor: '#4f66e5',
+                        backgroundColor: ctx => {
+                            const g = ctx.chart.ctx.createLinearGradient(0,0,0,200);
+                            g.addColorStop(0,'rgba(79,102,229,.18)'); g.addColorStop(1,'rgba(79,102,229,0)');
+                            return g;
+                        },
+                        borderWidth: 2, tension: .4, fill: true,
+                        pointBackgroundColor: '#4f66e5', pointRadius: 4, pointHoverRadius: 6
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                display: false
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,.05)' }, border: { dash: [4,4] } },
+                        x: { grid: { display: false } }
+                    },
+                    animation: { duration: 1200, easing: 'easeOutQuart' }
                 }
             });
         }
-        
-        // Response Time Chart
+
         const responseCtx = document.getElementById('responseChart')?.getContext('2d');
         if (responseCtx) {
             new Chart(responseCtx, {
                 type: 'bar',
                 data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
                     datasets: [{
-                        label: 'Response Time (min)',
-                        data: [2.5, 2.1, 2.8, 2.3, 2.0, 1.8, 1.9],
-                        backgroundColor: '#764ba2',
-                        borderRadius: 5
+                        label: 'Response (min)', data: [2.5,2.1,2.8,2.3,2.0,1.8,1.9],
+                        backgroundColor: ctx => {
+                            const g = ctx.chart.ctx.createLinearGradient(0,0,0,160);
+                            g.addColorStop(0,'rgba(79,102,229,.9)'); g.addColorStop(1,'rgba(44,63,181,.5)');
+                            return g;
+                        },
+                        borderRadius: 6, borderSkipped: false
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                display: false
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,.05)' }, border: { dash: [4,4] } },
+                        x: { grid: { display: false } }
+                    },
+                    animation: { duration: 1200, delay: ctx => ctx.dataIndex * 80, easing: 'easeOutBounce' }
                 }
             });
         }
-        
-        // Update time every second
-        function updateTime() {
-            const timeElement = document.querySelector('.quick-stat-item:nth-child(2) span');
-            if (timeElement) {
-                const now = new Date();
-                timeElement.textContent = now.toLocaleTimeString('en-US', { 
-                    hour: '2-digit', 
-                    minute: '2-digit',
-                    second: '2-digit'
-                });
-            }
-        }
-        
-        setInterval(updateTime, 1000);
-        
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('sidebar');
-            const toggle = document.getElementById('sidebarToggle');
-            
-            if (window.innerWidth <= 768 && 
-                sidebar.classList.contains('show') && 
-                !sidebar.contains(event.target) && 
-                !toggle.contains(event.target)) {
-                sidebar.classList.remove('show');
-            }
-        });
     </script>
 </body>
 </html>
