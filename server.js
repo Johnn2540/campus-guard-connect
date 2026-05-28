@@ -9,8 +9,12 @@ const compression = require("compression");
 const crypto = require("crypto");
 require("dotenv").config();
 
-// Database imports - REPLACED MongoDB with Prisma/PostgreSQL
-const { prisma, connectDatabase, PrismaSessionStore } = require("./config/database");
+// PostgreSQL session store
+const pgSession = require('connect-pg-simple')(session);
+const { Pool } = require('pg');
+
+// Database imports - PostgreSQL with Prisma
+const { prisma, connectDatabase } = require("./config/database");
 
 const app = express();
 
@@ -21,13 +25,20 @@ app.set("trust proxy", 1);
 app.use(compression());
 
 // ================== SESSION MIDDLEWARE with PostgreSQL ==================
-const sessionStore = new PrismaSessionStore(prisma);
+const pgPool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+});
 
 const sessionConfig = {
     secret: process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex'),
     resave: false,
     saveUninitialized: false,
-    store: sessionStore,
+    store: new pgSession({
+      pool: pgPool,
+      tableName: 'session',  // Change from 'sessions' to 'session'
+      createTableIfMissing: true,
+    }),
     cookie: {
         maxAge: 1000 * 60 * 60 * 24,
         httpOnly: true,
@@ -283,12 +294,30 @@ async function getUserById(id) {
     return await prisma.user.findUnique({
         where: { id },
         select: {
-            id: true, firstName: true, lastName: true, name: true, email: true,
-            password: true, role: true, badgeNumber: true, phoneNumber: true,
-            institution: true, profileImage: true, isActive: true, lastLogin: true,
-            createdAt: true, updatedAt: true, timezone: true, notifications: true,
-            privacy: true, accessibility: true, integrations: true, twoFactorEnabled: true,
-            loginAlerts: true, passwordLastChanged: true, emergencyContact: true,
+            id: true, 
+            firstName: true, 
+            lastName: true, 
+            name: true, 
+            email: true,
+            password: true, 
+            role: true, 
+            badgeNumber: true, 
+            phoneNumber: true,
+            institution: true, 
+            profileImage: true, 
+            isActive: true, 
+            lastLogin: true,
+            createdAt: true, 
+            updatedAt: true, 
+            timezone: true, 
+            notificationSettings: true,  // Changed from 'notifications'
+            privacySettings: true,       // Changed from 'privacy'
+            accessibilitySettings: true, // Changed from 'accessibility'
+            integrationSettings: true,   // Changed from 'integrations'
+            twoFactorEnabled: true,
+            loginAlerts: true, 
+            passwordLastChanged: true, 
+            emergencyContact: true,
             shiftPreferences: true
         }
     });
@@ -296,7 +325,29 @@ async function getUserById(id) {
 
 async function getUserByEmail(email) {
     return await prisma.user.findUnique({
-        where: { email: email.toLowerCase() }
+        where: { email: email.toLowerCase() },
+        select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            name: true,
+            email: true,
+            password: true,
+            role: true,
+            badgeNumber: true,
+            phoneNumber: true,
+            institution: true,
+            profileImage: true,
+            isActive: true,
+            lastLogin: true,
+            createdAt: true,
+            notificationSettings: true,
+            privacySettings: true,
+            accessibilitySettings: true,
+            integrationSettings: true,
+            twoFactorEnabled: true,
+            loginAlerts: true
+        }
     });
 }
 

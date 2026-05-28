@@ -93,6 +93,11 @@ class PrismaSessionStore extends EventEmitter {
       .catch(() => callback(null)); // Ignore if session doesn't exist
   }
 
+  // ADD THIS METHOD - Required by express-session
+  createSession(sid, session, callback) {
+    this.set(sid, session, callback);
+  }
+
   // Required by express-session
   on(event, listener) {
     return super.on(event, listener);
