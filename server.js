@@ -59,12 +59,22 @@ app.use(express.static(path.join(__dirname, "public"), {
     etag: true,
 }));
 
-// Create uploads directory if it doesn't exist
+// Create uploads directory if it doesn't exist (skip on Vercel)
 const uploadDir = path.join(__dirname, "uploads");
 const avatarDir = path.join(__dirname, "public/uploads/avatars");
 
 async function ensureDirectories() {
+    // Skip directory creation on Vercel (read-only filesystem)
+    const isVercel = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
+    
+    if (isVercel) {
+        console.log("⚠️ Running on Vercel/Production - skipping directory creation (read-only filesystem)");
+        console.log("ℹ️ File uploads will be disabled. Use cloud storage for production.");
+        return;
+    }
+    
     try {
+        // Only create directories in development/local environment
         await fs.mkdir(uploadDir, { recursive: true });
         await fs.mkdir(avatarDir, { recursive: true });
         console.log("✅ Upload directories created/verified");
