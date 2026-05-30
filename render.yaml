@@ -1,0 +1,23 @@
+# render.yaml
+services:
+  - type: web
+    name: campus-guard-connect
+    runtime: node
+    plan: free
+    buildCommand: npm install && npx prisma generate && npx prisma migrate deploy
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: SITE_URL
+        value: https://campus-guard-connect.onrender.com/
+      - key: SITE_NAME
+        value: Campus Guard Connect
